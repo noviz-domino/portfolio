@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180" viewBox="0 0 240 180" role="img" aria-label="아직 식단이 없는 상태를 나타낸 그림">
+  <!-- 빈 상태(식단 0개)용 일러스트.
+       주간 식단표 + 접시 + 장보기 체크를 한 그림에 담아, 이 서비스가 뭘 만들어 주는지 보여준다.
+       브랜드 색만 쓰므로 배경이 흰색이든 크림이든 어울린다. -->
+
+  <!-- 주간 식단표 -->
+  <g transform="translate(18 26)">
+    <rect x="0" y="0" width="132" height="104" rx="10" fill="#ffffff" stroke="#176b52" stroke-opacity="0.28" stroke-width="2"/>
+    <path d="M0 24h132" stroke="#176b52" stroke-opacity="0.28" stroke-width="2"/>
+    <circle cx="14" cy="12" r="3" fill="#176b52" fill-opacity="0.45"/>
+    <circle cx="26" cy="12" r="3" fill="#f28c28" fill-opacity="0.55"/>
+
+    <!-- 채워진 칸 두 개 -->
+    <rect x="12" y="36" width="32" height="24" rx="6" fill="#176b52" fill-opacity="0.12"/>
+    <rect x="50" y="36" width="32" height="24" rx="6" fill="#f28c28" fill-opacity="0.16"/>
+    <!-- 아직 빈 칸들 -->
+    <rect x="88" y="36" width="32" height="24" rx="6" fill="none" stroke="#176b52" stroke-opacity="0.22" stroke-width="1.6" stroke-dasharray="4 4"/>
+    <rect x="12" y="68" width="32" height="24" rx="6" fill="none" stroke="#176b52" stroke-opacity="0.22" stroke-width="1.6" stroke-dasharray="4 4"/>
+    <rect x="50" y="68" width="32" height="24" rx="6" fill="none" stroke="#176b52" stroke-opacity="0.22" stroke-width="1.6" stroke-dasharray="4 4"/>
+    <rect x="88" y="68" width="32" height="24" rx="6" fill="none" stroke="#176b52" stroke-opacity="0.22" stroke-width="1.6" stroke-dasharray="4 4"/>
+  </g>
+
+  <!-- 접시 -->
+  <g transform="translate(150 78)">
+    <circle cx="34" cy="34" r="33" fill="#ffffff" stroke="#176b52" stroke-opacity="0.28" stroke-width="2"/>
+    <circle cx="34" cy="34" r="24" fill="none" stroke="#176b52" stroke-opacity="0.18" stroke-width="1.6"/>
+    <path d="M34 10a24 24 0 0 1 24 24z" fill="#176b52" fill-opacity="0.16"/>
+    <path d="M34 58a24 24 0 0 1-24-24z" fill="#f28c28" fill-opacity="0.18"/>
+  </g>
+
+  <!-- 장보기 체크 -->
+  <g transform="translate(162 20)">
+    <rect x="0" y="0" width="60" height="46" rx="8" fill="#ffffff" stroke="#176b52" stroke-opacity="0.28" stroke-width="2"/>
+    <g stroke="#176b52" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="m9 14 3 3 5-6"/>
+      <path d="m9 30 3 3 5-6"/>
+    </g>
+    <path d="M24 15h26M24 31h18" stroke="#176b52" stroke-opacity="0.22" stroke-width="2.6" stroke-linecap="round"/>
+  </g>
+
+  <!-- 장식용 잎사귀 -->
+  <g fill="none" stroke="#176b52" stroke-opacity="0.3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(8 140) rotate(-12)">
+      <path d="M0 10C0 4 5 0 12 0c0 7-4 11-12 10z"/>
+    </g>
+  </g>
+</svg>

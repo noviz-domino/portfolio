@@ -1,0 +1,1679 @@
+{
+  "name": "ReplyGate 02 · 승인 / 수정 루프",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "id": "cc9d592b-c07d-4ceb-9c16-75ee3cc843d8",
+      "name": "텔레그램 수신",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -928,
+        160
+      ],
+      "webhookId": "6d3e8102-8c4e-4972-9002-a5174fa03214",
+      "credentials": {
+        "telegramApi": {
+          "id": "8sdQtVtcbcWvE3wQ",
+          "name": "미니프로젝트용_cx어시스턴트"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 인라인 버튼 콜백인지, 수정 지시 텍스트인지 판별한다.\n// callback_data 는 텔레그램 규격상 64바이트 제한이라 'approve:INQ-...' 형태로만 실었다.\n\nconst j = $input.first().json;\n\nlet route = 'ignore';\nlet inquiry_id = '';\nlet instruction = '';\nlet callback_id = '';\nlet chat_id = '';\n\nif (j.callback_query) {\n  callback_id = j.callback_query.id || '';\n  chat_id = (j.callback_query.message && j.callback_query.message.chat && j.callback_query.message.chat.id) || '';\n  const data = String(j.callback_query.data || '');\n\n  if (data.startsWith('approve:')) {\n    route = 'approve';\n    inquiry_id = data.slice('approve:'.length);\n  } else if (data.startsWith('revise:')) {\n    route = 'revise';\n    inquiry_id = data.slice('revise:'.length);\n  }\n} else if (j.message && j.message.text) {\n  const t = String(j.message.text).trim();\n  chat_id = (j.message.chat && j.message.chat.id) || '';\n\n  // 슬래시 명령이나 빈 문자열은 무시\n  if (t && !t.startsWith('/')) {\n    route = 'instruct';\n    instruction = t;\n  }\n}\n\nreturn [{ json: { route, inquiry_id, instruction, callback_id, chat_id } }];"
+      },
+      "id": "86381832-29a8-4253-b60f-0d1cf5de493b",
+      "name": "라우팅 판별",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-approve",
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "approve",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "승인"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-revise",
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "revise",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "수정요청"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-instruct",
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "instruct",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "수정지시"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "15a9fe7a-7217-42a0-8849-d8e7122a58b9",
+      "name": "분기",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -480,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $json.callback_id }}",
+        "additionalFields": {
+          "text": "발송 처리 중입니다..."
+        }
+      },
+      "id": "a3463304-c5ad-4595-a267-63cb36bcda5c",
+      "name": "콜백 응답(승인)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        -128
+      ],
+      "webhookId": "70ab2f92-f572-432c-b560-3c968740b80c",
+      "credentials": {
+        "telegramApi": {
+          "id": "8sdQtVtcbcWvE3wQ",
+          "name": "미니프로젝트용_cx어시스턴트"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1355789493,
+          "mode": "list",
+          "cachedResultName": "문의",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=1355789493"
+        },
+        "options": {}
+      },
+      "id": "a8eaa432-a0de-4536-8d9b-b2e7d23c1861",
+      "name": "문의 읽기(승인)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        0,
+        -128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// inquiry_id 로 대상 행을 찾는다. 행 번호로 찾지 않는 이유는\n// 동시에 여러 건이 제출되면 행 번호가 어긋나기 때문이다.\n\nconst target = $('라우팅 판별').first().json.inquiry_id;\nconst rows = $input.all();\n\nconst hit = rows.find(r => String(r.json.inquiry_id || '').trim() === target);\n\nif (!hit) {\n  throw new Error(`문의를 찾을 수 없습니다: ${target}`);\n}\nif (!hit.json.draft_id) {\n  throw new Error(`draft_id 가 비어 있습니다: ${target}`);\n}\nif (String(hit.json.status).trim() === '발송완료') {\n  throw new Error(`이미 발송된 건입니다: ${target}`);   // 버튼 중복 클릭 방어\n}\n\nreturn [{ json: hit.json }];"
+      },
+      "id": "dd4f70ae-df49-4185-987f-66924b60f9cb",
+      "name": "대상 조회(승인)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://gmail.googleapis.com/gmail/v1/users/me/drafts/send",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gmailOAuth2",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ id: $json.draft_id }) }}",
+        "options": {}
+      },
+      "id": "e71a5eb5-53e8-4f71-ac3e-2d4b6588c367",
+      "name": "초안 발송",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        432,
+        -128
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3uA6VG6NsBe4xY78",
+          "name": "gmail 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1355789493,
+          "mode": "list",
+          "cachedResultName": "문의",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=1355789493"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "inquiry_id": "={{ $('대상 조회(승인)').first().json.inquiry_id }}",
+            "status": "발송완료",
+            "status_at": "={{ $now.toUTC().toISO() }}",
+            "sent_at": "={{ $now.toUTC().toISO() }}"
+          },
+          "matchingColumns": [
+            "inquiry_id"
+          ],
+          "schema": [
+            {
+              "id": "타임스탬프",
+              "displayName": "타임스탬프",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "이름",
+              "displayName": "이름",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "이메일",
+              "displayName": "이메일",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "주문번호",
+              "displayName": "주문번호",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "문의내용",
+              "displayName": "문의내용",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "개인정보 수집 동의",
+              "displayName": "개인정보 수집 동의",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "inquiry_id",
+              "displayName": "inquiry_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "search_query",
+              "displayName": "search_query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "cited_clauses",
+              "displayName": "cited_clauses",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "insufficient_info",
+              "displayName": "insufficient_info",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "draft_id",
+              "displayName": "draft_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "revision_count",
+              "displayName": "revision_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status_at",
+              "displayName": "status_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sent_at",
+              "displayName": "sent_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "final_body",
+              "displayName": "final_body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "handler_note",
+              "displayName": "handler_note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "210024fc-3968-400a-8f73-a9f46ad73e44",
+      "name": "상태: 발송완료",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        656,
+        -128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('라우팅 판별').first().json.chat_id }}",
+        "text": "={{ '✅ 발송 완료\\n[' + $json.inquiry_id + '] ' + $('대상 조회(승인)').first().json['이름'] + ' · ' + $('대상 조회(승인)').first().json.category + '\\n' + $('대상 조회(승인)').first().json['이메일'] + ' 앞으로 답변을 보냈습니다.\\n수정 ' + ($('대상 조회(승인)').first().json.revision_count || 0) + '회' }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "35cece1e-81aa-489f-9bb1-6138921d6188",
+      "name": "완료 알림",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        -128
+      ],
+      "webhookId": "ca8e1e89-fbeb-455e-8eeb-071bb42cca9f",
+      "credentials": {
+        "telegramApi": {
+          "id": "8sdQtVtcbcWvE3wQ",
+          "name": "미니프로젝트용_cx어시스턴트"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $json.callback_id }}",
+        "additionalFields": {
+          "text": "수정 지시를 입력해 주세요"
+        }
+      },
+      "id": "b4af3799-75ac-4c8b-8bf5-22a3cccb1922",
+      "name": "콜백 응답(수정)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        176
+      ],
+      "webhookId": "75f70727-ed19-4751-b93d-b8b85095ffaa",
+      "credentials": {
+        "telegramApi": {
+          "id": "8sdQtVtcbcWvE3wQ",
+          "name": "미니프로젝트용_cx어시스턴트"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1355789493,
+          "mode": "list",
+          "cachedResultName": "문의",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=1355789493"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "inquiry_id": "={{ $('라우팅 판별').first().json.inquiry_id }}",
+            "status_at": "={{ $now.toUTC().toISO() }}",
+            "status": "수정중"
+          },
+          "matchingColumns": [
+            "inquiry_id"
+          ],
+          "schema": [
+            {
+              "id": "타임스탬프",
+              "displayName": "타임스탬프",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "이름",
+              "displayName": "이름",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "이메일",
+              "displayName": "이메일",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "주문번호",
+              "displayName": "주문번호",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "문의내용",
+              "displayName": "문의내용",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "개인정보 수집 동의",
+              "displayName": "개인정보 수집 동의",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "inquiry_id",
+              "displayName": "inquiry_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "search_query",
+              "displayName": "search_query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "cited_clauses",
+              "displayName": "cited_clauses",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "insufficient_info",
+              "displayName": "insufficient_info",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "draft_id",
+              "displayName": "draft_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "revision_count",
+              "displayName": "revision_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status_at",
+              "displayName": "status_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sent_at",
+              "displayName": "sent_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "final_body",
+              "displayName": "final_body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "handler_note",
+              "displayName": "handler_note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "38a431b6-731d-4646-a5ea-d3ffebe59758",
+      "name": "상태: 수정중",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        656,
+        288
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('라우팅 판별').first().json.chat_id }}",
+        "text": "={{ '✏️ [' + $('라우팅 판별').first().json.inquiry_id + ']\\n어떤 부분을 고칠까요?\\n이 채팅에 그냥 텍스트로 보내주세요.\\n\\n예) 환불 기한이 7일이 아니라 14일이야. 그리고 좀 더 정중하게.' }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "7b32f662-181f-479d-8641-1c46cf126357",
+      "name": "수정 지시 요청",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        288
+      ],
+      "webhookId": "2b6e5b9b-a945-4959-a316-a5cd46f5dc87",
+      "credentials": {
+        "telegramApi": {
+          "id": "8sdQtVtcbcWvE3wQ",
+          "name": "미니프로젝트용_cx어시스턴트"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1355789493,
+          "mode": "list",
+          "cachedResultName": "문의",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=1355789493"
+        },
+        "options": {}
+      },
+      "id": "0f01d83b-2180-4a2b-8b30-9e47fcd65af4",
+      "name": "문의 읽기(수정)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -224,
+        464
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 담당자가 보낸 텍스트가 어떤 문의에 대한 수정 지시인지 알아내야 한다.\n// 텔레그램 일반 메시지에는 문의 정보가 없으므로,\n// status='수정중' 인 행 중 status_at 이 가장 최근인 건을 대상으로 삼는다.\n\nconst instruction = $('라우팅 판별').first().json.instruction;\n\nconst candidates = $input.all()\n  .map(r => r.json)\n  .filter(j => String(j.status || '').trim() === '수정중');\n\nif (candidates.length === 0) {\n  throw new Error('수정 대기 중인 문의가 없습니다. 먼저 카드에서 [✏️ 수정 요청] 을 눌러주세요.');\n}\n\ncandidates.sort((a, b) => String(b.status_at || '').localeCompare(String(a.status_at || '')));\nconst target = candidates[0];\n\nif (!target.final_body) {\n  throw new Error(`기존 초안 본문(final_body)이 비어 있습니다: ${target.inquiry_id}`);\n}\n\nreturn [{\n  json: {\n    ...target,\n    instruction: instruction\n  }\n}];"
+      },
+      "id": "b4db4be5-7915-491c-bd84-c78199a97783",
+      "name": "수정 대상 찾기",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 447769192,
+          "mode": "list",
+          "cachedResultName": "조항",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=447769192"
+        },
+        "options": {}
+      },
+      "id": "898b622c-e616-4911-aa21-e5d6095616c9",
+      "name": "조항 읽기(수정)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        464
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// P3 프롬프트를 조립한다. 컨텍스트 4개를 모두 넣는 것이 핵심이다.\n// 수정 지시만 던지면 맥락이 끊겨 전혀 다른 답변이 나온다.\n\nconst ctx = $('수정 대상 찾기').first().json;\n\n// 시트에는 조항 ID만 저장돼 있으므로 원문을 복원한다\nconst citedIds = String(ctx.cited_clauses || '')\n  .split(',')\n  .map(s => s.trim())\n  .filter(Boolean);\n\nconst clauseMap = {};\nconst allClauses = [];\nfor (const item of $input.all()) {\n  const j = item.json;\n  if (!j.clause_id) continue;\n  const id = String(j.clause_id).trim();\n  clauseMap[id] = j;\n  allClauses.push(`[${id}] ${j.title} — ${j.text}`);\n}\n\nconst retrieved = citedIds\n  .map(id => clauseMap[id])\n  .filter(Boolean)\n  .map(c => `[${c.clause_id}] ${c.title} — ${c.text}`)\n  .join('\\n') || '(인용된 조항 없음)';\n\nconst promptP3 = [\n  '너는 이커머스 쇼핑몰 \"온마켓\"의 고객 응대 담당자다.',\n  '아래 답변 초안에 대해 검토자가 수정을 요청했다. 요청받은 부분만 고쳐서 다시 작성하라.',\n  '',\n  '■ 절대 규칙',\n  '1. 수정 요청과 무관한 문장은 원래 표현을 그대로 유지하라. 전체를 새로 쓰지 마라.',\n  '2. 지시가 모호하면 가장 보수적으로 해석하라. 임의로 내용을 추가하지 마라.',\n  '3. 본문에 여전히 정책 조항에 근거한 내용이 남아 있다면 그 조항 ID는 cited_clauses 에 유지하라.',\n  '   검토자가 새로 넣은 내용 때문에 전체 근거를 비우지 마라.',\n  '4. 이번 지시로 추가되거나 바뀐 내용을 handler_added 에 짧게 나열하라.',\n  '   예) [\"고객센터 번호 안내\", \"5% 할인 쿠폰 지급\"]',\n  '5. 재작성을 마친 뒤, 완성된 본문 전체를 [전체 정책 조항]과 대조하라.',\n  '   본문의 서술이 어느 조항과 어긋나면 policy_conflict.detected 를 true 로 두고,',\n  '   instruction 에 문제가 되는 본문 문장을 그대로,',\n  '   policy 에 충돌하는 조항을 [ID] 제목 — 원문 형태로 적어라.',\n  '   이번 지시로 생긴 것이든 이전 수정에서 남은 것이든 상관없이 검사한다.',\n  '   어긋나지 않으면 detected 를 false, 나머지 두 필드는 빈 문자열로 둔다.',\n  '   판단은 사람이 하므로 본문은 검토자 지시를 따라 작성한다. 지시를 무시하지 마라.',\n  '',\n  '■ 원래 고객 문의',\n  ctx['문의내용'] || ctx.content || '',\n  '',\n  '■ 기존 초안',\n  ctx.final_body,\n  '',\n  '■ 정책 근거 (본문 작성의 근거로 삼을 조항)',\n  retrieved,\n  '',\n  '■ 검토자의 수정 요청',\n  ctx.instruction,\n  '',\n  '■ 전체 정책 조항 (충돌 확인 전용)',\n  '아래 목록은 policy_conflict 판정에만 사용한다.',\n  '본문 작성에는 위 [정책 근거]와 검토자 지시만 쓴다. 아래 조항을 본문에 새로 끌어오지 마라.',\n  allClauses.join('\\n'),\n  '',\n  'change_note 에는 무엇을 어떻게 고쳤는지 한 문장으로 적어라.'\n].join('\\n');\n\nreturn [{\n  json: {\n    ...ctx,\n    retrieved_clauses: retrieved,\n    prompt_p3: promptP3\n  }\n}];"
+      },
+      "id": "6cfd99f6-e697-4aca-a63b-d17419957e9b",
+      "name": "P3 프롬프트 조립",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "GEMINI_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ contents: [{ parts: [{ text: $json.prompt_p3 }] }], generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'object', properties: { subject: { type: 'string' }, body: { type: 'string' }, cited_clauses: { type: 'array', items: { type: 'string' } }, change_note: { type: 'string' }, handler_added: { type: 'array', items: { type: 'string' } }, policy_conflict: { type: 'object', properties: { detected: { type: 'boolean' }, instruction: { type: 'string' }, policy: { type: 'string' } }, required: ['detected','instruction','policy'] } }, required: ['subject','body','cited_clauses','change_note','handler_added','policy_conflict'] } } }) }}",
+        "options": {}
+      },
+      "id": "f6daf0c2-322e-417f-91e2-6e2cbe4ef47b",
+      "name": "P3 재작성",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// P3 응답 파싱 + 재검토 카드 조립\n\nconst ctx = $('P3 프롬프트 조립').first().json;\n\nlet raw = '';\ntry {\n  raw = $input.first().json.candidates[0].content.parts[0].text;\n} catch (e) {\n  raw = '';\n}\nraw = String(raw).replace(/^\\s*```(?:json)?\\s*/i, '').replace(/\\s*```\\s*$/i, '').trim();\n\nlet p = {};\ntry {\n  p = JSON.parse(raw);\n} catch (e) {\n  throw new Error('P3 재작성 응답을 파싱하지 못했습니다. 원문: ' + raw.slice(0, 300));\n}\n\nconst body = p.body || '';\nif (!body.trim()) throw new Error('재작성된 본문이 비어 있습니다.');\n\nconst cited   = Array.isArray(p.cited_clauses) ? p.cited_clauses : [];\nconst added   = Array.isArray(p.handler_added) ? p.handler_added : [];\nconst conf    = p.policy_conflict || {};\nconst hasConf = conf.detected === true;\n\nconst esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst clip = (s, n) => {\n  s = String(s || '').trim();\n  if (n === null) return s;                 // 제한 없음\n  return n <= 0 ? '' : (s.length > n ? s.slice(0, n) + ' …(생략)' : s);\n};\n\n// 감정은 불만/일반 두 값뿐이다. 조회 필요 여부는 별도 축이라 배지를 따로 붙인다.\n// (이전의 3단계 객체 조회는 두 축 분리 이후 죽은 코드였다)\nconst badge = ctx.sentiment === '불만' ? '🔴' : '⚪';\nconst needsLookup = ctx.needs_lookup === true || String(ctx.needs_lookup).toUpperCase() === 'TRUE';\nconst nextCount = Number(ctx.revision_count || 0) + 1;\n\n// 수정 회차가 쌓일수록 담당자가 원래 문의를 잊는다. 카드마다 원문을 다시 보여준다.\nconst original = ctx['문의내용'] || ctx.content || '';\n\nfunction build(quoteLimit, bodyLimit) {\n  const lines = [];\n  lines.push(`${badge} <b>[${esc(ctx.category)}]</b> ${esc(ctx.customer_name || ctx['이름'] || '')} — 수정 ${nextCount}회차`);\n\n  if (needsLookup) {\n    lines.push('📋 <b>주문 조회 필요</b> — 고객 주문 정보를 확인해야 답이 완결됩니다');\n  }\n\n  if (hasConf) {\n    lines.push('⚠️ <b>지시와 정책이 충돌합니다</b>');\n    lines.push(`   문제: ${esc(conf.instruction || '')}`);\n    lines.push(`   정책: ${esc(conf.policy || '')}`);\n  }\n\n  const quote = clip(original, quoteLimit);\n  if (quote) {\n    // <blockquote> 미사용 — 텔레그램이 태그를 거부하면 전송이 실패한다. 서식보다 전송이 중요하다.\n    lines.push('──────────────');\n    lines.push('💬 <b>고객 문의</b>');\n    lines.push(`「${esc(quote)}」`);\n  }\n\n  lines.push('──────────────');\n  lines.push(`🔁 <b>바뀐 점</b>: ${esc(p.change_note || '(설명 없음)')}`);\n\n  if (added.length) {\n    lines.push(`✍️ 담당자 추가: ${esc(added.join(', '))}`);\n  }\n\n  lines.push(`📎 근거: ${cited.length ? esc(cited.join(', ')) : '없음'}`);\n  lines.push('');\n  lines.push(esc(clip(body, bodyLimit)));\n  lines.push('');\n  lines.push(`<code>${esc(ctx.inquiry_id)}</code>`);\n  return lines.join('\\n');\n}\n\n// 텔레그램 메시지 한도는 4096자. **넘으면 전송이 실패하고 재검토 카드가 오지 않는다.**\n// 충돌 경고와 초안 본문이 우선이므로 문의 원문부터 줄인다.\nlet card = build(500, null);\nif (card.length > 3900) card = build(200, null);\nif (card.length > 3900) card = build(0, null);\nif (card.length > 3900) card = build(0, 3000);       // 마지막 방어선\n\nreturn [{\n  json: {\n    ...ctx,\n    subject: p.subject || `[온마켓] 문의하신 내용에 대한 답변입니다`,\n    body: body,\n    new_cited: cited.join(','),\n    change_note: p.change_note || '',\n    handler_added: added.join(', '),\n    policy_conflict: hasConf ? `지시:${conf.instruction} / 정책:${conf.policy}` : '',\n    revision_next: nextCount,\n    card_text: card\n  }\n}];"
+      },
+      "id": "e4a0ae76-7e60-400e-8cb2-3735880081e6",
+      "name": "재작성 파싱",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://gmail.googleapis.com/gmail/v1/users/me/drafts/{{ $json.draft_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gmailOAuth2",
+        "options": {}
+      },
+      "id": "ff5e1b76-9a61-482e-8803-a00730e9a401",
+      "name": "기존 초안 삭제",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        464
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3uA6VG6NsBe4xY78",
+          "name": "gmail 미니프로젝트용"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('재작성 파싱').first().json.subject }}",
+        "message": "={{ $('재작성 파싱').first().json.body }}",
+        "options": {
+          "sendTo": "={{ $('재작성 파싱').first().json.customer_email || $('재작성 파싱').first().json['이메일'] }}"
+        }
+      },
+      "id": "89cdad43-9b71-404a-b1af-a700102f796e",
+      "name": "새 초안 생성",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1312,
+        464
+      ],
+      "webhookId": "863d93a1-d702-4c0e-a54c-4a495507aaeb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3uA6VG6NsBe4xY78",
+          "name": "gmail 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "문의",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "inquiry_id": "={{ $('재작성 파싱').first().json.inquiry_id }}",
+            "cited_clauses": "={{ $('재작성 파싱').first().json.new_cited }}",
+            "final_body": "={{ $('재작성 파싱').first().json.body }}",
+            "draft_id": "={{ $json.id }}",
+            "revision_count": "={{ $('재작성 파싱').first().json.revision_next }}",
+            "handler_note": "={{ $('재작성 파싱').first().json.instruction }}",
+            "status": "승인대기",
+            "status_at": "={{ $now.toUTC().toISO() }}",
+            "row_number": 0
+          },
+          "matchingColumns": [
+            "inquiry_id"
+          ],
+          "schema": [
+            {
+              "id": "타임스탬프",
+              "displayName": "타임스탬프",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "이름",
+              "displayName": "이름",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "이메일",
+              "displayName": "이메일",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "주문번호",
+              "displayName": "주문번호",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "문의내용",
+              "displayName": "문의내용",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "개인정보 수집 동의",
+              "displayName": "개인정보 수집 동의",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "inquiry_id",
+              "displayName": "inquiry_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "search_query",
+              "displayName": "search_query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "cited_clauses",
+              "displayName": "cited_clauses",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "insufficient_info",
+              "displayName": "insufficient_info",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "draft_id",
+              "displayName": "draft_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "revision_count",
+              "displayName": "revision_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status_at",
+              "displayName": "status_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sent_at",
+              "displayName": "sent_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "final_body",
+              "displayName": "final_body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "handler_note",
+              "displayName": "handler_note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6ddd496d-19e5-4a6c-accf-966f85015cf7",
+      "name": "상태: 승인대기(재)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1552,
+        464
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('라우팅 판별').first().json.chat_id }}",
+        "text": "={{ $('재작성 파싱').first().json.card_text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ 발송 승인",
+                    "additionalFields": {
+                      "callback_data": "={{ 'approve:' + $('재작성 파싱').first().json.inquiry_id }}"
+                    }
+                  },
+                  {
+                    "text": "✏️ 수정 요청",
+                    "additionalFields": {
+                      "callback_data": "={{ 'revise:' + $('재작성 파싱').first().json.inquiry_id }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "ea80e803-37e2-4b8d-b379-0d5587c3c2ac",
+      "name": "재검토 카드",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1760,
+        464
+      ],
+      "webhookId": "ddfc1f6e-b8a3-4b16-b3c6-6a4de4776b95",
+      "credentials": {
+        "telegramApi": {
+          "id": "8sdQtVtcbcWvE3wQ",
+          "name": "미니프로젝트용_cx어시스턴트"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1355789493,
+          "mode": "list",
+          "cachedResultName": "문의",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=1355789493"
+        },
+        "options": {}
+      },
+      "id": "25494e23-8449-489f-8166-f08e0ad8890b",
+      "name": "문의 읽기(가드)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -32,
+        176
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 수정 요청 가드 — 이미 발송된 건이 수정중으로 되돌아가는 것을 막는다.\n//\n// 텔레그램 카드는 발송 후에도 채팅에 남고 버튼이 계속 눌린다.\n// 승인 경로에는 중복 방어가 있었지만(대상 조회(승인)) 수정 경로에는 없어서,\n// 발송이 끝난 건을 다시 수정 루프에 넣을 수 있었다.\n// 그 상태에서 승인을 누르면 같은 고객에게 두 번째 메일이 나간다.\n\nconst target = $('라우팅 판별').first().json.inquiry_id;\n\nconst hit = $input.all().find(\n  r => String(r.json.inquiry_id || '').trim() === target\n);\n\nif (!hit) {\n  throw new Error(`문의를 찾을 수 없습니다: ${target}`);\n}\n\nconst status = String(hit.json.status || '').trim();\nconst sentAt = String(hit.json.sent_at || '').trim();\n\n// status 와 sent_at 을 둘 다 본다. 상태가 어떤 경로로든 바뀌어 있어도\n// 발송 기록이 남아 있으면 이미 나간 건이다.\nconst alreadySent = status === '발송완료' || sentAt !== '';\n\n// 안내 문구는 여기서 만든다. 텔레그램 노드의 표현식 안에서 줄바꿈을\n// 다루면 이스케이프가 깨지기 쉽다. 카드 문구를 Code 에서 조립하는\n// 초안 파싱·재작성 파싱과 같은 방식이다.\nconst esc = s => String(s == null ? '' : s)\n  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\n\nconst blockText = [\n  '🚫 <b>이미 발송된 건입니다</b>',\n  `[${esc(hit.json.inquiry_id)}] ${esc(hit.json['이름'])} · ${esc(hit.json.category)}`,\n  `발송 시각: ${esc(sentAt)}`,\n  '',\n  '이 카드는 지난 기록입니다. 수정이 필요하면 새로 접수해 주세요.'\n].join('\\n');\n\nreturn [{\n  json: {\n    ...hit.json,\n    already_sent: alreadySent,\n    current_status: status,\n    block_text: blockText\n  }\n}];"
+      },
+      "id": "8724ef16-2084-4fdd-bc26-159bed730a74",
+      "name": "수정 가능 확인",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "guard-already-sent",
+              "leftValue": "={{ $json.already_sent }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6b2b3336-8d20-46d1-a029-9794ad4e67ef",
+      "name": "IF 발송 여부",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('라우팅 판별').first().json.chat_id }}",
+        "text": "={{ $json.block_text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "ef728e8d-d378-48cb-9324-edc578bc2188",
+      "name": "차단 알림",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        80
+      ],
+      "webhookId": "ed3d414a-f935-4394-afe7-cd9c0458bd01",
+      "credentials": {
+        "telegramApi": {
+          "id": "8sdQtVtcbcWvE3wQ",
+          "name": "미니프로젝트용_cx어시스턴트"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "텔레그램 수신": {
+      "main": [
+        [
+          {
+            "node": "라우팅 판별",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "라우팅 판별": {
+      "main": [
+        [
+          {
+            "node": "분기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "분기": {
+      "main": [
+        [
+          {
+            "node": "콜백 응답(승인)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "콜백 응답(수정)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "문의 읽기(수정)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "콜백 응답(승인)": {
+      "main": [
+        [
+          {
+            "node": "문의 읽기(승인)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "문의 읽기(승인)": {
+      "main": [
+        [
+          {
+            "node": "대상 조회(승인)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "대상 조회(승인)": {
+      "main": [
+        [
+          {
+            "node": "초안 발송",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "초안 발송": {
+      "main": [
+        [
+          {
+            "node": "상태: 발송완료",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "상태: 발송완료": {
+      "main": [
+        [
+          {
+            "node": "완료 알림",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "콜백 응답(수정)": {
+      "main": [
+        [
+          {
+            "node": "문의 읽기(가드)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "상태: 수정중": {
+      "main": [
+        [
+          {
+            "node": "수정 지시 요청",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "문의 읽기(수정)": {
+      "main": [
+        [
+          {
+            "node": "수정 대상 찾기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "수정 대상 찾기": {
+      "main": [
+        [
+          {
+            "node": "조항 읽기(수정)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "조항 읽기(수정)": {
+      "main": [
+        [
+          {
+            "node": "P3 프롬프트 조립",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "P3 프롬프트 조립": {
+      "main": [
+        [
+          {
+            "node": "P3 재작성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "P3 재작성": {
+      "main": [
+        [
+          {
+            "node": "재작성 파싱",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "재작성 파싱": {
+      "main": [
+        [
+          {
+            "node": "기존 초안 삭제",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "기존 초안 삭제": {
+      "main": [
+        [
+          {
+            "node": "새 초안 생성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "새 초안 생성": {
+      "main": [
+        [
+          {
+            "node": "상태: 승인대기(재)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "상태: 승인대기(재)": {
+      "main": [
+        [
+          {
+            "node": "재검토 카드",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "문의 읽기(가드)": {
+      "main": [
+        [
+          {
+            "node": "수정 가능 확인",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "수정 가능 확인": {
+      "main": [
+        [
+          {
+            "node": "IF 발송 여부",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF 발송 여부": {
+      "main": [
+        [
+          {
+            "node": "차단 알림",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "상태: 수정중",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b4aa623f-360f-4562-a0a3-e689c656a5b7",
+  "meta": {
+    "instanceId": "23221038147e5a06c047d86937c1dc9416e86285b658dcb964332a0d3fb1ff0f"
+  },
+  "nodeGroups": [],
+  "id": "nTp35kcPfySQqUG1",
+  "tags": [
+    {
+      "updatedAt": "2026-08-01T10:18:18.347Z",
+      "createdAt": "2026-08-01T10:18:18.347Z",
+      "id": "bmLPA6fZpCfzfN35",
+      "name": "ReplyGate"
+    }
+  ]
+}

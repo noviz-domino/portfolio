@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">
+  <!-- 페이지 배경용 타일 패턴. 재료 아이콘을 아주 옅은 브랜드 그린 선으로 흩뿌린다.
+       색이 한 가지뿐이고 투명도가 낮아서, 위에 어떤 글자가 와도 대비가 무너지지 않는다.
+       background-repeat 로 반복해 쓴다. -->
+  <g fill="none" stroke="#176b52" stroke-opacity="0.10" stroke-width="1.6"
+     stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- 잎사귀 -->
+    <g transform="translate(26 30) rotate(-18)">
+      <path d="M0 12C0 5 6 0 14 0c0 8-5 13-14 12z"/>
+      <path d="M13 1 2 11"/>
+    </g>
+
+    <!-- 당근 -->
+    <g transform="translate(150 22) rotate(24)">
+      <path d="M5 8 0 21l13-6z"/>
+      <path d="M5 8 9 3M8 9l4-4"/>
+    </g>
+
+    <!-- 그릇 -->
+    <g transform="translate(96 74)">
+      <path d="M0 4h24a12 12 0 0 1-24 0z"/>
+      <path d="M3 0h18"/>
+    </g>
+
+    <!-- 토마토 -->
+    <g transform="translate(30 122)">
+      <circle cx="9" cy="10" r="8"/>
+      <path d="M9 2V0M5 3 3.5 1M13 3l1.5-2"/>
+    </g>
+
+    <!-- 체크된 장보기 항목 -->
+    <g transform="translate(168 112) rotate(-8)">
+      <rect x="0" y="0" width="16" height="16" rx="4"/>
+      <path d="m4 8 3 3 5-6"/>
+    </g>
+
+    <!-- 브로콜리 -->
+    <g transform="translate(78 156)">
+      <path d="M4 8a4 4 0 1 1 3-6 4 4 0 0 1 6 4 4 4 0 0 1-2 4H5z"/>
+      <path d="M8 10v8"/>
+    </g>
+
+    <!-- 계란 프라이 -->
+    <g transform="translate(140 178) rotate(12)">
+      <path d="M2 10a8 6 0 1 1 16 0 8 6 0 0 1-16 0z"/>
+      <circle cx="10" cy="10" r="3"/>
+    </g>
+
+    <!-- 밀 한 줄기 -->
+    <g transform="translate(196 62)">
+      <path d="M4 18V4"/>
+      <path d="M4 6 0 3M4 6l4-3M4 11 0 8M4 11l4-3"/>
+    </g>
+
+  </g>
+</svg>

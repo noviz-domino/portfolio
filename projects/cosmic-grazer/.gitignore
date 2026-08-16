@@ -1,0 +1,7 @@
+﻿# 과제 제출용 아카이브 (레포에 불필요)
+*.zip
+
+# OS / 편집기
+.DS_Store
+Thumbs.db
+.claude/

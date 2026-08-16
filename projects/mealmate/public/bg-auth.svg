@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+  <!-- 로그인/회원가입 화면 배경.
+       가운데 폼이 놓이는 자리는 비워 두고 색은 네 모서리로 밀어냈다.
+       사진과 달리 색 덩어리가 크고 부드러워서, 위에 흰 카드가 올라가도 글자가 안 묻힌다. -->
+  <defs>
+    <radialGradient id="green" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#176b52" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#176b52" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="orange" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#f28c28" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#f28c28" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mint" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#3fa07f" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#3fa07f" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1440" height="900" fill="#fdf7f0"/>
+
+  <ellipse cx="120" cy="90" rx="520" ry="420" fill="url(#green)"/>
+  <ellipse cx="1360" cy="120" rx="460" ry="380" fill="url(#orange)"/>
+  <ellipse cx="1300" cy="860" rx="520" ry="400" fill="url(#mint)"/>
+  <ellipse cx="80" cy="840" rx="420" ry="340" fill="url(#orange)"/>
+
+  <!-- 아주 옅은 재료 선그림 몇 개. 가장자리에만 둔다. -->
+  <g fill="none" stroke="#176b52" stroke-opacity="0.12" stroke-width="2.2"
+     stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(150 250) scale(2.2) rotate(-14)">
+      <path d="M0 12C0 5 6 0 14 0c0 8-5 13-14 12z"/>
+      <path d="M13 1 2 11"/>
+    </g>
+    <g transform="translate(1180 240) scale(2) rotate(20)">
+      <circle cx="9" cy="10" r="8"/>
+      <path d="M9 2V0M5 3 3.5 1M13 3l1.5-2"/>
+    </g>
+    <g transform="translate(1150 640) scale(2.4)">
+      <path d="M0 4h24a12 12 0 0 1-24 0z"/>
+      <path d="M3 0h18"/>
+    </g>
+    <g transform="translate(180 660) scale(2.2) rotate(-6)">
+      <rect x="0" y="0" width="16" height="16" rx="4"/>
+      <path d="m4 8 3 3 5-6"/>
+    </g>
+  </g>
+</svg>

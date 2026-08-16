@@ -1,0 +1,287 @@
+{
+  "name": "ReplyGate 00 - 정책 조항 임베딩 적재(수동)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "ab41f649-afd6-46e4-8c0f-bcc7886df8ae",
+      "name": "수동 실행",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "조항",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "49e154b6-1567-40e5-9188-4e4b63f7b9d5",
+      "name": "조항 읽기",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        48,
+        16
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 아직 임베딩이 없는 조항만 골라 임베딩 입력 문장을 만든다.\n// 재실행해도 이미 적재된 행은 건너뛰므로 중복 호출이 없다.\n\nconst out = [];\n\nfor (const item of $input.all()) {\n  const j = item.json;\n\n  if (!j.clause_id || String(j.clause_id).trim() === '') continue;\n  if (j.embedding && String(j.embedding).trim() !== '') continue;\n\n  out.push({\n    json: {\n      clause_id: String(j.clause_id).trim(),\n      doc: j.doc || '',\n      title: j.title || '',\n      text: j.text || '',\n      // 제목만으로는 정보가 부족하고 본문만으로는 맥락이 약하다. 둘을 합쳐 임베딩한다.\n      embed_input: `[${j.doc || ''}] ${j.title || ''}\\n${j.text || ''}`\n    }\n  });\n}\n\nif (out.length === 0) {\n  throw new Error('임베딩할 조항이 없습니다. 조항 시트에 데이터가 있는지, 이미 전부 적재됐는지 확인하세요.');\n}\n\nconsole.log(`임베딩 대상 ${out.length}건`);\nreturn out;"
+      },
+      "id": "719055d8-4009-49f5-800e-0d6bd7d8cb7a",
+      "name": "조항 준비",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "GEMINI_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'models/gemini-embedding-001', content: { parts: [{ text: $json.embed_input }] }, taskType: 'RETRIEVAL_DOCUMENT', outputDimensionality: 768 }) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 5,
+              "batchInterval": 20000
+            }
+          }
+        }
+      },
+      "id": "f915fe57-9746-45fe-8227-f875abad0306",
+      "name": "임베딩 생성",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// HTTP Request 는 입력 순서대로 출력하므로 인덱스로 원본과 다시 짝지을 수 있다.\nconst src = $('조항 준비').all();\nconst res = $input.all();\n\nif (src.length !== res.length) {\n  throw new Error(`입력 ${src.length}건과 응답 ${res.length}건의 수가 다릅니다. 부분 실패를 의심하세요.`);\n}\n\nconst out = [];\n\nfor (let i = 0; i < res.length; i++) {\n  const clauseId = src[i].json.clause_id;\n  const values = res[i].json && res[i].json.embedding && res[i].json.embedding.values;\n\n  if (!Array.isArray(values) || values.length === 0) {\n    throw new Error(`임베딩 실패: ${clauseId} — 응답에 embedding.values 가 없습니다.`);\n  }\n\n  // 소수 6자리로 줄여 시트 셀 한도(5만 자)에 여유를 둔다. 768차원 기준 약 7KB.\n  const rounded = values.map(v => Math.round(v * 1e6) / 1e6);\n\n  out.push({\n    json: {\n      clause_id: clauseId,\n      embedding: JSON.stringify(rounded)\n    }\n  });\n}\n\nconsole.log(`적재 대상 ${out.length}건, 차원 ${JSON.parse(out[0].json.embedding).length}`);\nreturn out;"
+      },
+      "id": "709ca42e-e42d-47af-98dc-8545b475ee73",
+      "name": "벡터 결합",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "조항",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "clause_id": "={{ $json.clause_id }}",
+            "embedding": "={{ $json.embedding }}",
+            "row_number": 0
+          },
+          "matchingColumns": [
+            "clause_id"
+          ],
+          "schema": [
+            {
+              "id": "clause_id",
+              "displayName": "clause_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "doc",
+              "displayName": "doc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "embedding",
+              "displayName": "embedding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "aee17b84-d420-40e0-b988-a91e4a455e23",
+      "name": "임베딩 저장",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        928,
+        16
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "수동 실행": {
+      "main": [
+        [
+          {
+            "node": "조항 읽기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "조항 읽기": {
+      "main": [
+        [
+          {
+            "node": "조항 준비",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "조항 준비": {
+      "main": [
+        [
+          {
+            "node": "임베딩 생성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "임베딩 생성": {
+      "main": [
+        [
+          {
+            "node": "벡터 결합",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "벡터 결합": {
+      "main": [
+        [
+          {
+            "node": "임베딩 저장",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "881a61f3-d455-434c-bb00-1e0ec61c84e5",
+  "meta": {
+    "instanceId": "23221038147e5a06c047d86937c1dc9416e86285b658dcb964332a0d3fb1ff0f"
+  },
+  "nodeGroups": [],
+  "id": "oPCZmv8WTId7qZV6",
+  "tags": [
+    {
+      "updatedAt": "2026-08-01T10:18:18.347Z",
+      "createdAt": "2026-08-01T10:18:18.347Z",
+      "id": "bmLPA6fZpCfzfN35",
+      "name": "ReplyGate"
+    }
+  ]
+}

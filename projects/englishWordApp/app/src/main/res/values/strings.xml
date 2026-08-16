@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">englishWordApp</string>
+
+    <!-- 홈 (2x3 메뉴 그리드) -->
+    <string name="home_brand_title">오늘도 한 단어씩</string>
+    <string name="home_brand_subtitle">보고 · 듣고 · 풀며 익혀요</string>
+    <string name="home_study_list">단어보기</string>
+    <string name="home_tile_continue">이어보기</string>
+    <string name="home_tile_continue_empty">학습 기록 없음</string>
+    <string name="home_tile_continue_caption_format">day%1$d (%2$d/%3$d)</string>
+    <string name="home_quiz">퀴즈</string>
+    <string name="home_reset">학습 기록 초기화</string>
+    <string name="home_reset_confirm_title">학습 기록을 초기화할까요?</string>
+    <string name="home_reset_confirm_text">진행도, 즐겨찾기, 오답노트가 모두 삭제되며 되돌릴 수 없습니다.</string>
+
+    <!-- 홈 하단 정보. 광고 바로 위이므로 누를 수 없는 텍스트만 둔다(오조작 클릭 방지). -->
+    <string name="home_footer_version_format">v%1$s</string>
+    <string name="home_footer_credit">made by @noviz2025</string>
+    <string name="home_footer_contact">noviz2025@gmail.com</string>
+
+    <!-- 공용 액션 -->
+    <string name="action_confirm_reset">초기화</string>
+    <string name="action_cancel">취소</string>
+
+    <!-- day 목록 -->
+    <string name="day_completed">완료</string>
+    <string name="day_progress_format">%1$d/%2$d</string>
+
+    <!-- 학습 화면 -->
+    <string name="study_know">안다</string>
+    <string name="study_dont_know">모른다</string>
+    <string name="study_prev">이전</string>
+    <string name="study_next">다음</string>
+    <string name="study_complete_title">day 학습 완료</string>
+    <string name="study_complete_text">이 day의 단어를 모두 확인했습니다.</string>
+    <string name="study_restart">다시 학습</string>
+    <string name="study_back_to_days">day 목록으로</string>
+    <string name="study_auto_speak">자동 발음</string>
+    <string name="study_shuffle">셔플</string>
+    <string name="study_reveal_hint">뜻 보기 (탭)</string>
+    <string name="study_favorite_desc">즐겨찾기</string>
+    <string name="study_speak_desc">발음 듣기</string>
+    <string name="study_progress_format">%1$d / %2$d</string>
+    <string name="study_tts_unavailable">이 기기에서는 발음 재생을 사용할 수 없어요</string>
+
+    <!-- 즐겨찾기/오답노트 -->
+    <string name="review_favorites">즐겨찾기</string>
+    <string name="review_unknown">오답노트</string>
+    <string name="review_empty">아직 없습니다</string>
+    <string name="review_study">학습하기</string>
+    <string name="review_count_format">%1$d개</string>
+    <string name="review_item_format">%1$s · %2$s - %3$s</string>
+
+    <!-- 퀴즈 -->
+    <string name="quiz_setup_title">퀴즈 범위 선택</string>
+    <string name="quiz_favorites_format">즐겨찾기 (%1$d)</string>
+    <string name="quiz_unknown_format">오답노트 (%1$d)</string>
+    <string name="quiz_by_day_title">day별 퀴즈</string>
+    <string name="quiz_day_item_format">%1$s (%2$d개)</string>
+    <string name="quiz_insufficient">퀴즈를 만들 단어가 부족합니다.</string>
+    <string name="quiz_progress_format">%1$d / %2$d</string>
+    <string name="quiz_next">다음</string>
+    <string name="quiz_show_result">결과 보기</string>
+    <string name="quiz_result_title">퀴즈 결과</string>
+    <string name="quiz_result_score_format">%1$d / %2$d 정답 (%3$d%%)</string>
+    <string name="quiz_result_all_correct">전부 맞혔습니다!</string>
+    <string name="quiz_result_wrong_count_format">틀린 단어 (%1$d개)</string>
+    <string name="quiz_exit">나가기</string>
+    <string name="quiz_retry_wrong">틀린 단어만 다시 학습</string>
+</resources>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReplyGate 상황판</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">✉️</span>
+    <div>
+      <h1>ReplyGate</h1>
+      <p>AI가 쓰고, 사람이 승인해서 보내는 고객 응대</p>
+    </div>
+  </div>
+  <div class="conn">
+    <label class="mask-toggle" title="켜면 이메일 등 개인정보를 가립니다. 화면을 투사할 때 쓰세요">
+      <input type="checkbox" id="mask-pii"> 발표 모드
+    </label>
+    <span class="dot" id="conn-dot"></span>
+    <span id="conn-text">연결 중…</span>
+  </div>
+</header>
+
+<div class="banner" id="banner" hidden></div>
+
+<main>
+
+  <!-- ─────────────────────────── 실시간 상황판 ─────────────────────────── -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>실시간 상황판</h2>
+      <span class="hint">카드를 누르면 문의 원문과 근거 조항을 볼 수 있습니다</span>
+    </div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <!-- ─────────────────────────── 운영 지표 ─────────────────────────── -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>운영 지표</h2>
+      <span class="hint">지금까지 이 파이프라인이 처리한 실제 문의</span>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="charts">
+      <div class="card">
+        <h3>문의 유형</h3>
+        <div id="chart-category"></div>
+      </div>
+      <div class="card">
+        <h3>분류 축</h3>
+        <div id="chart-axes"></div>
+      </div>
+      <div class="card">
+        <h3>많이 인용된 조항</h3>
+        <div id="chart-clauses"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 실험 결과 ─────────────────────────── -->
+  <section class="panel" id="exp-panel" hidden>
+    <div class="panel-head">
+      <h2>실험 결과 — RAG는 효과가 있었나</h2>
+      <span class="hint">평가셋 50건을 두 조건으로 측정 · 승인 판정은 사람</span>
+    </div>
+    <div id="experiment"></div>
+  </section>
+
+</main>
+
+<!-- ─────────────────────────── 상세 보기 ─────────────────────────── -->
+<div class="overlay" id="overlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+    <div class="sheet-head">
+      <div id="detail-title"></div>
+      <button class="close" id="detail-close" aria-label="닫기">✕</button>
+    </div>
+    <div class="sheet-body" id="detail-body"></div>
+  </div>
+</div>
+
+<footer>
+  <span id="served">—</span>
+  <span class="sep">·</span>
+  <span>읽기 전용 · 구글 시트를 통해서만 n8n과 연결됩니다</span>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

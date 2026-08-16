@@ -1,0 +1,9 @@
+# 환경 변수 (API 키)
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Claude Code 로컬 설정
+.claude/

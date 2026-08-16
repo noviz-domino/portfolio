@@ -1,0 +1,1003 @@
+{
+  "name": "ReplyGate 01 · 문의 접수 → 초안 생성",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "문의",
+          "mode": "name"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "952361f2-9d86-4509-ab81-4809cf3fa8da",
+      "name": "문의 접수 감지",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "n7QVj7xIBk96tSNx",
+          "name": "Google Sheets Trigger account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 폼 응답을 정규화하고 inquiry_id 를 만든다.\n// 이후 모든 노드는 inquiry_id 로 행을 찾는다. 행 번호는 여기서만 쓴다.\n\nconst out = [];\n\nfor (const item of $input.all()) {\n  const j = item.json;\n\n  const content = String(j['문의내용'] || '').trim();\n  if (!content) continue;                       // 빈 제출 방어\n    if (j.inquiry_id && String(j.inquiry_id).trim() !== '') continue;   // 이미 처리된 행\n\n  const now = new Date();\n  const pad = n => String(n).padStart(2, '0');\n  const ymd = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;\n  const rand = String(Math.floor(Math.random() * 9000) + 1000);\n  const inquiryId = `INQ-${ymd}-${rand}`;\n\n  const promptP1 = [\n    '너는 이커머스 쇼핑몰 \"온마켓\"의 고객 문의 분류기다.',\n    '',\n    '아래 고객 문의를 읽고 네 가지를 판정하라.',\n    '',\n    '1. category — 다음 중 하나',\n    '   환불 / 배송 / 교환반품 / 불량AS / 회원적립금 / 기타',\n    '',\n    '2. sentiment — 다음 중 하나',\n    '   불만 : 손해·지연·부당함을 호소하거나 항의하는 문의. 어조가 정중해도 해당한다',\n    '   일반 : 그 외. 정보를 묻거나 처리를 요청하는 문의',\n    '',\n    '3. needs_order_lookup — true 또는 false',\n    '   이 문의에 제대로 답하려면 이 고객의 특정 주문·계정을 조회해야 하는가.',\n    '   true  : \"제 환불이 왜 아직인가요\", \"주소를 바꾸고 싶어요\" 처럼 이 고객의 건을 봐야 답이 되는 문의',\n    '   false : \"환불은 며칠 걸리나요\" 처럼 규정만 안내하면 답이 끝나는 문의',\n    '   sentiment 와는 독립이다. 불만이면서 false 일 수도 있고, 일반이면서 true 일 수도 있다.',\n    '',\n    '4. summary — 담당자가 3초 안에 파악할 수 있는 한 문장 요약 (40자 이내)',\n    '',\n    '5. search_query — 사내 정책 문서에서 근거 조항을 찾기 위한 검색 문장.',\n    '   고객의 구어체를 정책 문서에서 쓰는 용어로 바꿔 한 문장으로 작성하라.',\n    '   예) \"돈이 안 들어왔어요\" → \"환불 처리 소요 기간과 지연 시 문의 절차\"',\n    '',\n    '판정 규칙',\n    '- 여러 유형이 섞여 있으면 고객이 가장 해결받고 싶어 하는 것을 고른다.',\n    '- 추측하지 말고 문의에 적힌 내용만으로 판정한다.',\n    '',\n    '고객 문의:',\n    content\n  ].join('\\n');\n\n  out.push({\n    json: {\n      inquiry_id: inquiryId,\n      row_number: j.row_number,\n      customer_name: String(j['이름'] || '').trim(),\n      customer_email: String(j['이메일'] || '').trim(),\n      order_no: String(j['주문번호'] || '').trim(),\n      content: content,\n      received_at: String(j['타임스탬프'] || now.toISOString()),\n      status_at: now.toISOString(),\n      prompt_p1: promptP1\n    }\n  });\n}\n\nreturn out;"
+      },
+      "id": "64c2fb25-9043-4156-a084-66f9c64ec5f9",
+      "name": "접수 처리",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1355789493,
+          "mode": "list",
+          "cachedResultName": "문의",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=1355789493"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "inquiry_id": "={{ $json.inquiry_id }}",
+            "revision_count": "0",
+            "status": "=분석중",
+            "status_at": "={{ $json.status_at }}",
+            "타임스탬프": "={{ $json.received_at }}"
+          },
+          "matchingColumns": [
+            "타임스탬프"
+          ],
+          "schema": [
+            {
+              "id": "타임스탬프",
+              "displayName": "타임스탬프",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "이름",
+              "displayName": "이름",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "이메일",
+              "displayName": "이메일",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "주문번호",
+              "displayName": "주문번호",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "문의내용",
+              "displayName": "문의내용",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "개인정보 수집 동의",
+              "displayName": "개인정보 수집 동의",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "inquiry_id",
+              "displayName": "inquiry_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "search_query",
+              "displayName": "search_query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "cited_clauses",
+              "displayName": "cited_clauses",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "insufficient_info",
+              "displayName": "insufficient_info",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "draft_id",
+              "displayName": "draft_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "revision_count",
+              "displayName": "revision_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status_at",
+              "displayName": "status_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sent_at",
+              "displayName": "sent_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "final_body",
+              "displayName": "final_body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "handler_note",
+              "displayName": "handler_note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "5285555f-9278-41e9-8da5-3be9d8e50db6",
+      "name": "상태: 분석중",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        720,
+        16
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "GEMINI_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ contents: [{ parts: [{ text: $('접수 처리').all()[$runIndex].json.prompt_p1 }] }], generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'object', properties: { category: { type: 'string', enum: ['환불','배송','교환반품','불량AS','회원적립금','기타'] }, sentiment: { type: 'string', enum: ['불만','일반'] }, needs_order_lookup: { type: 'boolean' }, summary: { type: 'string' }, search_query: { type: 'string' } }, required: ['category','sentiment','needs_order_lookup','summary','search_query'] } } }) }}",
+        "options": {}
+      },
+      "id": "dc95196e-1c64-4cff-b4ef-4e070e31ce6e",
+      "name": "P1 분류·감정",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// P1 응답 파싱. 스키마 강제가 걸려 있어 순수 JSON이 오지만\n// 모델 출력은 확률적이므로 펜스 제거 + 허용값 검증 + 폴백을 보험으로 둔다.\n\nconst ctx = $('접수 처리').all()[$runIndex].json;\n\nconst ALLOWED_CATEGORY  = ['환불', '배송', '교환반품', '불량AS', '회원적립금', '기타'];\nconst ALLOWED_SENTIMENT = ['불만', '일반'];\n\nlet raw = '';\ntry {\n  raw = $input.first().json.candidates[0].content.parts[0].text;\n} catch (e) {\n  raw = '';\n}\n\nraw = String(raw).replace(/^\\s*```(?:json)?\\s*/i, '').replace(/\\s*```\\s*$/i, '').trim();\n\nlet p = {};\ntry {\n  p = JSON.parse(raw);\n} catch (e) {\n  p = {};\n}\n\nconst category  = ALLOWED_CATEGORY.includes(p.category)   ? p.category  : '기타';\nconst sentiment = ALLOWED_SENTIMENT.includes(p.sentiment) ? p.sentiment : '일반';\n\nreturn [{\n  json: {\n    ...ctx,\n    category: category,\n    sentiment: sentiment,\n    needs_lookup: p.needs_order_lookup === true,\n    summary: p.summary || ctx.content.slice(0, 40),\n    search_query: p.search_query || ctx.content,\n    parse_failed: !p.category\n  }\n}];"
+      },
+      "id": "576369bc-d8d9-4f82-8728-b11ea9e49ef5",
+      "name": "분류 파싱",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1168,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "GEMINI_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'models/gemini-embedding-001', content: { parts: [{ text: $json.search_query }] }, taskType: 'RETRIEVAL_QUERY', outputDimensionality: 768 }) }}",
+        "options": {}
+      },
+      "id": "3ffb4815-103f-406c-b744-202f381b039b",
+      "name": "쿼리 임베딩",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1392,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 코사인 유사도로 상위 3개 조항을 뽑고 P2 프롬프트를 조립한다.\n// 조항이 70개뿐이라 벡터DB 없이 이 계산으로 충분하다. 수 밀리초면 끝난다.\n\nconst ctx = $('분류 파싱').first().json;\n\nlet q;\ntry {\n  q = $('쿼리 임베딩').first().json.embedding.values;\n} catch (e) {\n  throw new Error('쿼리 임베딩 응답에서 embedding.values 를 찾지 못했습니다.');\n}\n\nfunction cosine(a, b) {\n  let dot = 0, na = 0, nb = 0;\n  for (let i = 0; i < a.length; i++) {\n    dot += a[i] * b[i];\n    na  += a[i] * a[i];\n    nb  += b[i] * b[i];\n  }\n  const denom = Math.sqrt(na) * Math.sqrt(nb);\n  return denom === 0 ? 0 : dot / denom;\n}\n\nconst scored = [];\n\nfor (const item of $input.all()) {\n  const j = item.json;\n  if (!j.clause_id || !j.embedding) continue;\n\n  let v;\n  try {\n    v = JSON.parse(j.embedding);\n  } catch (e) {\n    continue;\n  }\n  if (!Array.isArray(v) || v.length !== q.length) continue;\n\n  scored.push({\n    clause_id: String(j.clause_id).trim(),\n    doc: j.doc,\n    title: j.title,\n    text: j.text,\n    score: cosine(q, v)\n  });\n}\n\nif (scored.length === 0) {\n  throw new Error('검색 가능한 조항이 없습니다. 워크플로우 00 을 먼저 실행해 조항 시트의 embedding 열을 채우세요.');\n}\n\nscored.sort((a, b) => b.score - a.score);\nconst top = scored.slice(0, 3);\n\nconst retrieved = top\n  .map(c => `[${c.clause_id}] ${c.title} — ${c.text}`)\n  .join('\\n');\n\nconst toneGuide = {\n  '불만': '첫 문장에서 불편에 대해 사과한다. 변명을 앞세우지 않는다. 처리 일정과 보상 가능 여부를 먼저 제시하고 사유는 뒤에 짧게 붙인다.',\n  '일반': '사과 없이 바로 본론. 요청한 정보를 순서대로 제시하고 간결하게 끝낸다.'\n};\n\nconst lookupHint = ctx.needs_lookup\n  ? '이 문의는 고객의 특정 주문·계정을 확인해야 답이 완결된다. 규정을 먼저 안내한 뒤, 마지막에 주문번호 등 확인에 필요한 정보를 정중히 요청하라.'\n  : '';\n\nconst promptP2 = [\n  '너는 이커머스 쇼핑몰 \"온마켓\"의 고객 응대 담당자다.',\n  '아래 고객 문의에 대한 답변 이메일 초안을 작성하라.',\n  '',\n  '■ 절대 규칙',\n  '1. 아래 [정책 근거]에 적혀 있지 않은 수치·기간·금액·조건은 절대 쓰지 마라.',\n  '   기억하고 있는 일반적인 쇼핑몰 관행을 끌어와서는 안 된다.',\n  '2. [정책 근거]로 답할 수 없는 문의라면, 답을 지어내지 말고',\n  '   insufficient_info 를 true 로 두고 \"담당 부서 확인 후 안내드리겠습니다\"로 작성하라.',\n  '3. 실제로 인용한 조항의 ID만 cited_clauses 에 넣어라. 참고만 하고 쓰지 않은 조항은 넣지 마라.',\n  '',\n  `■ 어조 지침 (sentiment = ${ctx.sentiment})`,\n  toneGuide[ctx.sentiment] || toneGuide['일반'],\n  lookupHint,\n  '',\n  '■ 작성 형식',\n  '- 인사 → 본문 → 마무리 순서',\n  '- 존댓말, 400자 내외',\n  '- 정책 조항을 그대로 복사하지 말고 이 고객의 상황에 맞춰 풀어 쓴다',\n  '- 조항 ID(RF-01 등)는 본문에 노출하지 않는다',\n  '- 서명은 \"온마켓 고객센터 드림\"',\n  `- 고객 이름은 \"${ctx.customer_name}\" 이다`,\n  '',\n  '■ 고객 문의',\n  ctx.content,\n  '',\n  '■ 문의 유형',\n  ctx.category,\n  '',\n  '■ 정책 근거',\n  retrieved\n].join('\\n');\n\nreturn [{\n  json: {\n    ...ctx,\n    retrieved_clauses: retrieved,\n    top_scores: top.map(c => `${c.clause_id}:${c.score.toFixed(3)}`).join(', '),\n    prompt_p2: promptP2\n  }\n}];"
+      },
+      "id": "d787f16a-5416-4c1e-bbe7-cd5d3e96605f",
+      "name": "조항 검색",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "GEMINI_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ contents: [{ parts: [{ text: $json.prompt_p2 }] }], generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'object', properties: { subject: { type: 'string' }, body: { type: 'string' }, cited_clauses: { type: 'array', items: { type: 'string' } }, insufficient_info: { type: 'boolean' } }, required: ['subject','body','cited_clauses','insufficient_info'] } } }) }}",
+        "options": {}
+      },
+      "id": "21a52d39-b67c-4bbf-9d07-0d40ac32cb92",
+      "name": "P2 초안 생성",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2048,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// P2 응답 파싱 + 텔레그램 카드 문구 조립\n\nconst ctx = $('조항 검색').first().json;\n\nlet raw = '';\ntry {\n  raw = $input.first().json.candidates[0].content.parts[0].text;\n} catch (e) {\n  raw = '';\n}\n\nraw = String(raw).replace(/^\\s*```(?:json)?\\s*/i, '').replace(/\\s*```\\s*$/i, '').trim();\n\nlet p = {};\ntry {\n  p = JSON.parse(raw);\n} catch (e) {\n  throw new Error('P2 초안 응답을 파싱하지 못했습니다. 원문: ' + raw.slice(0, 300));\n}\n\nconst subject = p.subject || `[온마켓] 문의하신 내용에 대한 답변입니다`;\nconst body = p.body || '';\nconst cited = Array.isArray(p.cited_clauses) ? p.cited_clauses : [];\nconst insufficient = p.insufficient_info === true;\n\nif (!body.trim()) {\n  throw new Error('초안 본문이 비어 있습니다.');\n}\n\n// 텔레그램 HTML 파싱 모드에서 깨지지 않도록 이스케이프\nconst esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst clip = (s, n) => {\n  s = String(s || '').trim();\n  if (n === null) return s;                 // 제한 없음\n  return n <= 0 ? '' : (s.length > n ? s.slice(0, n) + ' …(생략)' : s);\n};\n\n// 감정은 불만/일반 두 값뿐이다. 조회 필요 여부는 별도 축이라 배지를 따로 붙인다.\nconst badge = ctx.sentiment === '불만' ? '🔴' : '⚪';\n\n// 요약은 대체로 핵심을 고르지만 판단하려면 원문이 필요할 때가 있다.\n// 담당자가 승인 전에 \"고객이 실제로 뭐라고 했는지\"를 카드에서 바로 볼 수 있어야 한다.\nfunction build(quoteLimit, bodyLimit) {\n  const lines = [];\n  lines.push(`${badge} <b>[${esc(ctx.category)}]</b> ${esc(ctx.customer_name)} — ${esc(ctx.summary)}`);\n\n  if (insufficient) {\n    lines.push('⚠️ <b>정책 미커버</b> — 확인 후 안내 문구로 작성됨');\n  }\n  if (ctx.needs_lookup) {\n    lines.push('📋 <b>주문 조회 필요</b> — 고객 주문 정보를 확인해야 답이 완결됩니다');\n  }\n\n  const quote = clip(ctx.content, quoteLimit);\n  if (quote) {\n    // <blockquote> 는 쓰지 않는다. 텔레그램이 태그를 거부하면 전송 자체가 실패하는데\n    // 그 대가로 얻는 것이 서식뿐이다. 「」 로 감싸면 태그 없이도 원문임이 드러난다.\n    lines.push('──────────────');\n    lines.push('💬 <b>고객 문의</b>');\n    lines.push(`「${esc(quote)}」`);\n  }\n\n  lines.push('──────────────');\n  lines.push(`📎 근거: ${cited.length ? esc(cited.join(', ')) : '없음'}`);\n  lines.push('');\n  lines.push(esc(clip(body, bodyLimit)));\n  lines.push('');\n  lines.push(`<code>${esc(ctx.inquiry_id)}</code>`);\n  return lines.join('\\n');\n}\n\n// 텔레그램 메시지 한도는 4096자다. **넘으면 전송이 실패하고 그 문의는 카드 없이 방치된다.**\n// 초안 본문이 가장 중요하므로 문의 원문 → 초안 순으로 줄인다.\nlet card = build(700, null);\nif (card.length > 3900) card = build(300, null);\nif (card.length > 3900) card = build(0, null);\nif (card.length > 3900) card = build(0, 3000);       // 마지막 방어선\n\nreturn [{\n  json: {\n    ...ctx,\n    subject: subject,\n    body: body,\n    cited_clauses: cited.join(','),\n    insufficient_info: insufficient ? 'TRUE' : 'FALSE',\n    card_text: card,\n    status_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "9dbf9d94-501e-43b4-a2fe-c4a94f345de1",
+      "name": "초안 파싱",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2272,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.body }}",
+        "options": {
+          "sendTo": "={{ $json.customer_email }}"
+        }
+      },
+      "id": "d7659fd5-86ce-416a-8b5c-bf14e1a86a55",
+      "name": "Gmail 초안 생성",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2496,
+        16
+      ],
+      "webhookId": "bca58eed-efac-4c3f-a66a-1c60cab08975",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3uA6VG6NsBe4xY78",
+          "name": "gmail 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1355789493,
+          "mode": "list",
+          "cachedResultName": "문의",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=1355789493"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "inquiry_id": "={{ $('초안 파싱').first().json.inquiry_id }}",
+            "category": "={{ $('초안 파싱').first().json.category }}",
+            "sentiment": "={{ $('초안 파싱').first().json.sentiment }}",
+            "summary": "={{ $('초안 파싱').first().json.summary }}",
+            "search_query": "={{ $('초안 파싱').first().json.search_query }}",
+            "cited_clauses": "={{ $('초안 파싱').first().json.cited_clauses }}",
+            "insufficient_info": "={{ $('초안 파싱').first().json.insufficient_info }}",
+            "draft_id": "={{ $json.id }}",
+            "final_body": "={{ $('초안 파싱').first().json.body }}",
+            "status": "승인대기",
+            "status_at": "={{ $now.toUTC().toISO() }}",
+            "needs_lookup": "={{ $('초안 파싱').first().json.needs_lookup }}"
+          },
+          "matchingColumns": [
+            "inquiry_id"
+          ],
+          "schema": [
+            {
+              "id": "타임스탬프",
+              "displayName": "타임스탬프",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "이름",
+              "displayName": "이름",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "이메일",
+              "displayName": "이메일",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "주문번호",
+              "displayName": "주문번호",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "문의내용",
+              "displayName": "문의내용",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "개인정보 수집 동의",
+              "displayName": "개인정보 수집 동의",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "inquiry_id",
+              "displayName": "inquiry_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "search_query",
+              "displayName": "search_query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cited_clauses",
+              "displayName": "cited_clauses",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "insufficient_info",
+              "displayName": "insufficient_info",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "draft_id",
+              "displayName": "draft_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "revision_count",
+              "displayName": "revision_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status_at",
+              "displayName": "status_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sent_at",
+              "displayName": "sent_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "final_body",
+              "displayName": "final_body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "handler_note",
+              "displayName": "handler_note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "needs_lookup",
+              "displayName": "needs_lookup",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "bab56773-2620-4c34-a59a-dc64567cece2",
+      "name": "상태: 승인대기",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2720,
+        16
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "MANAGER_CHAT_ID",
+        "text": "={{ $('초안 파싱').first().json.card_text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ 발송 승인",
+                    "additionalFields": {
+                      "callback_data": "={{ 'approve:' + $('초안 파싱').first().json.inquiry_id }}"
+                    }
+                  },
+                  {
+                    "text": "✏️ 수정 요청",
+                    "additionalFields": {
+                      "callback_data": "={{ 'revise:' + $('초안 파싱').first().json.inquiry_id }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "8c2f061f-365c-429c-ae13-9f5fa7bf0cbd",
+      "name": "검토 요청 카드",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2928,
+        16
+      ],
+      "webhookId": "8729dd81-27fc-4b4b-b1d3-8efd02d65f3c",
+      "credentials": {
+        "telegramApi": {
+          "id": "8sdQtVtcbcWvE3wQ",
+          "name": "미니프로젝트용_cx어시스턴트"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 447769192,
+          "mode": "list",
+          "cachedResultName": "조항",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=447769192"
+        },
+        "options": {}
+      },
+      "id": "93b52b96-b672-4a0f-9a5f-1c9dc2f2e4d8",
+      "name": "조항 읽기1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1616,
+        16
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "xbs1q6DTYjNoomUV",
+          "name": "구글 시트 미니프로젝트용"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        464,
+        0
+      ],
+      "id": "f4e911e8-5fd4-4157-a041-06bd14f73071",
+      "name": "Loop Over Items"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "문의 접수 감지": {
+      "main": [
+        [
+          {
+            "node": "접수 처리",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "접수 처리": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "상태: 분석중": {
+      "main": [
+        [
+          {
+            "node": "P1 분류·감정",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "P1 분류·감정": {
+      "main": [
+        [
+          {
+            "node": "분류 파싱",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "분류 파싱": {
+      "main": [
+        [
+          {
+            "node": "쿼리 임베딩",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "쿼리 임베딩": {
+      "main": [
+        [
+          {
+            "node": "조항 읽기1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "조항 검색": {
+      "main": [
+        [
+          {
+            "node": "P2 초안 생성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "P2 초안 생성": {
+      "main": [
+        [
+          {
+            "node": "초안 파싱",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "초안 파싱": {
+      "main": [
+        [
+          {
+            "node": "Gmail 초안 생성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail 초안 생성": {
+      "main": [
+        [
+          {
+            "node": "상태: 승인대기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "상태: 승인대기": {
+      "main": [
+        [
+          {
+            "node": "검토 요청 카드",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "조항 읽기1": {
+      "main": [
+        [
+          {
+            "node": "조항 검색",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "상태: 분석중",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "검토 요청 카드": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "776bf05b-83dc-483e-893e-cd44f69bc78d",
+  "meta": {
+    "instanceId": "23221038147e5a06c047d86937c1dc9416e86285b658dcb964332a0d3fb1ff0f"
+  },
+  "nodeGroups": [],
+  "id": "qigPQDxG8i325Y6e",
+  "tags": [
+    {
+      "updatedAt": "2026-08-01T10:18:18.347Z",
+      "createdAt": "2026-08-01T10:18:18.347Z",
+      "id": "bmLPA6fZpCfzfN35",
+      "name": "ReplyGate"
+    }
+  ]
+}

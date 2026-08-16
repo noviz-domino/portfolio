@@ -1,0 +1,342 @@
+{
+  "name": "고객 VOC 분석 Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "YOUR_SHEET_GID",
+          "mode": "list",
+          "cachedResultName": "설문지 응답 시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=YOUR_SHEET_GID"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "445c29ea-9aea-4c8f-a65a-74b0bded1331",
+      "name": "Form 제출 감지",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [176, 288]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "167e8435-62fd-42da-8326-bbf131da2591",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [384, 288],
+      "notes": "폴링 한 번에 폼 제출이 2건 이상 몰릴 수 있어 추가함(실제로 테스트 중 발생). Batch Size=1로 한 건씩 전체 파이프라인을 통과시키고, 각 종료 노드(중복종료/Discord알림/긴급아님종료)에서 다시 이 노드로 되돌아와 다음 건을 처리한다."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "YOUR_ANALYSIS_SHEET_GID",
+          "mode": "list",
+          "cachedResultName": "분석결과",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=YOUR_ANALYSIS_SHEET_GID"
+        },
+        "options": {}
+      },
+      "id": "fcf630e1-137c-4e70-a1ae-07f71bf8faaf",
+      "name": "분석결과 시트 조회",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [608, 288],
+      "alwaysOutputData": true,
+      "notes": "alwaysOutputData=true : 분석결과 시트가 비어 있어도 빈 아이템을 내보내 뒤 노드가 실행되게 한다"
+    },
+    {
+      "parameters": {
+        "jsCode": "const trigger = $('Form 제출 감지').item.json;\n\nconst norm = (v) => String(v ?? '').trim();\n// 물품 번호는 숫자로 변환 후 다시 문자열화 → \"00001\" 과 1 을 같은 값으로 취급\n// (Google Sheets가 셀 서식에 따라 앞자리 0을 지운 숫자로 읽어들이는 경우가 있어 실제로 중복이 안 잡힌 적이 있었다)\nconst normNo = (v) => String(Number(String(v ?? '').trim()) || v);\n\nconst itemNo = normNo(trigger['물품 번호']);\nconst email = norm(trigger['이메일']).toLowerCase();\n\nconst rows = $input.all()\n  .map(i => i.json)\n  .filter(r => r && Object.keys(r).length > 0);\n\nconst isDuplicate = rows.some(r =>\n  normNo(r['물품 번호']) === itemNo &&\n  norm(r['이메일']).toLowerCase() === email\n);\n\nreturn [{ json: { ...trigger, isDuplicate, _기존행수: rows.length } }];"
+      },
+      "id": "2e0313de-98bc-4e5a-9678-fd1ed6c704c6",
+      "name": "중복 체크",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [832, 288]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-dup",
+              "leftValue": "={{ $json.isDuplicate }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "b2e63adf-9b92-4c49-a0c3-95728aab7a40",
+      "name": "IF 중복?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1040, 288]
+    },
+    {
+      "parameters": {},
+      "id": "2c9701b7-859c-4258-9662-364e61af7c25",
+      "name": "중복 종료",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1264, 48],
+      "notes": "REQ-03 : 중복건은 저장도 알림도 하지 않고 정상 종료"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=당신은 종합 쇼핑몰의 고객 VOC(고객의 소리)를 분류하는 어시스턴트입니다.\n아래 [문의내용]만 읽고 5개 필드를 판단하세요. 고객이 직접 고른 문의유형은 일부러 제공하지 않습니다. 내용만 근거로 판단하세요.\nJSON 외의 설명, 서론, 코드블록 표기는 절대 출력하지 마세요.\n\n[필드 정의]\n- category : 결제 / 계정 / 상품 / 배송 / 기타 중 정확히 하나\n- sentiment : 긍정 / 중립 / 부정 중 정확히 하나\n- urgency : 상 / 중 / 하 중 정확히 하나\n- summary : 한국어 요약. 80자를 절대 넘기지 마세요.\n- needs_review : 분류에 확신이 없으면 true, 확실하면 false (문자열이 아닌 boolean)\n\n[긴급도 판정 기준]\n- 상 : 서비스를 못 쓰는 상태 / 금전적 피해가 이미 발생 / 법적 대응이나 언론·소비자원 제보 언급 / 명시적인 환불 요구\n- 중 : 불편하지만 서비스 사용은 가능한 상태 / 단순 질문을 넘어선 개선 요청\n- 하 : 단순 질문, 칭찬, 정보 확인\n\n[문의내용]\n{{ $json['문의내용'] }}",
+        "hasOutputParser": true
+      },
+      "id": "85cbf157-236b-4ee2-bff4-f455551659dd",
+      "name": "Gemini 분류",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [1264, 304]
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "4a7b84d2-53cc-426a-8098-82a4a9b9c50d",
+      "name": "Gemini 모델",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [1136, 496],
+      "notes": "temperature 0 : 같은 문의는 같은 분류가 나오게 (통계 일관성)"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"category\":     { \"type\": \"string\", \"enum\": [\"결제\", \"계정\", \"상품\", \"배송\", \"기타\"] },\n    \"sentiment\":    { \"type\": \"string\", \"enum\": [\"긍정\", \"중립\", \"부정\"] },\n    \"urgency\":      { \"type\": \"string\", \"enum\": [\"상\", \"중\", \"하\"] },\n    \"summary\":      { \"type\": \"string\" },\n    \"needs_review\": { \"type\": \"boolean\" }\n  },\n  \"required\": [\"category\", \"sentiment\", \"urgency\", \"summary\", \"needs_review\"]\n}"
+      },
+      "id": "9318f666-9018-4345-8c1f-2b1a0258e5ee",
+      "name": "출력 스키마",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [1376, 496]
+    },
+    {
+      "parameters": {
+        "jsCode": "const trigger = $('Form 제출 감지').item.json;\nconst raw = $input.first().json;\n\nconst ALLOWED = {\n  category: ['결제', '계정', '상품', '배송', '기타'],\n  sentiment: ['긍정', '중립', '부정'],\n  urgency: ['상', '중', '하'],\n};\n\n// ── 함정3 방어 : Gemini 가 ```json ... ``` 코드펜스나 설명문을 섞어 보내도 JSON 을 건져낸다.\n// 어떤 경우에도 throw 하지 않는다 (REQ-05 : 워크플로우가 죽으면 안 됨)\nfunction extractJson(input) {\n  if (input && typeof input === 'object') {\n    if (input.output && typeof input.output === 'object') return input.output;\n    if (typeof input.output === 'string') return extractJson(input.output);\n    if (typeof input.text === 'string') return extractJson(input.text);\n    return input;\n  }\n  let s = String(input ?? '').trim();\n  s = s.replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();\n  const start = s.indexOf('{');\n  const end = s.lastIndexOf('}');\n  if (start !== -1 && end > start) s = s.slice(start, end + 1);\n  try { return JSON.parse(s); } catch (e) { return null; }\n}\n\nconst llm = extractJson(raw);\nconst g = (k) => (llm && llm[k] !== undefined && llm[k] !== null) ? llm[k] : undefined;\n\nlet violated = false;\nconst 위반사유 = [];\n\nif (llm === null) {\n  violated = true;\n  위반사유.push('JSON 파싱 실패');\n}\n\n// 1) 필수 필드 누락 검사\nfor (const k of ['category', 'sentiment', 'urgency', 'summary', 'needs_review']) {\n  if (g(k) === undefined) { violated = true; 위반사유.push(`${k} 누락`); }\n}\n\n// 2) 허용값 위반 검사\nfor (const k of ['category', 'sentiment', 'urgency']) {\n  if (g(k) !== undefined && !ALLOWED[k].includes(g(k))) {\n    violated = true;\n    위반사유.push(`${k} 허용값 위반(${g(k)})`);\n  }\n}\n\n// 3) 타입 / 길이 검사\nif (g('summary') !== undefined && typeof g('summary') !== 'string') { violated = true; 위반사유.push('summary 타입 불일치'); }\nif (typeof g('summary') === 'string' && g('summary').length > 80) { violated = true; 위반사유.push('summary 80자 초과'); }\n// 함정4 방어 : LLM 이 문자열 \"true\" 를 보내는 경우도 계약 위반으로 잡는다\nif (g('needs_review') !== undefined && typeof g('needs_review') !== 'boolean') { violated = true; 위반사유.push('needs_review 타입 불일치'); }\n\n// ── 안전한 기본값으로 교정 (중단하지 않고 통과시킨다)\nconst safe = {\n  category: ALLOWED.category.includes(g('category')) ? g('category') : '기타',\n  sentiment: ALLOWED.sentiment.includes(g('sentiment')) ? g('sentiment') : '중립',\n  urgency: ALLOWED.urgency.includes(g('urgency')) ? g('urgency') : '중',\n  summary: typeof g('summary') === 'string' ? g('summary').slice(0, 80) : '',\n  needs_review: g('needs_review') === true,\n};\n\n// REQ-05 : 검증 실패 시 urgency 는 안전한 기본값 '중', needs_review 는 true\nif (violated) {\n  safe.urgency = '중';\n  safe.needs_review = true;\n}\n\nreturn [{ json: { ...trigger, ...safe, _위반사유: 위반사유.join(', ') } }];"
+      },
+      "id": "46bca0da-2bf3-434a-95b4-112dd6b7af07",
+      "name": "검증 안전판",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1568, 304]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\n// ── 함정2 방어 : '2026/08/10 오후 2:32:10' 같은 한국어 타임스탬프는 new Date() 로 파싱되지 않는다.\n// 문자열에서 숫자를 순서대로 뽑아 직접 조립하고, 오전/오후를 반영한다.\nfunction parseTimestamp(rawValue) {\n  const s = String(rawValue ?? '').trim();\n  if (!s) return null;\n  const nums = s.match(/\\d+/g);\n  if (!nums || nums.length < 5) return null;\n  let [y, mo, d, h, mi] = nums.slice(0, 5).map(Number);\n  const sec = nums.length >= 6 ? Number(nums[5]) : 0;\n  if (/오후|PM/i.test(s) && h < 12) h += 12;\n  if (/오전|AM/i.test(s) && h === 12) h = 0;\n  if (y < 1000 || mo < 1 || mo > 12 || d < 1 || d > 31 || h > 23 || mi > 59) return null;\n  const dt = new Date(y, mo - 1, d, h, mi, sec);\n  return isNaN(dt.getTime()) ? null : dt;\n}\n\nconst base = parseTimestamp(item['타임스탬프']) ?? new Date();\nconst p2 = (n) => String(n).padStart(2, '0');\nconst dateStr = `${base.getFullYear()}${p2(base.getMonth() + 1)}${p2(base.getDate())}`;\nconst 접수시각 = `${base.getFullYear()}-${p2(base.getMonth() + 1)}-${p2(base.getDate())} ${p2(base.getHours())}:${p2(base.getMinutes())}`;\n\n// 같은 날짜의 '최대 순번 + 1' (단순 개수 세기가 아니라 최댓값 → 중간 행을 지워도 번호가 겹치지 않는다)\nconst rows = $('분석결과 시트 조회').all()\n  .map(i => i.json)\n  .filter(r => r && Object.keys(r).length > 0);\n\nconst prefix = `VOC-${dateStr}-`;\nlet maxSeq = 0;\nfor (const r of rows) {\n  const no = String(r['접수번호'] ?? '');\n  if (no.startsWith(prefix)) {\n    const n = parseInt(no.slice(prefix.length), 10);\n    if (!isNaN(n) && n > maxSeq) maxSeq = n;\n  }\n}\nconst 접수번호 = `${prefix}${String(maxSeq + 1).padStart(3, '0')}`;\n\n// REQ-07 : 원문은 200자까지, 초과 시 말줄임\nconst body = String(item['문의내용'] ?? '');\nconst 원문 = body.length > 200 ? body.slice(0, 200) + '...' : body;\n\nconst discord_message = [\n  '🚨 긴급 VOC 접수',\n  `접수번호 : ${접수번호}`,\n  `분류     : ${item.category} / ${item.sentiment}`,\n  `요약     : ${item.summary}`,\n  `원문     : ${원문}`,\n  `접수시각 : ${접수시각}`,\n].join('\\n');\n\n// 시트 헤더와 '정확히 같은 키' 로 내보낸다 → Append 노드의 Auto-map 이 그대로 매핑한다\nreturn [{\n  json: {\n    '접수번호': 접수번호,\n    '접수시각': 접수시각,\n    '문의유형(고객선택)': item['문의유형'] ?? '',\n    '문의내용': body,\n    '이메일': item['이메일'] ?? '',\n    '물품 번호': String(item['물품 번호'] ?? ''),\n    'category': item.category,\n    'sentiment': item.sentiment,\n    'urgency': item.urgency,\n    'summary': item.summary,\n    'needs_review': item.needs_review,\n    discord_message,\n  }\n}];"
+      },
+      "id": "73ae5fbe-7e4d-48ea-b5b4-90711b3ab700",
+      "name": "접수번호 생성",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1776, 304]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "YOUR_ANALYSIS_SHEET_GID",
+          "mode": "list",
+          "cachedResultName": "분석결과",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=YOUR_ANALYSIS_SHEET_GID"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            { "id": "접수번호", "displayName": "접수번호", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "접수시각", "displayName": "접수시각", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "문의유형(고객선택)", "displayName": "문의유형(고객선택)", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "문의내용", "displayName": "문의내용", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "이메일", "displayName": "이메일", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "물품 번호", "displayName": "물품 번호", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "category", "displayName": "category", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "sentiment", "displayName": "sentiment", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "urgency", "displayName": "urgency", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "summary", "displayName": "summary", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "needs_review", "displayName": "needs_review", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "c3d552ed-66c0-4143-973d-66c7a079ee0d",
+      "name": "분석결과 저장",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [2000, 304],
+      "notes": "REQ-05/06 : 검증 실패건도 예외 없이 여기서 저장된다 (Discord 분기보다 앞)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-urgency",
+              "leftValue": "={{ $('접수번호 생성').first().json.urgency }}",
+              "rightValue": "상",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "0cffa2b3-9746-46ca-a72e-0343c88f5e18",
+      "name": "IF 긴급?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [2224, 304],
+      "notes": "Append 노드 출력에 의존하지 않고 '접수번호 생성' 노드를 직접 참조한다"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "YOUR_DISCORD_WEBHOOK_URL",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ content: $('접수번호 생성').first().json.discord_message }) }}",
+        "options": {}
+      },
+      "id": "8f99d2dd-c5a9-41fb-a64a-64cb4859708f",
+      "name": "Discord 알림",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2464, 80],
+      "notes": "REQ-07 : urgency=상 인 건만 도달. Webhook URL 은 비밀값이므로 외부 공유 시 마스킹"
+    },
+    {
+      "parameters": {},
+      "id": "32268ae3-ff81-4e92-869f-6265287878a2",
+      "name": "긴급 아님 종료",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [2448, 496],
+      "notes": "중/하 건은 시트 저장까지만 하고 알림 없이 종료"
+    }
+  ],
+  "connections": {
+    "Form 제출 감지": {
+      "main": [[{ "node": "Loop Over Items", "type": "main", "index": 0 }]]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [{ "node": "분석결과 시트 조회", "type": "main", "index": 0 }]
+      ]
+    },
+    "분석결과 시트 조회": {
+      "main": [[{ "node": "중복 체크", "type": "main", "index": 0 }]]
+    },
+    "중복 체크": {
+      "main": [[{ "node": "IF 중복?", "type": "main", "index": 0 }]]
+    },
+    "IF 중복?": {
+      "main": [
+        [{ "node": "중복 종료", "type": "main", "index": 0 }],
+        [{ "node": "Gemini 분류", "type": "main", "index": 0 }]
+      ]
+    },
+    "Gemini 모델": {
+      "ai_languageModel": [[{ "node": "Gemini 분류", "type": "ai_languageModel", "index": 0 }]]
+    },
+    "출력 스키마": {
+      "ai_outputParser": [[{ "node": "Gemini 분류", "type": "ai_outputParser", "index": 0 }]]
+    },
+    "Gemini 분류": {
+      "main": [[{ "node": "검증 안전판", "type": "main", "index": 0 }]]
+    },
+    "검증 안전판": {
+      "main": [[{ "node": "접수번호 생성", "type": "main", "index": 0 }]]
+    },
+    "접수번호 생성": {
+      "main": [[{ "node": "분석결과 저장", "type": "main", "index": 0 }]]
+    },
+    "분석결과 저장": {
+      "main": [[{ "node": "IF 긴급?", "type": "main", "index": 0 }]]
+    },
+    "IF 긴급?": {
+      "main": [
+        [{ "node": "Discord 알림", "type": "main", "index": 0 }],
+        [{ "node": "긴급 아님 종료", "type": "main", "index": 0 }]
+      ]
+    },
+    "중복 종료": {
+      "main": [[{ "node": "Loop Over Items", "type": "main", "index": 0 }]]
+    },
+    "Discord 알림": {
+      "main": [[{ "node": "Loop Over Items", "type": "main", "index": 0 }]]
+    },
+    "긴급 아님 종료": {
+      "main": [[{ "node": "Loop Over Items", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "voc-agent-miniproject"
+  }
+}

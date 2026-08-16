@@ -1,0 +1,33 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Claude Code의 로컬 명령 권한 설정 — 사용자 환경에 종속되므로 커밋하지 않는다.
+# .claude/ 전체를 제외하면 나중에 공유할 설정까지 막히므로 이 파일만 지정한다.
+/.claude/settings.local.json
+
+# 서명 키 — 유출 시 앱을 사칭당할 수 있으므로 어떤 경우에도 커밋하지 않는다.
+# 실제 키스토어는 저장소 바깥(%USERPROFILE%\keystores)에 보관한다.
+*.jks
+*.keystore
+*.p12
+
+# 빌드 산출물 — 저장소 용량만 차지하고 소스에서 언제든 재생성된다.
+*.apk
+*.aab
+/app/release/
+
+# Kotlin 증분 컴파일 캐시
+.kotlin/

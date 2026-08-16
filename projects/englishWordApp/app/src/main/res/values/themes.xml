@@ -1,0 +1,23 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <!-- Phase 2: 화면이 전부 Compose로 바뀌면서 com.google.android.material(View) 의존성을
+         제거했다. 실제 색상/타이포는 EnglishWordAppTheme(Compose MaterialTheme)가 담당하고,
+         여기서는 플랫폼 기본 테마만으로 액션바 없는 창을 구성한다.
+
+         Phase 7: 매니페스트가 이제 항상 Theme.EnglishWordApp.Splash를 적용하고, 그 스플래시가
+         끝나면 postSplashScreenTheme로 Base.Theme.EnglishWordApp으로 전환한다. 별도의
+         Theme.EnglishWordApp(스플래시 없는 버전)을 참조하는 곳이 없어져 삭제했다
+         (단일 Activity 구조라 스플래시 없이 띄울 화면이 따로 없다). -->
+    <style name="Base.Theme.EnglishWordApp" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.EnglishWordApp.Splash" parent="Theme.SplashScreen">
+<!--        배경색 (다크 모드는 values-night/colors.xml의 splash_background로 자동 교체됨)-->
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+<!--        앱아이콘사용-->
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+<!--        아이콘표시시간-->
+        <item name="windowSplashScreenAnimationDuration">500</item>
+<!--        스플래시 이후적용테마-->
+        <item name="postSplashScreenTheme">@style/Base.Theme.EnglishWordApp</item>
+    </style>
+</resources>

@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/* 기획서 2-2 시각 언어.
+   여기 있는 값이 Tailwind 유틸리티가 된다. 예: --color-brand → bg-brand, text-brand, border-brand.
+   화면에서 색을 직접 적지 말고 반드시 이 토큰을 쓴다. */
+@theme {
+  /* 핵심 브랜드 색 — 딥 그린. 주요 CTA, 실천율, 선택된 필터에 쓴다. */
+  --color-brand: #176b52;
+  --color-brand-hover: #125743;
+  --color-brand-50: #eaf3f0;
+  --color-brand-700: #0f4536;
+
+  /* 보조 강조 — 따뜻한 오렌지. 주의를 끌되 오류는 아닌 곳에만 쓴다(안내, 필수 표시). */
+  --color-accent: #f28c28;
+  --color-accent-50: #fef4e9;
+  --color-accent-200: #f8d5ab;
+  --color-accent-900: #7c4408;
+
+  /* 경고 */
+  --color-danger: #b42318;
+  --color-danger-50: #fef3f2;
+  --color-danger-200: #f5c9c5;
+
+  /* 페이지 배경.
+     기획서의 보조 배경은 #F7F7F5지만 차가운 회색에 가까워 화면이 흑백처럼 보였다.
+     같은 밝기에서 노란기만 올린 크림으로 잡는다. 카드(흰색)와의 대비는 그대로 유지된다. */
+  --color-surface: #fdf7f0;
+  --color-ink: #222222;
+
+  /* 목표 badge. 네 가지가 한눈에 구분되도록 색을 나눈다.
+     청록(감량)만 브랜드 밖 색인데, 그린 옆 색이라 같이 놓아도 튀지 않는다. */
+  --color-goal-loss: #e1efec;
+  --color-goal-loss-ink: #125f52;
+  --color-goal-maintain: #f0eee9;
+  --color-goal-maintain-ink: #57534e;
+  --color-goal-bulk: #fef4e9;
+  --color-goal-bulk-ink: #7c4408;
+  --color-goal-balanced: #eaf3f0;
+  --color-goal-balanced-ink: #0f4536;
+
+  /* 끼니 슬롯. 7일 21칸을 훑을 때 아침/점심/저녁이 색으로 먼저 읽히게 한다.
+     글자와 점의 색을 나눈다. 선명한 색을 글자에 그대로 쓰면 흰 배경에서 대비가 2:1까지
+     떨어져 안 읽힌다(작은 글씨 기준 4.5:1 필요). 점은 글자가 아니라 도형이라 밝아도 된다. */
+  --color-slot-breakfast: #a8590a;
+  --color-slot-lunch: #176b52;
+  --color-slot-dinner: #4a5c78;
+  --color-slot-breakfast-dot: #f0a13a;
+  --color-slot-lunch-dot: #2f8f6f;
+  --color-slot-dinner-dot: #6b7f9e;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #222222;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* 버튼 역할.
+   버튼은 전부 "자기 배경색"을 가진다. 투명 버튼은 크림/사진 배경 위에서 묻혀 버린다.
+   그림자로 배경에서 한 겹 띄우고, hover 때 한 단계 더 든다.
+   화면에서는 이 클래스만 쓰고 색을 직접 적지 않는다. */
+@layer components {
+  .btn {
+    @apply inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full
+      text-sm font-medium transition
+      disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none;
+  }
+
+  /* 화면당 하나. 그 화면에서 가장 하고 싶은 행동. */
+  .btn-primary {
+    @apply bg-brand text-white shadow-sm hover:bg-brand-hover hover:shadow-md;
+  }
+
+  /* 보조 행동. 흰 배경 + 테두리라 크림 배경 위에서도 경계가 보인다. */
+  .btn-secondary {
+    @apply border border-zinc-300 bg-white text-zinc-700 shadow-sm hover:bg-zinc-50 hover:shadow-md;
+  }
+
+  /* 되돌릴 수 없는 행동. */
+  .btn-danger {
+    @apply border border-danger-200 bg-white text-danger shadow-sm hover:bg-danger-50 hover:shadow-md;
+  }
+
+  /* 크기 */
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+  .btn-md {
+    @apply px-5 py-2.5;
+  }
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+}
+
+/* 페이지 배경.
+   크림색 위에 재료 아이콘 패턴을 아주 옅게 깐다.
+   패턴은 브랜드 그린 한 가지 색을 10% 농도로만 쓰므로, 위에 어떤 글자가 와도 대비가
+   무너지지 않는다. 사진을 깔면 스크롤할 때마다 글자 뒤 색이 바뀌어 반드시 어딘가 깨진다. */
+.page-bg {
+  background-color: var(--color-surface);
+  background-image: url('/bg-ingredients.svg');
+  background-repeat: repeat;
+}
+
+/* 로그인·회원가입 배경. 가운데는 비어 있고 색이 네 모서리로 밀려 있어 폼과 겹치지 않는다. */
+.auth-bg {
+  background-color: var(--color-surface);
+  background-image: url('/bg-auth.svg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* 키보드로 조작할 때 어디에 포커스가 있는지 항상 보이게 한다.
+   outline을 지우기만 하고 대체하지 않으면 키보드 사용자가 길을 잃는다. */
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}

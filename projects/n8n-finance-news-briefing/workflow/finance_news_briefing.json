@@ -1,0 +1,821 @@
+{
+    "name":  "금융 뉴스 브리핑 Agent",
+    "nodes":  [
+                  {
+                      "parameters":  {
+                                         "rule":  {
+                                                      "interval":  [
+                                                                       {
+                                                                           "triggerAtHour":  8,
+                                                                           "triggerAtMinute":  30
+                                                                       }
+                                                                   ]
+                                                  }
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000001",
+                      "name":  "Schedule 08:30",
+                      "type":  "n8n-nodes-base.scheduleTrigger",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -1120,
+                                       300
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "documentId":  {
+                                                            "__rl":  true,
+                                                            "value":  "REPLACE_WITH_SPREADSHEET_ID",
+                                                            "mode":  "id"
+                                                        },
+                                         "sheetName":  {
+                                                           "__rl":  true,
+                                                           "value":  "sent_log",
+                                                           "mode":  "name"
+                                                       },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000002",
+                      "name":  "이력 조회",
+                      "type":  "n8n-nodes-base.googleSheets",
+                      "typeVersion":  4.5,
+                      "position":  [
+                                       -900,
+                                       300
+                                   ],
+                      "alwaysOutputData":  true,
+                      "onError":  "continueRegularOutput",
+                      "notes":  "D-03: 시트 전체를 읽고 7일 필터는 \u0027중복대조+키워드필터\u0027 노드에서 수행"
+                  },
+                  {
+                      "parameters":  {
+                                         "maxItems":  1
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000003",
+                      "name":  "Limit 1",
+                      "type":  "n8n-nodes-base.limit",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -700,
+                                       300
+                                   ],
+                      "notes":  "이력 조회가 RSS보다 먼저 끝나도록 순서를 고정하고, RSS 노드가 이력 행 수만큼 반복 실행되는 것을 방지"
+                  },
+                  {
+                      "parameters":  {
+                                         "url":  "https://www.yna.co.kr/rss/economy.xml",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000004",
+                      "name":  "RSS - 연합뉴스",
+                      "type":  "n8n-nodes-base.rssFeedRead",
+                      "typeVersion":  1.1,
+                      "position":  [
+                                       -480,
+                                       120
+                                   ],
+                      "alwaysOutputData":  true,
+                      "onError":  "continueRegularOutput",
+                      "retryOnFail":  true,
+                      "maxTries":  2,
+                      "waitBetweenTries":  1000,
+                      "notes":  "REQ-01 안전장치: 이 피드가 죽어도 워크플로우는 계속 진행"
+                  },
+                  {
+                      "parameters":  {
+                                         "url":  "https://www.hankyung.com/feed/economy",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000005",
+                      "name":  "RSS - 한국경제",
+                      "type":  "n8n-nodes-base.rssFeedRead",
+                      "typeVersion":  1.1,
+                      "position":  [
+                                       -480,
+                                       300
+                                   ],
+                      "alwaysOutputData":  true,
+                      "onError":  "continueRegularOutput",
+                      "retryOnFail":  true,
+                      "maxTries":  2,
+                      "waitBetweenTries":  1000
+                  },
+                  {
+                      "parameters":  {
+                                         "url":  "https://www.mk.co.kr/rss/30100041/",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000006",
+                      "name":  "RSS - 매일경제",
+                      "type":  "n8n-nodes-base.rssFeedRead",
+                      "typeVersion":  1.1,
+                      "position":  [
+                                       -480,
+                                       480
+                                   ],
+                      "alwaysOutputData":  true,
+                      "onError":  "continueRegularOutput",
+                      "retryOnFail":  true,
+                      "maxTries":  2,
+                      "waitBetweenTries":  1000
+                  },
+                  {
+                      "parameters":  {
+                                         "mode":  "append",
+                                         "numberInputs":  3,
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000020",
+                      "name":  "RSS 병합",
+                      "type":  "n8n-nodes-base.merge",
+                      "typeVersion":  3,
+                      "position":  [
+                                       -300,
+                                       300
+                                   ],
+                      "notes":  "필수! n8n은 같은 입력에 연결이 여러 개면 하류 체인을 연결 수만큼 반복 실행합니다. Merge로 한 줄기로 합쳐야 브리핑이 1통으로 나갑니다."
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "// 3 정규화 + 시간창 + 실행내 중복제거\n// Mode: Run Once for All Items\n\nconst WINDOW_HOURS = 24;   // A-01: 실행 시점 기준 직전 24시간.\n                           // 브리핑에 실리는 기사는 \u0027항상 최신\u0027이어야 합니다.\n                           // 창을 넓히면 어제/그제 기사가 오늘 브리핑에 섞이므로 넓히지 말 것.\n                           // (v1.4에서 48h로 늘렸다가 v1.5에서 되돌림)\nconst SNIPPET_MAX  = 1200; // LLM 입력 토큰 절약\n\nfunction sha256(str) {\n  try {\n    return crypto.createHash(\u0027sha256\u0027).update(str).digest(\u0027hex\u0027);\n  } catch (e) {\n    let h1 = 0xcbf29ce484222325n, h2 = 0x84222325cbf29ce4n;\n    const P = 0x100000001b3n, M = 0xFFFFFFFFFFFFFFFFn;\n    for (const ch of str) {\n      const c = BigInt(ch.codePointAt(0));\n      h1 = ((h1 ^ c) * P) \u0026 M;\n      h2 = ((h2 ^ (c + 7n)) * P) \u0026 M;\n    }\n    return h1.toString(16).padStart(16, \u00270\u0027) + h2.toString(16).padStart(16, \u00270\u0027);\n  }\n}\n\nconst TRACKING_PREFIXES = [\u0027utm_\u0027, \u0027fbclid\u0027, \u0027gclid\u0027, \u0027igshid\u0027, \u0027spm\u0027, \u0027_ga\u0027];\nconst TRACKING_EXACT = new Set([\u0027ref\u0027,\u0027src\u0027,\u0027source\u0027,\u0027cid\u0027,\u0027mid\u0027,\u0027sid\u0027,\u0027from\u0027,\u0027inputkey\u0027,\u0027utm\u0027,\u0027nav\u0027]);\n\nfunction normalizeUrl(raw) {\n  if (!raw) return \u0027\u0027;\n  const s = String(raw).trim();\n  try {\n    const u = new URL(s);\n    u.protocol = \u0027https:\u0027;\n    u.hostname = u.hostname.toLowerCase().replace(/^www\\./, \u0027\u0027);\n    u.hash = \u0027\u0027;\n    const keep = [];\n    for (const [k, v] of u.searchParams.entries()) {\n      const lk = k.toLowerCase();\n      if (TRACKING_PREFIXES.some(p =\u003e lk.startsWith(p))) continue;\n      if (TRACKING_EXACT.has(lk)) continue;\n      keep.push([k, v]);\n    }\n    keep.sort((a, b) =\u003e a[0].localeCompare(b[0]));\n    u.search = keep.length ? \u0027?\u0027 + keep.map(([k, v]) =\u003e k + \u0027=\u0027 + v).join(\u0027\u0026\u0027) : \u0027\u0027;\n    return u.toString().replace(/\\/+$/, \u0027\u0027);\n  } catch (e) {\n    return s.toLowerCase().replace(/[#?].*$/, \u0027\u0027).replace(/\\/+$/, \u0027\u0027);\n  }\n}\n\nfunction sourceOf(j) {\n  const link = String(j.link || j.guid || j.id || \u0027\u0027);\n  if (link.includes(\u0027yna.co.kr\u0027)) return \u0027연합뉴스\u0027;\n  if (link.includes(\u0027hankyung.com\u0027)) return \u0027한국경제\u0027;\n  if (link.includes(\u0027mk.co.kr\u0027)) return \u0027매일경제\u0027;\n  return \u0027기타\u0027;\n}\n\nconst now = new Date();\nconst windowStart = new Date(now.getTime() - WINDOW_HOURS * 3600 * 1000);\nconst runDate = new Intl.DateTimeFormat(\u0027sv-SE\u0027, { timeZone: \u0027Asia/Seoul\u0027 }).format(now);\nconst runId = String($execution.id);\n\nconst seen = new Set();\nconst out = [];\nconst counters = { raw: 0, out_of_window: 0, dup_in_run: 0, no_link: 0 };\n\nfor (const item of $input.all()) {\n  const j = item.json || {};\n  if (j._empty || (!j.link \u0026\u0026 !j.guid \u0026\u0026 !j.id \u0026\u0026 !j.title)) { continue; }\n  counters.raw++;\n\n  const rawLink = j.link || j.guid || j.id || \u0027\u0027;\n  if (!rawLink) { counters.no_link++; continue; }\n\n  const normalized = normalizeUrl(rawLink);\n  const hash = sha256(normalized);\n\n  if (seen.has(hash)) { counters.dup_in_run++; continue; }\n  seen.add(hash);\n\n  const rawDate = j.isoDate || j.pubDate || j.pubdate || j.date || null;\n  const d = rawDate ? new Date(rawDate) : null;\n  const parsed = d instanceof Date \u0026\u0026 !isNaN(d.getTime());\n  if (parsed \u0026\u0026 (d \u003c windowStart || d \u003e now)) { counters.out_of_window++; continue; }\n\n  const snippetRaw = j.contentSnippet || j.content || j.description || j.summary || \u0027\u0027;\n  const snippet = String(snippetRaw)\n    .replace(/\u003c[^\u003e]*\u003e/g, \u0027 \u0027)\n    .replace(/\u0026[a-z]+;/gi, \u0027 \u0027)\n    .replace(/\\s+/g, \u0027 \u0027)\n    .trim()\n    .slice(0, SNIPPET_MAX);\n\n  out.push({ json: {\n    url_hash: hash,\n    normalized_url: normalized,\n    original_url: String(rawLink),\n    title: String(j.title || \u0027\u0027).replace(/\\s+/g, \u0027 \u0027).trim(),\n    source: sourceOf(j),\n    published_at: parsed ? d.toISOString() : \u0027\u0027,\n    pub_parsed: parsed,\n    snippet,\n    run_id: runId,\n    run_date: runDate,\n    _counters: counters,\n  }});\n}\n\nif (out.length === 0) {\n  return [{ json: { _empty: true, run_id: runId, run_date: runDate, _counters: counters } }];\n}\nreturn out;"
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000007",
+                      "name":  "정규화+시간창",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -140,
+                                       300
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "// 5 중복 대조 + 금융 키워드 필터  (둘 다 LLM 이전)\n// Mode: Run Once for All Items\n\nconst HISTORY_DAYS = 7;   // D-03\nconst SCORE_MIN    = 2;\n\nconst BLOCK = [\u0027연예\u0027,\u0027아이돌\u0027,\u0027드라마\u0027,\u0027예능\u0027,\u0027배우\u0027,\u0027가수\u0027,\u0027열애\u0027,\u0027결혼설\u0027,\u0027이혼\u0027,\n  \u0027프로야구\u0027,\u0027축구\u0027,\u0027야구\u0027,\u0027골프\u0027,\u0027올림픽\u0027,\u0027월드컵\u0027,\u0027리그\u0027,\u0027선수단\u0027,\u0027감독 선임\u0027,\n  \u0027날씨\u0027,\u0027미세먼지\u0027,\u0027폭염\u0027,\u0027한파\u0027,\u0027태풍 경로\u0027,\n  \u0027음주운전\u0027,\u0027살인\u0027,\u0027성폭행\u0027,\u0027마약 투약\u0027,\u0027운세\u0027,\u0027별자리\u0027,\u0027로또 당첨번호\u0027];\n\nconst STRONG = [\u0027기준금리\u0027,\u0027금통위\u0027,\u0027한국은행\u0027,\u0027연준\u0027,\u0027FOMC\u0027,\u0027파월\u0027,\n  \u0027코스피\u0027,\u0027코스닥\u0027,\u0027나스닥\u0027,\u0027S\u0026P\u0027,\u0027다우\u0027,\u0027지수\u0027,\u0027증시\u0027,\u0027주가\u0027,\u0027상장\u0027,\u0027공모주\u0027,\u0027IPO\u0027,\n  \u0027환율\u0027,\u0027원달러\u0027,\u0027달러화\u0027,\u0027엔화\u0027,\u0027위안화\u0027,\u0027외환보유액\u0027,\n  \u0027국채\u0027,\u0027회사채\u0027,\u0027채권\u0027,\u0027금리\u0027,\u0027스프레드\u0027,\n  \u0027영업이익\u0027,\u0027순이익\u0027,\u0027실적\u0027,\u0027어닝\u0027,\u0027매출\u0027,\n  \u0027인수합병\u0027,\u0027M\u0026A\u0027,\u0027지분 인수\u0027,\u0027유상증자\u0027,\u0027자사주\u0027,\n  \u0027물가\u0027,\u0027소비자물가\u0027,\u0027CPI\u0027,\u0027PPI\u0027,\u0027GDP\u0027,\u0027경상수지\u0027,\u0027무역수지\u0027,\n  \u0027부동산\u0027,\u0027아파트값\u0027,\u0027집값\u0027,\u0027전세\u0027,\u0027분양\u0027,\u0027청약\u0027,\u0027재건축\u0027,\n  \u0027금융위\u0027,\u0027금감원\u0027,\u0027기재부\u0027,\u0027세제 개편\u0027,\u0027규제 완화\u0027,\n  \u0027펀드\u0027,\u0027ETF\u0027,\u0027연기금\u0027,\u0027국민연금\u0027,\u0027순매수\u0027,\u0027순매도\u0027];\n\nconst WEAK = [\u0027투자\u0027,\u0027자금\u0027,\u0027자본\u0027,\u0027시장\u0027,\u0027경기\u0027,\u0027경제\u0027,\u0027산업\u0027,\u0027수출\u0027,\u0027수입\u0027,\u0027성장률\u0027,\n  \u0027기업\u0027,\u0027대기업\u0027,\u0027중소기업\u0027,\u0027스타트업\u0027,\u0027상장사\u0027,\u0027계약\u0027,\u0027수주\u0027,\n  \u0027정부\u0027,\u0027정책\u0027,\u0027대출\u0027,\u0027예금\u0027,\u0027은행\u0027,\u0027보험\u0027,\u0027증권사\u0027,\u0027카드사\u0027,\n  \u0027반도체\u0027,\u0027배터리\u0027,\u0027바이오\u0027,\u0027조선\u0027,\u0027철강\u0027,\u0027자동차\u0027,\u0027유통\u0027,\u0027건설\u0027];\n\n// --- 1) 시트 이력을 Set으로 (최근 7일치만) ---\nconst cutoff = new Date(Date.now() - HISTORY_DAYS * 86400 * 1000);\nconst historySet = new Set();\nlet historyRowsRead = 0;\n\nlet historyItems = [];\ntry { historyItems = $(\u0027이력 조회\u0027).all(); } catch (e) { historyItems = []; }\n\nfor (const h of historyItems) {\n  const hj = h.json || {};\n  const hash = String(hj.url_hash || \u0027\u0027).trim();\n  if (!hash) continue;\n  historyRowsRead++;\n  const rd = hj.run_date ? new Date(String(hj.run_date) + \u0027T00:00:00+09:00\u0027) : null;\n  if (rd \u0026\u0026 !isNaN(rd.getTime()) \u0026\u0026 rd \u003c cutoff) continue;\n  historySet.add(hash);\n}\n\n// --- 2) 필터링 ---\nconst inputs = $input.all().filter(i =\u003e !i.json._empty);\nconst counters = (inputs[0] \u0026\u0026 inputs[0].json._counters) || ($input.first().json._counters) || {};\nconst stats = {\n  raw: counters.raw || 0,\n  out_of_window: counters.out_of_window || 0,\n  dup_in_run: counters.dup_in_run || 0,\n  collected: inputs.length,\n  history_rows: historyRowsRead,\n  history_active: historySet.size,\n  dup_blocked: 0,\n  keyword_blocked: 0,\n  passed: 0,\n};\n\nconst out = [];\n\nfor (const item of inputs) {\n  const j = item.json;\n\n  // (a) 중복 대조 - REQ-03, LLM 이전\n  if (historySet.has(j.url_hash)) { stats.dup_blocked++; continue; }\n\n  // (b) 금융 키워드 필터 - REQ-04, LLM 이전\n  const title = String(j.title || \u0027\u0027);\n  const body  = title + \u0027 \u0027 + String(j.snippet || \u0027\u0027);\n\n  if (BLOCK.some(k =\u003e body.includes(k))) { stats.keyword_blocked++; continue; }\n\n  const strongHits = STRONG.filter(k =\u003e body.includes(k));\n  const weakHits   = WEAK.filter(k =\u003e body.includes(k));\n\n  // v1.2: STRONG 키워드 1개 이상 필수.\n  // 피드 3개가 모두 경제면이라 WEAK(시장/경제/기업...)만으로는 사실상 전수 통과했음.\n  if (strongHits.length === 0) { stats.keyword_blocked++; continue; }\n\n  let score = strongHits.length * 2 + weakHits.length;\n  if (strongHits.some(k =\u003e title.includes(k))) score += 1;\n\n  if (score \u003c SCORE_MIN) { stats.keyword_blocked++; continue; }\n\n  stats.passed++;\n  out.push({ json: Object.assign({}, j, {\n    filter_score: score,\n    matched_keywords: strongHits.concat(weakHits).slice(0, 8).join(\u0027,\u0027),\n    _stats: stats,\n  })});\n}\n\nif (out.length === 0) {\n  const f = $input.first().json;\n  return [{ json: { _empty: true, run_id: f.run_id || \u0027\u0027, run_date: f.run_date || \u0027\u0027, _stats: stats } }];\n}\nreturn out;"
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000008",
+                      "name":  "중복대조+키워드필터",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -40,
+                                       300
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "// 5b 일일 LLM 상한 + 배치 묶기  (v1.2 신규)\n// Mode: Run Once for All Items\n//\n// Gemini 무료 티어는 분당 5요청 / 일일 250요청 제한.\n// 건별 호출이면 하루 수백 건에서 429가 납니다.\n//  (1) filter_score 상위 LLM_MAX건만 LLM으로 보내고\n//  (2) BATCH_SIZE건씩 한 프롬프트로 묶어 호출 수를 1/10로 줄입니다.\n//\n// 상한에 걸려 제외된 기사는 \u0027시트에 기록하지 않습니다\u0027.\n// 기록하면 중복 키가 생겨 내일 다시 평가받을 기회가 영영 사라지기 때문입니다.\n\nconst LLM_MAX      = 40;   // 하루 LLM 대상 상한 (배치 4회 = 무료 티어 분당 5회 이내)\nconst BATCH_SIZE   = 10;   // 한 번의 LLM 호출에 넣을 기사 수\nconst SNIPPET_MAX  = 600;  // 배치 프롬프트용 본문 발췌 상한\n\nconst inputs = $input.all().filter(i =\u003e !i.json._empty);\nconst head = $input.first().json;\nconst stats = Object.assign({}, head._stats || {});\n\nfunction emptyOut() {\n  return [{ json: {\n    _empty: true,\n    run_id: head.run_id || \u0027\u0027,\n    run_date: head.run_date || \u0027\u0027,\n    _stats: Object.assign(stats, { llm_selected: 0, llm_skipped: 0, llm_calls: 0 }),\n  }}];\n}\n\nif (inputs.length === 0) { return emptyOut(); }\n\n// --- 우선순위 정렬: 필터 점수 높은 순 -\u003e 최신 순 ---\nconst ranked = inputs.map(i =\u003e i.json).sort((a, b) =\u003e {\n  if ((b.filter_score || 0) !== (a.filter_score || 0)) {\n    return (b.filter_score || 0) - (a.filter_score || 0);\n  }\n  return String(b.published_at).localeCompare(String(a.published_at));\n});\n\nconst selected = ranked.slice(0, LLM_MAX);\nstats.llm_selected = selected.length;\nstats.llm_skipped  = ranked.length - selected.length;\n\nif (selected.length === 0) { return emptyOut(); }\n\n// --- 배치로 자르기 ---\nconst out = [];\nfor (let s = 0; s \u003c selected.length; s += BATCH_SIZE) {\n  const chunk = selected.slice(s, s + BATCH_SIZE);\n  const batchNo = Math.floor(s / BATCH_SIZE) + 1;\n\n  // 기사에 배치 내 지역 id 부여 (LLM 응답을 되짚을 키)\n  const articles = chunk.map((a, k) =\u003e Object.assign({}, a, { id: k + 1 }));\n\n  const promptBlock = articles.map(a =\u003e\n    \u0027### id: \u0027 + a.id + \u0027\\n\u0027 +\n    \u0027[매체] \u0027 + a.source + \u0027\\n\u0027 +\n    \u0027[제목] \u0027 + a.title + \u0027\\n\u0027 +\n    \u0027[발행] \u0027 + a.published_at + \u0027\\n\u0027 +\n    \u0027[본문발췌] \u0027 + String(a.snippet || \u0027\u0027).slice(0, SNIPPET_MAX)\n  ).join(\u0027\\n\\n\u0027);\n\n  out.push({ json: {\n    batch_no: batchNo,\n    count: articles.length,\n    ids: articles.map(a =\u003e a.id),\n    articles,\n    prompt_block: \u0027아래 \u0027 + articles.length + \u0027건의 기사를 각각 분석하십시오.\\n\u0027 +\n                  \u0027반드시 \u0027 + articles.length + \u0027개의 결과를 모두 반환하고, 각 결과의 id는 입력 id와 정확히 일치시키십시오.\\n\\n\u0027 +\n                  promptBlock,\n    run_id: head.run_id || \u0027\u0027,\n    run_date: head.run_date || \u0027\u0027,\n    _stats: stats,\n  }});\n}\n\nstats.llm_calls = out.length;\nreturn out;"
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000019",
+                      "name":  "상한+배치",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       180,
+                                       300
+                                   ],
+                      "notes":  "v1.2: Gemini 무료 티어(분당 5회) 대응. 상위 40건만, 10건씩 묶어 4회 호출"
+                  },
+                  {
+                      "parameters":  {
+                                         "conditions":  {
+                                                            "options":  {
+                                                                            "caseSensitive":  true,
+                                                                            "leftValue":  "",
+                                                                            "typeValidation":  "loose",
+                                                                            "version":  2
+                                                                        },
+                                                            "conditions":  [
+                                                                               {
+                                                                                   "id":  "cond-empty",
+                                                                                   "leftValue":  "={{ !!$json._empty }}",
+                                                                                   "rightValue":  "",
+                                                                                   "operator":  {
+                                                                                                    "type":  "boolean",
+                                                                                                    "operation":  "true",
+                                                                                                    "singleValue":  true
+                                                                                                }
+                                                                               }
+                                                                           ],
+                                                            "combinator":  "and"
+                                                        },
+                                         "looseTypeValidation":  true,
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000009",
+                      "name":  "통과건 있음?",
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2.2,
+                      "position":  [
+                                       400,
+                                       300
+                                   ],
+                      "notes":  "true(통과 0건) -\u003e 브리핑 조립으로 직행(LLM 건너뜀) / false -\u003e LLM"
+                  },
+                  {
+                      "parameters":  {
+                                         "promptType":  "define",
+                                         "text":  "={{ $json.prompt_block }}",
+                                         "hasOutputParser":  true,
+                                         "messages":  {
+                                                          "messageValues":  [
+                                                                                {
+                                                                                    "message":  "당신은 자산운용사 리서치팀을 위해 뉴스를 정리하는 애널리스트입니다.\n입력으로 여러 건의 기사가 \u0027### id: N\u0027 구분자와 함께 주어집니다.\n각 기사를 독립적으로 분석해, results 배열에 기사 수만큼의 객체를 담아 JSON 하나만 반환합니다.\n설명, 인사말, 코드펜스를 절대 붙이지 마십시오.\n\n[절대 규칙]\n- 입력 기사가 N건이면 results도 정확히 N개여야 합니다. 건너뛰거나 합치지 마십시오.\n- 각 결과의 id는 입력의 \u0027### id: N\u0027 값과 정확히 일치해야 합니다.\n- 기사끼리 내용을 섞지 마십시오. 각 요약은 해당 id의 기사에서만 나와야 합니다.\n\n[각 결과의 필드]\n1) id : 입력 기사의 id (정수)\n2) summary : 한국어. 3문장 이하. 각 문장은 마침표로 끝냅니다.\n   숫자와 고유명사를 살리고, 기사에 없는 사실은 절대 추가하지 않습니다.\n   추측 표현은 기사에 그 표현이 있을 때만 씁니다.\n3) importance : 1~5 사이의 정수. 아래 기준을 그대로 적용합니다.\n   5 :: 시장 전체를 흔드는 사건. 금리 결정, 대형 정책 발표, 급락과 급등\n   4 :: 특정 업종이나 대형 기업에 직접 영향. 실적 발표, 대형 인수합병\n   3 :: 참고할 만한 동향. 지표 발표, 업계 전망\n   2 :: 일반적인 소식\n   1 :: 브리핑에 넣을 필요 없는 기사\n4) category : 다음 7개 중 정확히 하나. 다른 값을 만들지 마십시오.\n   증시, 금리, 환율, 부동산, 기업, 정책, 기타\n   - 증시   : 주가지수, 개별 종목 주가, 수급, IPO\n   - 금리   : 기준금리, 채권금리, 예금·대출금리\n   - 환율   : 원달러 등 통화, 외환보유액\n   - 부동산 : 주택가격, 분양, 부동산 정책\n   - 기업   : 개별 기업 실적·경영·M\u0026A\n   - 정책   : 정부·규제당국의 제도, 세제, 예산\n   - 기타   : 위 어디에도 명확히 속하지 않는 금융 기사\n\n[중요도 4 이상은 엄격하게 판정하십시오]\n아래 유형은 위 기준의 \u00273 :: 참고할 만한 동향\u0027에 해당하므로 3 이하를 부여합니다.\n- 증권사 투자의견 변경, 목표주가 조정, 애널리스트 리포트 인용\n- 개별 종목의 단순 주가 등락 보도 ([특징주] 류)\n- 시장 예상 범위 안의 실적 발표\n- 이미 예고돼 있던 정기 지표 및 통계 발표\n- 정책 변화를 담지 않은 원론적 발언 인용\n기업의 소규모 계약, 수주, 인사는 2를 부여합니다.\n\n[4를 부여하는 조건]\n한 기업의 소식이라도 그 기업이 속한 \u0027업종 전체\u0027 또는 \u0027지수\u0027에 파급되는 경우여야 합니다.\n특정 기업 하나의 사정에 그치는 소식은 4가 아닙니다.\n\n[5를 부여하는 조건]\n금리 결정, 대형 정책 발표, 지수나 환율의 급락과 급등처럼\n시장 참여자 전체가 반응하는 사건에만 부여합니다.\n\n[중요도 판정 시 주의]\n- 제목의 자극성이 아니라 시장 영향 범위로 판단합니다.\n- 기사 내용이 부실해 판단 근거가 부족하면 낮은 쪽(2 이하)을 선택합니다.\n- 확신이 없을 때 높은 값을 주지 마십시오. 누락보다 오탐의 비용이 큽니다.\n- 하루치 기사 중 4 이상은 소수입니다. 대부분의 기사는 2 또는 3입니다."
+                                                                                }
+                                                                            ]
+                                                      }
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000010",
+                      "name":  "LLM 요약+중요도",
+                      "type":  "@n8n/n8n-nodes-langchain.chainLlm",
+                      "typeVersion":  1.5,
+                      "position":  [
+                                       620,
+                                       400
+                                   ],
+                      "onError":  "continueRegularOutput",
+                      "retryOnFail":  true,
+                      "maxTries":  3,
+                      "waitBetweenTries":  65000,
+                      "notes":  "429(분당 한도) 대비: 재시도 대기 65초 x 3회. onError=continue로 한 배치 실패가 브리핑 전체를 죽이지 않게 함"
+                  },
+                  {
+                      "parameters":  {
+                                         "modelName":  "models/gemini-2.5-flash",
+                                         "options":  {
+                                                         "temperature":  0.2
+                                                     }
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000011",
+                      "name":  "Gemini Chat Model",
+                      "type":  "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+                      "typeVersion":  1,
+                      "position":  [
+                                       360,
+                                       600
+                                   ],
+                      "notes":  "등록된 Google Gemini(PaLM) API 자격증명을 선택하세요"
+                  },
+                  {
+                      "parameters":  {
+                                         "schemaType":  "manual",
+                                         "inputSchema":  "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"results\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"id\":         { \"type\": \"integer\" },\n          \"summary\":    { \"type\": \"string\" },\n          \"importance\": { \"type\": \"integer\", \"minimum\": 1, \"maximum\": 5 },\n          \"category\":   { \"type\": \"string\", \"enum\": [\"증시\",\"금리\",\"환율\",\"부동산\",\"기업\",\"정책\",\"기타\"] }\n        },\n        \"required\": [\"id\", \"summary\", \"importance\", \"category\"]\n      }\n    }\n  },\n  \"required\": [\"results\"]\n}"
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000012",
+                      "name":  "Structured Output Parser",
+                      "type":  "@n8n/n8n-nodes-langchain.outputParserStructured",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       560,
+                                       600
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "// 9 배치 해체 + 검증 안전판 (V-1 ~ V-7)\n// Mode: Run Once for All Items\n//\n// 입력: LLM 노드 출력 (배치 1개당 아이템 1개, output.results 배열)\n// 출력: 기사 1건당 아이템 1개\n\nconst CATEGORIES = new Set([\u0027증시\u0027,\u0027금리\u0027,\u0027환율\u0027,\u0027부동산\u0027,\u0027기업\u0027,\u0027정책\u0027,\u0027기타\u0027]);\nconst SRC = \u0027상한+배치\u0027;\n\nfunction sentenceTrim(text, max) {\n  const parts = String(text).split(/(?\u003c=[.!?。])\\s+/).filter(s =\u003e s.trim());\n  return { text: parts.slice(0, max).join(\u0027 \u0027).trim(), over: parts.length \u003e max };\n}\n\nconst items = $input.all();\nconst srcAll = $(SRC).all();\nconst out = [];\n\nfor (let i = 0; i \u003c items.length; i++) {\n  const j = items[i].json || {};\n\n  // 배치 원본 복원 (LLM 노드는 output만 남기므로 인덱스로 페어링)\n  let batch = {};\n  try { batch = $(SRC).itemMatching(i).json; }\n  catch (e) { batch = (srcAll[i] \u0026\u0026 srcAll[i].json) || {}; }\n\n  const articles = Array.isArray(batch.articles) ? batch.articles : [];\n\n  const llm = (j.output \u0026\u0026 typeof j.output === \u0027object\u0027) ? j.output\n            : (j.data \u0026\u0026 typeof j.data === \u0027object\u0027) ? j.data\n            : null;\n  const results = (llm \u0026\u0026 Array.isArray(llm.results)) ? llm.results : [];\n\n  const byId = new Map();\n  for (const r of results) {\n    const rid = Number(r \u0026\u0026 r.id);\n    if (Number.isInteger(rid) \u0026\u0026 !byId.has(rid)) byId.set(rid, r);\n  }\n\n  for (const a of articles) {\n    const meta = {\n      url_hash: a.url_hash, normalized_url: a.normalized_url,\n      original_url: a.original_url, title: a.title, source: a.source,\n      published_at: a.published_at, run_id: a.run_id || batch.run_id,\n      run_date: a.run_date || batch.run_date,\n      filter_score: a.filter_score, matched_keywords: a.matched_keywords,\n      _stats: batch._stats,\n    };\n\n    // V-1: 배치 호출 자체가 실패\n    if (j.error || !llm) {\n      out.push({ json: Object.assign({}, meta, {\n        summary: \u0027\u0027, importance: 1, category: \u0027기타\u0027,\n        needs_review: true, review_flags: \u0027V1_llm_error\u0027,\n      })});\n      continue;\n    }\n\n    const r = byId.get(Number(a.id));\n\n    // V-7: 배치는 성공했으나 이 기사의 결과가 누락됨\n    if (!r) {\n      out.push({ json: Object.assign({}, meta, {\n        summary: \u0027\u0027, importance: 1, category: \u0027기타\u0027,\n        needs_review: true, review_flags: \u0027V7_missing_in_batch\u0027,\n      })});\n      continue;\n    }\n\n    let needsReview = false;\n    const flags = [];\n    let importance = 1;\n    let category = \u0027기타\u0027;\n\n    let summary = String(r.summary == null ? \u0027\u0027 : r.summary).trim();\n\n    // V-6: 코드펜스 / URL 잔여물\n    const cleaned = summary.replace(/```[a-z]*\\n?/gi, \u0027\u0027).replace(/https?:\\/\\/\\S+/g, \u0027\u0027).trim();\n    if (cleaned !== summary) { needsReview = true; flags.push(\u0027V6_artifact\u0027); }\n    summary = cleaned;\n\n    // V-2\n    if (summary.length \u003c 10) { needsReview = true; flags.push(\u0027V2_too_short\u0027); }\n\n    // V-3\n    const st = sentenceTrim(summary, 3);\n    if (st.over) { needsReview = true; flags.push(\u0027V3_too_many_sentences\u0027); }\n    summary = st.text;\n\n    // V-4\n    const impNum = Number(r.importance);\n    if (!Number.isInteger(impNum) || impNum \u003c 1 || impNum \u003e 5) {\n      importance = 1; needsReview = true; flags.push(\u0027V4_bad_importance\u0027);\n    } else {\n      importance = impNum;\n    }\n\n    // V-5\n    const cat = String(r.category == null ? \u0027\u0027 : r.category).trim();\n    if (!CATEGORIES.has(cat)) {\n      category = \u0027기타\u0027; needsReview = true; flags.push(\u0027V5_bad_category\u0027);\n    } else {\n      category = cat;\n    }\n\n    out.push({ json: Object.assign({}, meta, {\n      summary, importance, category,\n      needs_review: needsReview,\n      review_flags: flags.join(\u0027|\u0027),\n    })});\n  }\n}\n\nreturn out;"
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000013",
+                      "name":  "검증 안전판",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       800,
+                                       400
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "// 9b 발송 선별 + 메시지 조립 (v1.4 신규)\n// Mode: Run Once for All Items\n//\n// [이 노드가 생긴 이유]\n// v1.3까지는 \u0027이력 기록\u0027이 \u0027브리핑 조립\u0027보다 먼저 실행됐습니다.\n// 그래서 시트는 길이 제한(2000자)에 몇 건이 잘렸는지 알 수 없었고,\n// 중요도만 보고 sent=TRUE를 찍었습니다.\n// 결과: 실제로 발송되지 않은 중요 기사가 시트에 남아 다음날 중복 차단 -\u003e 영구 유실.\n//\n// 이 노드가 \u0027실제로 메시지에 들어갈 기사\u0027를 먼저 확정한 뒤,\n//   - 발송된 기사        -\u003e sent=true 로 기록\n//   - 중요도 1~3 / 검증실패 -\u003e sent=false 로 기록 (D-02 유지: 재요약 방지)\n//   - 중요도 4+ 인데 잘린 기사 -\u003e 아예 출력하지 않음 (시트 미기록) -\u003e 내일 재도전\n\nconst MIN_IMPORTANCE = 4;\nconst MAX_ARTICLES   = 15;    // 길이 가드가 실질 상한을 정하므로 넉넉히\nconst SUMMARY_MAX    = 90;    // v1.4: 요약 압축 (첫 문장만, 90자)\nconst HARD_LIMIT     = 1950;  // Discord 본문 2000자 대비 여유\n\nconst CAT_ORDER = [\u0027금리\u0027,\u0027정책\u0027,\u0027증시\u0027,\u0027환율\u0027,\u0027기업\u0027,\u0027부동산\u0027,\u0027기타\u0027];\n\nconst items = $input.all().map(i =\u003e i.json).filter(j =\u003e j \u0026\u0026 j.url_hash);\n\nlet stats = {};\nlet runDate = \u0027\u0027;\ntry {\n  const f = $(\u0027상한+배치\u0027).first().json;\n  stats = f._stats || {};\n  runDate = f.run_date || \u0027\u0027;\n} catch (e) { stats = {}; }\nif (!runDate) {\n  runDate = (items[0] \u0026\u0026 items[0].run_date) ||\n            new Intl.DateTimeFormat(\u0027sv-SE\u0027, { timeZone: \u0027Asia/Seoul\u0027 }).format(new Date());\n}\n\nfunction countLine(n) {\n  let s = \u0027수집 \u0027 + (stats.raw || 0) + \u0027건 → 시간창 \u0027 + (stats.collected || 0) + \u0027건 → \u0027 +\n          \u0027중복제외 \u0027 + ((stats.collected || 0) - (stats.dup_blocked || 0)) + \u0027건 → \u0027 +\n          \u0027금융필터 \u0027 + (stats.passed || 0) + \u0027건\u0027;\n  if (stats.llm_skipped \u003e 0) {\n    s += \u0027 → LLM대상 \u0027 + (stats.llm_selected || 0) + \u0027건(상한제외 \u0027 + stats.llm_skipped + \u0027)\u0027;\n  }\n  return s + \u0027 → 중요도4+ \u0027 + n + \u0027건\u0027;\n}\n\nfunction firstSentence(t) {\n  const parts = String(t).split(/(?\u003c=[.!?。])\\s+/).filter(s =\u003e s.trim());\n  return parts.length ? parts[0].trim() : String(t).trim();\n}\n\n// --- 발송 후보 ---\nconst candidates = items.filter(j =\u003e\n  j.needs_review !== true \u0026\u0026 Number(j.importance) \u003e= MIN_IMPORTANCE);\n\ncandidates.sort((a, b) =\u003e {\n  if (b.importance !== a.importance) return b.importance - a.importance;\n  const ca = CAT_ORDER.indexOf(a.category), cb = CAT_ORDER.indexOf(b.category);\n  if (ca !== cb) return ca - cb;\n  return String(b.published_at).localeCompare(String(a.published_at));\n});\n\nfunction build(list) {\n  if (list.length === 0) {\n    return [\n      \u0027📭 오늘의 금융 브리핑 (\u0027 + runDate + \u0027)\u0027,\n      \u0027중요도 4 이상 기사가 없습니다.\u0027,\n      \u0027\u0027,\n      countLine(0),\n    ].join(\u0027\\n\u0027);\n  }\n  const body = list.map((a, idx) =\u003e {\n    let sum = firstSentence(String(a.summary || \u0027\u0027).trim());\n    if (sum.length \u003e SUMMARY_MAX) sum = sum.slice(0, SUMMARY_MAX - 1) + \u0027…\u0027;\n    return \u0027[\u0027 + (idx + 1) + \u0027] ⭐\u0027 + a.importance + \u0027 \u0027 + a.category + \u0027 | \u0027 + a.title + \u0027\\n\u0027 +\n           \u0027  \u0027 + sum + \u0027\\n\u0027 +\n           \u0027  📰 \u0027 + a.source + \u0027 🔗 \u003c\u0027 + a.original_url + \u0027\u003e\u0027;\n  }).join(\u0027\\n\u0027);\n\n  const lines = [\n    \u0027📈 오늘의 금융 브리핑 (\u0027 + runDate + \u0027)\u0027,\n    \u0027읽을 기사 \u0027 + candidates.length + \u0027건\u0027,\n    \u0027\u0027,\n    body,\n  ];\n  const hidden = candidates.length - list.length;\n  if (hidden \u003e 0) lines.push(\u0027\u0027, \u0027… 외 \u0027 + hidden + \u0027건은 길이 제한으로 생략\u0027);\n  // 정상 브리핑에는 파이프라인 카운트 줄을 넣지 않는다(자리만 차지).\n  // 0건 메시지에서만 유지 -\u003e REQ-06 \u0027조용한 날 vs 고장\u0027 구분 장치.\n  return lines.join(\u0027\\n\u0027);\n}\n\n// --- 길이 가드: 실제로 들어갈 기사 확정 ---\nlet shown = candidates.slice(0, MAX_ARTICLES);\nlet content = build(shown);\nwhile (content.length \u003e HARD_LIMIT \u0026\u0026 shown.length \u003e 1) {\n  shown = shown.slice(0, shown.length - 1);\n  content = build(shown);\n}\nif (content.length \u003e HARD_LIMIT) content = content.slice(0, HARD_LIMIT - 1) + \u0027…\u0027;\n\nconst shownSet = new Set(shown.map(a =\u003e a.url_hash));\nconst droppedCount = candidates.length - shown.length;\n\n// --- 시트 기록 (LLM을 탄 기사 전부, D-02 유지) ---\n// v1.5: 잘린 기사도 기록한다.\n//   시간 창이 24h이므로 그 기사는 내일 창 밖으로 나가 어차피 다시 오지 않는다.\n//   기록해 두어야 같은 날 재실행 시 중복 요약을 막을 수 있다.\n//   sent 값만 실제 발송 여부와 정확히 일치시킨다.\nconst out = items.map(j =\u003e ({ json: Object.assign({}, j, {\n  sent: shownSet.has(j.url_hash),\n  briefing_content: content,\n  dropped_count: droppedCount,\n})}));\n\n// 기록할 것이 없는 경우에도 브리핑은 나가야 하므로 신호 아이템 유지\nif (out.length === 0) {\n  return [{ json: {\n    _norecord: true,\n    run_date: runDate,\n    sent: false,\n    briefing_content: content,\n    dropped_count: droppedCount,\n  }}];\n}\nreturn out;"
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000021",
+                      "name":  "발송선별",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       960,
+                                       400
+                                   ],
+                      "notes":  "v1.4: 실제 발송분을 먼저 확정. 길이 제한에 잘린 중요기사는 출력에서 제외해 시트에 안 남김 -\u003e 내일 재도전"
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "append",
+                                         "documentId":  {
+                                                            "__rl":  true,
+                                                            "value":  "REPLACE_WITH_SPREADSHEET_ID",
+                                                            "mode":  "id"
+                                                        },
+                                         "sheetName":  {
+                                                           "__rl":  true,
+                                                           "value":  "sent_log",
+                                                           "mode":  "name"
+                                                       },
+                                         "columns":  {
+                                                         "mappingMode":  "defineBelow",
+                                                         "value":  {
+                                                                       "run_date":  "={{ $json.run_date }}",
+                                                                       "run_id":  "={{ $json.run_id }}",
+                                                                       "url_hash":  "={{ $json.url_hash }}",
+                                                                       "normalized_url":  "={{ $json.normalized_url }}",
+                                                                       "original_url":  "={{ $json.original_url }}",
+                                                                       "title":  "={{ $json.title }}",
+                                                                       "source":  "={{ $json.source }}",
+                                                                       "published_at":  "={{ $json.published_at }}",
+                                                                       "category":  "={{ $json.category }}",
+                                                                       "importance":  "={{ $json.importance }}",
+                                                                       "summary":  "={{ $json.summary }}",
+                                                                       "needs_review":  "={{ $json.needs_review ? \u0027TRUE\u0027 : \u0027FALSE\u0027 }}",
+                                                                       "review_flags":  "={{ $json.review_flags }}",
+                                                                       "sent":  "={{ $json.sent ? \u0027TRUE\u0027 : \u0027FALSE\u0027 }}",
+                                                                       "filter_score":  "={{ $json.filter_score }}",
+                                                                       "matched_keywords":  "={{ $json.matched_keywords }}"
+                                                                   },
+                                                         "matchingColumns":  [
+
+                                                                             ],
+                                                         "schema":  [
+                                                                        {
+                                                                            "id":  "run_date",
+                                                                            "displayName":  "run_date",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "run_id",
+                                                                            "displayName":  "run_id",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "url_hash",
+                                                                            "displayName":  "url_hash",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "normalized_url",
+                                                                            "displayName":  "normalized_url",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "original_url",
+                                                                            "displayName":  "original_url",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "title",
+                                                                            "displayName":  "title",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "source",
+                                                                            "displayName":  "source",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "published_at",
+                                                                            "displayName":  "published_at",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "category",
+                                                                            "displayName":  "category",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "importance",
+                                                                            "displayName":  "importance",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "summary",
+                                                                            "displayName":  "summary",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "needs_review",
+                                                                            "displayName":  "needs_review",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "review_flags",
+                                                                            "displayName":  "review_flags",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "sent",
+                                                                            "displayName":  "sent",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "filter_score",
+                                                                            "displayName":  "filter_score",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "matched_keywords",
+                                                                            "displayName":  "matched_keywords",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        }
+                                                                    ]
+                                                     },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000014",
+                      "name":  "이력 기록",
+                      "type":  "n8n-nodes-base.googleSheets",
+                      "typeVersion":  4.5,
+                      "position":  [
+                                       1120,
+                                       400
+                                   ],
+                      "onError":  "continueRegularOutput",
+                      "retryOnFail":  true,
+                      "maxTries":  3,
+                      "waitBetweenTries":  2000,
+                      "notes":  "v1.4: \u0027발송선별\u0027 뒤에 위치. sent 값이 실제 발송 여부와 일치하며, 잘려나간 중요기사는 애초에 입력으로 오지 않음. 여전히 Discord 발송보다는 앞이라 재발송 방지는 유지됨"
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "// 11 브리핑 발송 준비 (REQ-06)\n// Mode: Run Once for All Items\n//\n// v1.4부터 메시지 본문은 \u0027발송선별\u0027 노드가 만듭니다(실제 발송분 확정과 같은 곳에서 계산해야\n// sent 값과 메시지 내용이 어긋나지 않기 때문). 이 노드는 그 결과를 집어 1건으로 내보내고,\n// LLM을 아예 타지 않은 날(0건 경로)의 메시지만 여기서 직접 만듭니다.\n\nlet content = \u0027\u0027;\ntry {\n  const f = $(\u0027발송선별\u0027).first().json;\n  if (f \u0026\u0026 f.briefing_content) content = f.briefing_content;\n} catch (e) { content = \u0027\u0027; }\n\nif (!content) {\n  // --- 0건 경로: 중복/필터에서 전멸해 LLM을 타지 않은 날 ---\n  let stats = {};\n  let runDate = \u0027\u0027;\n  try {\n    const g = $(\u0027상한+배치\u0027).first().json;\n    stats = g._stats || {};\n    runDate = g.run_date || \u0027\u0027;\n  } catch (e) { stats = {}; }\n  if (!stats || Object.keys(stats).length === 0) {\n    try {\n      const h = $(\u0027중복대조+키워드필터\u0027).first().json;\n      stats = h._stats || {};\n      runDate = runDate || h.run_date || \u0027\u0027;\n    } catch (e) { stats = stats || {}; }\n  }\n  if (!runDate) {\n    runDate = new Intl.DateTimeFormat(\u0027sv-SE\u0027, { timeZone: \u0027Asia/Seoul\u0027 }).format(new Date());\n  }\n\n  let line = \u0027수집 \u0027 + (stats.raw || 0) + \u0027건 → 시간창 \u0027 + (stats.collected || 0) + \u0027건 → \u0027 +\n             \u0027중복제외 \u0027 + ((stats.collected || 0) - (stats.dup_blocked || 0)) + \u0027건 → \u0027 +\n             \u0027금융필터 \u0027 + (stats.passed || 0) + \u0027건\u0027;\n  if (stats.llm_skipped \u003e 0) {\n    line += \u0027 → LLM대상 \u0027 + (stats.llm_selected || 0) + \u0027건(상한제외 \u0027 + stats.llm_skipped + \u0027)\u0027;\n  }\n  line += \u0027 → 중요도4+ 0건\u0027;\n\n  content = [\n    \u0027📭 오늘의 금융 브리핑 (\u0027 + runDate + \u0027)\u0027,\n    \u0027중요도 4 이상 기사가 없습니다.\u0027,\n    \u0027\u0027,\n    line,\n  ].join(\u0027\\n\u0027);\n}\n\nreturn [{ json: { content } }];"
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000015",
+                      "name":  "브리핑 조립",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       1240,
+                                       300
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "method":  "POST",
+                                         "url":  "REPLACE_WITH_DISCORD_WEBHOOK_URL",
+                                         "sendBody":  true,
+                                         "specifyBody":  "keypair",
+                                         "bodyParameters":  {
+                                                                "parameters":  [
+                                                                                   {
+                                                                                       "name":  "content",
+                                                                                       "value":  "={{ $json.content }}"
+                                                                                   }
+                                                                               ]
+                                                            },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000016",
+                      "name":  "Discord 발송",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       1460,
+                                       300
+                                   ],
+                      "retryOnFail":  true,
+                      "maxTries":  3,
+                      "waitBetweenTries":  2000,
+                      "notes":  "채널 편집 \u003e 연동 \u003e 웹후크 에서 URL 발급. 이 URL 자체가 발송 권한이므로 외부 공유 금지"
+                  },
+                  {
+                      "parameters":  {
+                                         "content":  "## 금융 뉴스 브리핑 Agent\n\n**import 후 반드시 할 일 4가지**\n1. `이력 조회` / `이력 기록` 노드 → Google Sheets 자격증명 선택 + `documentId`를 실제 스프레드시트 ID로 교체\n2. `Gemini Chat Model` 노드 → 등록된 Gemini 자격증명 선택\n3. `Discord 발송` 노드 → URL을 실제 웹훅 URL로 교체\n4. Workflow Settings → **Timezone = Asia/Seoul** (미설정 시 17:30에 발송됨)\n\n시트 `sent_log` 1행 헤더(16개, 순서 무관하나 철자 일치 필수):\n`run_date, run_id, url_hash, normalized_url, original_url, title, source, published_at, category, importance, summary, needs_review, review_flags, sent, filter_score, matched_keywords`",
+                                         "height":  320,
+                                         "width":  460
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000017",
+                      "name":  "README",
+                      "type":  "n8n-nodes-base.stickyNote",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -1120,
+                                       -140
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "content":  "### REQ-03 / REQ-04 차단 지점\n\n`중복대조+키워드필터`는 LLM 노드보다 **앞**에 있습니다.\n노드 순서를 바꾸면 요구사항 위반이자 비용이 3~5배가 됩니다.\n\n- 중복 키: 정규화 URL의 SHA-256 (`url_hash`)\n- 이력 조회 범위: 최근 7일\n- 필터: BLOCK → STRONG(2점) + WEAK(1점), 합계 2점 이상 통과",
+                                         "height":  240,
+                                         "width":  420,
+                                         "color":  3
+                                     },
+                      "id":  "a1000000-0000-4000-8000-000000000018",
+                      "name":  "차단 지점 메모",
+                      "type":  "n8n-nodes-base.stickyNote",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -120,
+                                       -80
+                                   ]
+                  }
+              ],
+    "connections":  {
+                        "Schedule 08:30":  {
+                                               "main":  [
+                                                            [
+                                                                {
+                                                                    "node":  "이력 조회",
+                                                                    "type":  "main",
+                                                                    "index":  0
+                                                                }
+                                                            ]
+                                                        ]
+                                           },
+                        "이력 조회":  {
+                                      "main":  [
+                                                   [
+                                                       {
+                                                           "node":  "Limit 1",
+                                                           "type":  "main",
+                                                           "index":  0
+                                                       }
+                                                   ]
+                                               ]
+                                  },
+                        "Limit 1":  {
+                                        "main":  [
+                                                     [
+                                                         {
+                                                             "node":  "RSS - 연합뉴스",
+                                                             "type":  "main",
+                                                             "index":  0
+                                                         },
+                                                         {
+                                                             "node":  "RSS - 한국경제",
+                                                             "type":  "main",
+                                                             "index":  0
+                                                         },
+                                                         {
+                                                             "node":  "RSS - 매일경제",
+                                                             "type":  "main",
+                                                             "index":  0
+                                                         }
+                                                     ]
+                                                 ]
+                                    },
+                        "RSS - 연합뉴스":  {
+                                           "main":  [
+                                                        [
+                                                            {
+                                                                "node":  "RSS 병합",
+                                                                "type":  "main",
+                                                                "index":  0
+                                                            }
+                                                        ]
+                                                    ]
+                                       },
+                        "RSS - 한국경제":  {
+                                           "main":  [
+                                                        [
+                                                            {
+                                                                "node":  "RSS 병합",
+                                                                "type":  "main",
+                                                                "index":  1
+                                                            }
+                                                        ]
+                                                    ]
+                                       },
+                        "RSS - 매일경제":  {
+                                           "main":  [
+                                                        [
+                                                            {
+                                                                "node":  "RSS 병합",
+                                                                "type":  "main",
+                                                                "index":  2
+                                                            }
+                                                        ]
+                                                    ]
+                                       },
+                        "RSS 병합":  {
+                                       "main":  [
+                                                    [
+                                                        {
+                                                            "node":  "정규화+시간창",
+                                                            "type":  "main",
+                                                            "index":  0
+                                                        }
+                                                    ]
+                                                ]
+                                   },
+                        "정규화+시간창":  {
+                                        "main":  [
+                                                     [
+                                                         {
+                                                             "node":  "중복대조+키워드필터",
+                                                             "type":  "main",
+                                                             "index":  0
+                                                         }
+                                                     ]
+                                                 ]
+                                    },
+                        "중복대조+키워드필터":  {
+                                           "main":  [
+                                                        [
+                                                            {
+                                                                "node":  "상한+배치",
+                                                                "type":  "main",
+                                                                "index":  0
+                                                            }
+                                                        ]
+                                                    ]
+                                       },
+                        "상한+배치":  {
+                                      "main":  [
+                                                   [
+                                                       {
+                                                           "node":  "통과건 있음?",
+                                                           "type":  "main",
+                                                           "index":  0
+                                                       }
+                                                   ]
+                                               ]
+                                  },
+                        "통과건 있음?":  {
+                                        "main":  [
+                                                     [
+                                                         {
+                                                             "node":  "브리핑 조립",
+                                                             "type":  "main",
+                                                             "index":  0
+                                                         }
+                                                     ],
+                                                     [
+                                                         {
+                                                             "node":  "LLM 요약+중요도",
+                                                             "type":  "main",
+                                                             "index":  0
+                                                         }
+                                                     ]
+                                                 ]
+                                    },
+                        "Gemini Chat Model":  {
+                                                  "ai_languageModel":  [
+                                                                           [
+                                                                               {
+                                                                                   "node":  "LLM 요약+중요도",
+                                                                                   "type":  "ai_languageModel",
+                                                                                   "index":  0
+                                                                               }
+                                                                           ]
+                                                                       ]
+                                              },
+                        "Structured Output Parser":  {
+                                                         "ai_outputParser":  [
+                                                                                 [
+                                                                                     {
+                                                                                         "node":  "LLM 요약+중요도",
+                                                                                         "type":  "ai_outputParser",
+                                                                                         "index":  0
+                                                                                     }
+                                                                                 ]
+                                                                             ]
+                                                     },
+                        "LLM 요약+중요도":  {
+                                           "main":  [
+                                                        [
+                                                            {
+                                                                "node":  "검증 안전판",
+                                                                "type":  "main",
+                                                                "index":  0
+                                                            }
+                                                        ]
+                                                    ]
+                                       },
+                        "검증 안전판":  {
+                                       "main":  [
+                                                    [
+                                                        {
+                                                            "node":  "발송선별",
+                                                            "type":  "main",
+                                                            "index":  0
+                                                        }
+                                                    ]
+                                                ]
+                                   },
+                        "이력 기록":  {
+                                      "main":  [
+                                                   [
+                                                       {
+                                                           "node":  "브리핑 조립",
+                                                           "type":  "main",
+                                                           "index":  0
+                                                       }
+                                                   ]
+                                               ]
+                                  },
+                        "브리핑 조립":  {
+                                       "main":  [
+                                                    [
+                                                        {
+                                                            "node":  "Discord 발송",
+                                                            "type":  "main",
+                                                            "index":  0
+                                                        }
+                                                    ]
+                                                ]
+                                   },
+                        "발송선별":  {
+                                     "main":  [
+                                                  [
+                                                      {
+                                                          "node":  "이력 기록",
+                                                          "type":  "main",
+                                                          "index":  0
+                                                      }
+                                                  ]
+                                              ]
+                                 }
+                    },
+    "settings":  {
+                     "executionOrder":  "v1",
+                     "timezone":  "Asia/Seoul",
+                     "saveManualExecutions":  true,
+                     "saveDataErrorExecution":  "all",
+                     "saveDataSuccessExecution":  "all"
+                 },
+    "pinData":  {
+
+                },
+    "meta":  {
+                 "instanceId":  "finance-news-briefing-mini2"
+             },
+    "tags":  [
+
+             ]
+}

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>대한민국 대통령: 외교의 신</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #131826;
+    --border: #2a3345;
+    --accent: #e63946;
+    --text: #e8ecf4;
+    --muted: #8a93a6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  header {
+    padding: 12px 20px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .stat-name {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .stat-bar {
+    height: 8px;
+    background: #1e2536;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .stat-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .msg {
+    max-width: 720px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  .msg.situation {
+    background: var(--panel);
+    border-left: 3px solid var(--accent);
+    align-self: flex-start;
+  }
+  .msg.order {
+    background: #1a2233;
+    align-self: flex-end;
+    color: #cfe0ff;
+  }
+  .msg.gameover {
+    align-self: center;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    text-align: center;
+    font-weight: bold;
+  }
+  footer {
+    padding: 16px 20px;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+  }
+  #userInput {
+    flex: 1;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #0f1420;
+    color: var(--text);
+    font-size: 14px;
+  }
+  button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    background: var(--accent);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  button:disabled {
+    background: #3a4155;
+    cursor: not-allowed;
+  }
+  #restartBtn {
+    display: none;
+    background: #3a4155;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏛️ 청와대 상황실 — 대한민국 대통령: 외교의 신</h1>
+  <div class="stats" id="stats"></div>
+</header>
+
+<main id="chat"></main>
+
+<footer>
+  <input id="userInput" type="text" placeholder="대통령의 지시를 입력하세요...">
+  <button id="sendBtn">지시</button>
+  <button id="restartBtn">다시 시작</button>
+</footer>
+
+<script>
+const INTRO_TEXT = `2026년 8월, 백악관 발표실.
+
+도널드 트럼프 미국 대통령이 단상에 올라 소리쳤다.
+"이 순간부터 한국산 전 품목에 관세 50%를 매긴다! 불공평한 무역은 끝났다!"
+
+전 세계 증시가 요동치기 시작했다. 청와대 상황실에 비상벨이 울린다.
+대통령님, 어떻게 대응하시겠습니까?`;
+
+const STAT_KEYS = ["지지율", "경제", "정치력"];
+
+let stats = { 지지율: 50, 경제: 50, 정치력: 50 };
+let lastSituation = INTRO_TEXT;
+let gameOver = false;
+let isSending = false;
+
+const statsEl = document.getElementById("stats");
+const chatEl = document.getElementById("chat");
+const inputEl = document.getElementById("userInput");
+const sendBtn = document.getElementById("sendBtn");
+const restartBtn = document.getElementById("restartBtn");
+
+function renderStats() {
+  statsEl.innerHTML = STAT_KEYS.map(key => {
+    const value = Math.max(0, Math.min(100, stats[key]));
+    return `
+      <div>
+        <div class="stat-name"><span>${key}</span><span>${stats[key]}</span></div>
+        <div class="stat-bar"><div class="stat-fill" style="width:${value}%"></div></div>
+      </div>
+    `;
+  }).join("");
+}
+
+function addMessage(text, className) {
+  const div = document.createElement("div");
+  div.className = `msg ${className}`;
+  div.textContent = text;
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
+  return div;
+}
+
+function applyStatChanges(text) {
+  const tagMatch = text.match(/\[지표변화:\s*([^\]]+)\]/);
+  if (!tagMatch) return text;
+
+  const inner = tagMatch[1];
+  const changePattern = /(지지율|경제|정치력)\(([+-]?\d+)\)/g;
+  let m;
+  while ((m = changePattern.exec(inner)) !== null) {
+    stats[m[1]] += parseInt(m[2], 10);
+  }
+
+  return text.replace(tagMatch[0], "").trim();
+}
+
+function checkGameOver() {
+  return STAT_KEYS.some(key => stats[key] <= 0);
+}
+
+function setInputEnabled(enabled) {
+  inputEl.disabled = !enabled;
+  sendBtn.disabled = !enabled;
+}
+
+async function sendTurn() {
+  if (isSending || gameOver) return;
+
+  const userInput = inputEl.value.trim();
+  if (!userInput) return;
+
+  isSending = true;
+  addMessage(userInput, "order");
+  inputEl.value = "";
+  setInputEnabled(false);
+  sendBtn.textContent = "처리 중...";
+  const loadingMsg = addMessage("📡 상황실이 대응 방안을 분석하고 있습니다...", "situation loading");
+
+  try {
+    const res = await fetch("/api/turn", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ stats, lastSituation, userInput }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`서버 응답 오류 (${res.status})`);
+    }
+
+    const data = await res.json();
+    loadingMsg.remove();
+
+    const displayText = applyStatChanges(data.text);
+    addMessage(displayText, "situation");
+    lastSituation = displayText;
+    renderStats();
+
+    if (checkGameOver()) {
+      gameOver = true;
+      addMessage("🚨 GAME OVER 🚨", "gameover");
+      setInputEnabled(false);
+      restartBtn.style.display = "inline-block";
+    } else {
+      setInputEnabled(true);
+    }
+  } catch (err) {
+    loadingMsg.remove();
+    addMessage("⚠️ 오류가 발생했습니다: " + err.message, "gameover");
+    setInputEnabled(true);
+  } finally {
+    isSending = false;
+    sendBtn.textContent = "지시";
+  }
+}
+
+function restart() {
+  stats = { 지지율: 50, 경제: 50, 정치력: 50 };
+  lastSituation = INTRO_TEXT;
+  gameOver = false;
+  chatEl.innerHTML = "";
+  addMessage(INTRO_TEXT, "situation");
+  renderStats();
+  setInputEnabled(true);
+  restartBtn.style.display = "none";
+}
+
+sendBtn.addEventListener("click", sendTurn);
+inputEl.addEventListener("keydown", e => {
+  if (e.key === "Enter") sendTurn();
+});
+restartBtn.addEventListener("click", restart);
+
+renderStats();
+addMessage(INTRO_TEXT, "situation");
+</script>
+
+</body>
+</html>
