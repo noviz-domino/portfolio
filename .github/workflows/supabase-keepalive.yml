@@ -1,0 +1,54 @@
+# Supabase 무료 플랜은 7일간 DB 활동이 없으면 프로젝트를 일시정지시킨다.
+# 정지되면 대시보드에서 수동으로 재개해야 하고, 그동안 라이브 데모가 죽는다.
+# 포트폴리오 데모가 채용 검토 중에 멈추는 일이 없도록 3일마다 가벼운 조회를 보낸다.
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # 3일마다 00:17 UTC. 정각을 피한 건 GitHub Actions가 정각에 몰려
+    # 실행이 지연되거나 누락되는 경우가 있기 때문이다.
+    - cron: "17 0 */3 * *"
+  workflow_dispatch: # 수동 실행용
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # 한쪽이 실패해도 다른 쪽은 계속 시도한다
+      matrix:
+        include:
+          - name: mealmate
+            url_secret: MEALMATE_SUPABASE_URL
+            key_secret: MEALMATE_SUPABASE_ANON_KEY
+          - name: go-eat
+            url_secret: GOEAT_SUPABASE_URL
+            key_secret: GOEAT_SUPABASE_ANON_KEY
+    steps:
+      - name: ${{ matrix.name }} 프로젝트 깨우기
+        env:
+          SUPABASE_URL: ${{ secrets[matrix.url_secret] }}
+          SUPABASE_KEY: ${{ secrets[matrix.key_secret] }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${SUPABASE_URL}" ] || [ -z "${SUPABASE_KEY}" ]; then
+            echo "::error::${{ matrix.name }}의 시크릿이 설정되지 않았습니다."
+            exit 1
+          fi
+
+          # keep_alive 테이블에서 한 행만 조회한다. 읽기 활동으로도 정지 타이머가 초기화된다.
+          # -w '%{http_code}' 로 상태 코드만 받아 응답 본문이 로그에 남지 않게 한다.
+          status=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}" \
+            "${SUPABASE_URL}/rest/v1/keep_alive?select=id&limit=1")
+
+          echo "${{ matrix.name }} → HTTP ${status}"
+
+          case "${status}" in
+            200) echo "정상. 프로젝트가 활성 상태입니다." ;;
+            404) echo "::error::keep_alive 테이블이 없습니다. README의 SQL을 실행하세요." ; exit 1 ;;
+            401|403) echo "::error::인증 실패. anon 키 또는 RLS 정책을 확인하세요." ; exit 1 ;;
+            5*)  echo "::error::프로젝트가 이미 일시정지되었을 수 있습니다. 대시보드에서 재개하세요." ; exit 1 ;;
+            *)   echo "::error::예상치 못한 응답: ${status}" ; exit 1 ;;
+          esac
