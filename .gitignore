@@ -1,0 +1,52 @@
+# =============================================================
+#  이 저장소는 public 포트폴리오다.
+#  여기 들어오는 모든 파일은 전 세계에 공개된다고 가정하고 관리한다.
+#  아래 규칙은 "실수로도 올라가지 않게" 하는 마지막 방어선이다.
+# =============================================================
+
+# --- 시크릿 (절대 커밋 금지) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+credentials.json
+service-account*.json
+sa-key*.json
+secrets/
+keys/
+
+# --- 빌드 산출물 / 의존성 (소스에서 재생성 가능) ---
+node_modules/
+.next/
+out/
+build/
+dist/
+.gradle/
+.kotlin/
+*.apk
+*.aab
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# --- 배포 플랫폼 로컬 캐시 (토큰이 들어있다) ---
+.vercel/
+.netlify/
+
+# --- 편집기 / OS ---
+.idea/
+.DS_Store
+Thumbs.db
+*.iml
+
+# --- 과제 제출용 아카이브 ---
+*.zip
+
+# --- 로컬 전용 도구 설정 ---
+.claude/settings.local.json
