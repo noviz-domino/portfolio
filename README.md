@@ -63,6 +63,10 @@ flowchart LR
     F --> H[발송 후 수정 차단]
 ```
 
+<img src="projects/replygate/docs/screenshots/텔레그램-정책충돌-감지.png" alt="담당자의 수정 지시가 정책과 충돌하자 경고를 띄운 텔레그램 승인 카드" width="420" />
+
+담당자가 *"무료배송 기준이 3만원이라고 안내해줘"* 라고 지시했지만 정책 문서에는 **5만원**으로 되어 있습니다. 시스템은 지시를 그대로 따르지 않고 **충돌 사실만 드러내고, 판단은 사람에게 넘깁니다.**
+
 **측정 결과.** 베이스라인(RAG 없음)과 비교해 평가셋 50건으로 실측했습니다.
 
 | 지표 | 베이스라인 | RAG 적용 |
@@ -86,6 +90,10 @@ flowchart LR
 
 **실제 스토어에 출시되어 다운로드할 수 있는 앱입니다.**
 
+| 홈 | 단어 학습 | 퀴즈 |
+|:--:|:--:|:--:|
+| <img src="projects/englishWordApp/docs/brand/play-store/capture/main.png" width="220" /> | <img src="projects/englishWordApp/docs/brand/play-store/capture/word.png" width="220" /> | <img src="projects/englishWordApp/docs/brand/play-store/capture/game.png" width="220" /> |
+
 **문제.** 직접 만들었던 Java 버전이 학습 도구로 작동하지 않았습니다. 단어와 뜻이 항상 같이 보여 암기 검증이 불가능했고, CSV 파서가 따옴표를 처리하지 못해 **1,225행 중 835행에 `"` 문자가 그대로 노출**됐으며, 학습 이력이 저장되지 않아 화면 회전만으로 진행도가 초기화됐습니다.
 
 **접근.** Kotlin + Jetpack Compose로 전면 재작성했습니다. CSV 파서를 RFC 4180 기준으로 다시 만들고, 퀴즈 출제 로직을 순수 함수로 분리해 **JUnit 테스트 25건**으로 고정했으며, `SavedStateHandle`로 프로세스 재생성까지 상태를 복원하게 했습니다.
@@ -107,6 +115,10 @@ flowchart LR
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
+
+| 공개 식단 | AI가 만든 식단 | 끼니별 조리법 |
+|:--:|:--:|:--:|
+| ![](projects/mealmate/docs/screenshots/01-홈-공개식단.png) | ![](projects/mealmate/docs/screenshots/05-AI가만든식단.png) | ![](projects/mealmate/docs/screenshots/06-AI가만든조리법.png) |
 
 **문제.** 냉장고에 재료는 있는데 뭘 해먹을지 고민하다 결국 배달을 시킵니다. 식단을 짜려 해도 며칠치를 한 번에 계획하는 게 번거롭습니다.
 
@@ -131,6 +143,22 @@ flowchart LR
 
 **문제.** 리서치팀이 매일 아침 여러 뉴스 사이트를 각자 순회하면서 (1) 팀원 간 정보 비대칭, (2) 비금융 기사 선별에 드는 시간 낭비, (3) 동일 기사 반복 열람이 발생합니다.
 
+```mermaid
+flowchart LR
+    A[RSS 3곳<br/>08:30 KST] --> B[Merge]
+    B --> C[URL 정규화<br/>SHA-256 해시]
+    C --> D{7일 이력<br/>중복인가}
+    D -->|중복| X[버림]
+    D -->|신규| E[금융 키워드 필터]
+    E --> F[10건씩 배치 요약<br/>Gemini]
+    F --> G[검증 안전판<br/>누락·형식 교정]
+    G --> H{중요도 4 이상}
+    H -->|예| I[Discord 발송]
+    H -->|아니오| J[시트에만 기록]
+```
+
+중복 차단과 키워드 필터를 **LLM 호출보다 앞에** 둔 것이 이 설계의 핵심입니다.
+
 **접근.** 매일 08:30에 RSS 3곳을 수집해 요약 브리핑을 Discord로 발송합니다. **이 프로젝트의 핵심은 비용 제약 아래서의 설계 결정**입니다.
 
 - **API 호출 188회 → 4회.** 무료 티어 분당 5요청 한도에 걸려 `429`가 터졌습니다. 키워드 필터를 LLM 앞단으로 옮기고, 일일 상한을 두고, 10건씩 묶어 배치 요약하는 세 가지를 동시에 적용해 해결했습니다.
@@ -153,6 +181,25 @@ flowchart LR
 | **go-eat** | 시골 맛집 기록 웹앱 (8시간 제약 개발) | Next.js · Supabase | [코드](projects/go-eat/) · [데모](https://go-eat-noviz.vercel.app) |
 | **cosmic-grazer** | 단일 파일 탄막 서바이버 게임 | Vanilla JS · Canvas2D | [코드](projects/cosmic-grazer/) · [플레이](https://noviz-domino.github.io/cosmic-grazer/) |
 | **god-of-diplomacy** | Gemini 기반 정치·외교 텍스트 RPG | FastAPI · Gemini | [코드](projects/god-of-diplomacy/) |
+
+<details>
+<summary><b>그 외 프로젝트 화면 보기</b></summary>
+
+<br/>
+
+**go-eat** — 시골 맛집 기록. 사이드바의 "24곳 중 17곳 정복" 진행률은 필터와 무관하게 전체를 집계합니다.
+
+<img src="projects/go-eat/docs/screenshots/01-목록.png" width="640" />
+
+| 상세 | 모바일 |
+|:--:|:--:|
+| <img src="projects/go-eat/docs/screenshots/02-상세.png" width="380" /> | <img src="projects/go-eat/docs/screenshots/04-모바일.png" width="190" /> |
+
+**cosmic-grazer** — 프레임워크 없이 단일 HTML 파일(2,925줄)로 만든 탄막 서바이버.
+
+<img src="projects/cosmic-grazer/intro.png" width="480" />
+
+</details>
 
 ---
 
