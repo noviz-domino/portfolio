@@ -2,7 +2,7 @@
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:1a2980,100:26d0ce&height=200&section=header&text=Kim%20Minseok&fontSize=60&fontColor=ffffff&fontAlignY=35&desc=AI%20Agent%20Engineer&descSize=20&descAlignY=55" width="100%" />
 
-**AI 에이전트를 "만드는" 것보다 "측정하고 통제하는" 데 관심이 있습니다.**
+**LLM과 AI 에이전트로, 실제로 배포되어 쓰이는 것을 만듭니다.**
 
 [![Email](https://img.shields.io/badge/noviz2025@gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:noviz2025@gmail.com)
 [![GitHub](https://img.shields.io/badge/noviz--domino-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/noviz-domino)
@@ -16,13 +16,21 @@
 
 ## 30초 요약
 
-| | |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp; |
 |:--|:--|
 | **이름** | 김민석 (Kim Minseok) |
-| **지향** | LLM 에이전트의 **신뢰성** — 평가 · 검증 · 사람 개입(HITL) 설계 |
-| **현재** | 멀티캠퍼스 **AI 에이전트 엔지니어 트랙 1회차** 수강 중 (2026.07 ~ 2027.01, 984시간) |
-| **강점** | 만든 것을 **숫자로 검증**합니다. 대표 프로젝트는 RAG 도입 효과를 평가셋 50건으로 측정해 **1차 승인률 34% → 94%** 를 확인했습니다. |
+| **목표** | AI 에이전트 엔지니어 — LLM 응용 서비스 개발 |
+| **관심 도메인** | 금융 AI (RAG 기반 규제·약관 상담, 이상탐지, 자산관리 에이전트) |
+| **현재** | 멀티캠퍼스 **AI 에이전트 엔지니어 트랙 1회차** 수강 중 |
+| **기간** | 2026.07 ~ 2027.01 · 984시간 |
 | **연락** | noviz2025@gmail.com |
+
+**만든 것을 끝까지 배포하고, 숫자로 확인하는 편입니다.**
+안드로이드 앱은 Google Play에 출시해 실제 사용자가 쓰고 있고, 웹 서비스 두 개는 배포된 상태로 접속할 수 있습니다.
+대표 프로젝트에서는 RAG 도입 효과를 평가셋 50건으로 측정해 **1차 응답 승인률 34% → 94%** 를 확인했습니다.
+
+아직 배우는 중이고, 트랙을 마치며 관심 분야를 좁혀가고 있습니다.
+지금까지의 작업은 **LLM을 실제 서비스에 안전하게 붙이는 일** — 구조화 출력 강제, 출력 검증, 사람 개입 지점 설계 — 에 몰려 있습니다.
 
 > 이 저장소는 프로젝트별 **소스 코드와 설계 문서**를 한 곳에 모은 것입니다.
 > 각 프로젝트는 `projects/` 아래 같은 이름의 폴더에 있고, 원본 저장소 링크를 함께 표기했습니다.
@@ -202,6 +210,8 @@ flowchart LR
 
 **멀티캠퍼스 AI 에이전트 엔지니어 트랙 1회차** · 2026.07 ~ 2027.01 · 984시간
 
+**금융 AI 서비스 개발을 실습 축으로 삼는 과정**입니다. 매 단위기간의 미니프로젝트가 금융 도메인 과제로 구성되어 있습니다 — e-KYC 신분증 마스킹, PFM·로보어드바이저 대화형 에이전트, 금융 규제·약관 상담 RAG, 신용평가 및 이상탐지(FDS) 모델, 멀티에이전트 금융 서비스.
+
 | 단위기간 | 주제 |
 |:--|:--|
 | 1 | LLM · AI Agent 이해, 프롬프트 엔지니어링, n8n 노코드 워크플로우 |
@@ -210,6 +220,8 @@ flowchart LR
 | 4 | LLM · RAG 시스템 설계 (Chroma/FAISS, HyDE, Re-ranking), PyTorch · LoRA |
 | 5 | AI 프로덕션 개발 — FastAPI, Docker, AWS, CI/CD |
 | 6 | 종합 프로젝트 — 금융 AI 서비스 개발 (278시간) |
+
+> 진행 중인 과정입니다. 위 항목 중 완료된 단위기간의 결과물은 프로젝트 목록에 반영되어 있고, 이후 단위기간의 산출물은 완성되는 대로 추가됩니다.
 
 [![TIL](https://img.shields.io/badge/TIL_저장소-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/noviz-domino/TIL)
 
