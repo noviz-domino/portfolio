@@ -37,11 +37,15 @@ jobs:
           fi
 
           # keep_alive 테이블에서 한 행만 조회한다. 읽기 활동으로도 정지 타이머가 초기화된다.
-          # -w '%{http_code}' 로 상태 코드만 받아 응답 본문이 로그에 남지 않게 한다.
+          # 매번 같은 쿼리를 보내면 PostgREST/엣지 레이어에서 캐시되어 응답은 200이 와도
+          # 실제로는 DB까지 도달하지 않아 Supabase의 활동 감지에 안 잡힐 수 있다.
+          # _cb(cache buster) 파라미터로 매 요청을 서로 다르게 만들어 캐시를 우회한다.
           status=$(curl -s -o /dev/null -w '%{http_code}' \
             -H "apikey: ${SUPABASE_KEY}" \
             -H "Authorization: Bearer ${SUPABASE_KEY}" \
-            "${SUPABASE_URL}/rest/v1/keep_alive?select=id&limit=1")
+            -H "Cache-Control: no-cache" \
+            -H "Prefer: no-cache" \
+            "${SUPABASE_URL}/rest/v1/keep_alive?select=id&limit=1&_cb=$(date +%s)")
 
           echo "${{ matrix.name }} → HTTP ${status}"
 
