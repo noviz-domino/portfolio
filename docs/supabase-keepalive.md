@@ -65,3 +65,50 @@ GitHub 저장소 → **Actions** 탭 → `Supabase Keep-Alive` → **Run workflo
 
 - **Vercel 배포는 만료되지 않는다.** Hobby 플랜에 기간 제한이 없으므로 별도 조치가 필요 없다. 갱신이 필요한 건 Supabase뿐이다.
 - GitHub Actions는 저장소에 **60일간 활동이 없으면 스케줄 워크플로를 자동으로 비활성화**한다. 이 저장소는 프로젝트가 추가될 때마다 커밋이 생기므로 실무상 문제되지 않지만, 오래 손대지 않았다면 Actions 탭에서 활성 상태인지 확인한다.
+
+## 사고 기록 — 2026-08-31 실제로 두 프로젝트가 정지됐던 일
+
+3일마다 자동으로 핑을 보내고 있었는데도 `mealmate`, `go-eat` **두 프로젝트가 모두 실제로 일시정지됐다.** "자동으로 유지되게 만들어놨다"는 것과 "실제로 유지되고 있다"는 건 다른 문제라는 걸 확인한 사례라 남겨둔다.
+
+### 증상
+
+- GitHub Actions 실패 이메일 수신. workflow 로그를 보니 `curl`이 **exit code 6**(`Couldn't resolve host` — 호스트 이름 조회 자체가 실패)으로 즉시 종료됨. HTTP 상태 코드가 찍히기도 전에 죽은 것이라, 기존 문서의 "문제가 생겼을 때" 표에 있던 404/401/5xx 어느 것에도 안 걸림.
+- 라이브 데모(`mealmate-inky.vercel.app`)를 직접 열어보니 화면에 `TypeError: fetch failed`. GitHub Actions만의 문제가 아니라 **실제 서비스가 죽어 있었다.**
+- Supabase 대시보드에서 두 프로젝트 다 **"Project is paused"** 확인.
+
+### 원인 — 아직 완전히 규명되지는 않았지만 유력한 설명
+
+실행 이력을 시간순으로 보면 이상한 점이 있었다.
+
+| 날짜 | mealmate | go-eat |
+|---|---|---|
+| 8/22 | HTTP 200 | HTTP 200 |
+| 8/25 | HTTP 200 | **exit 6 (DNS 실패)** |
+| 8/28 | exit 6 | exit 6 |
+
+Supabase 공식 문서(`free-project-pausing`)는 "REST API를 통한 요청이면 SELECT도 활동으로 인정되고, 일주일에 며칠만 있어도 정지 안 된다"고 안내한다. 우리 워크플로는 3일마다 정확히 성공했으니 이 기준을 만족했어야 하는데도 정지됐다.
+
+가장 유력한 설명은 **캐싱**이다. 매번 완전히 동일한 쿼리(`select=id&limit=1`)를 보냈기 때문에, PostgREST나 엣지 캐시 레이어에서 응답이 캐시되어 **HTTP 200은 정상적으로 왔지만 실제로는 Postgres compute까지 도달하지 않았을 가능성**이 있다. 이러면 겉보기엔 "핑이 성공하고 있다"고 착각하기 쉽지만, Supabase의 활동 감지기 입장에서는 진짜 DB 활동이 없었던 것과 같다. (비슷한 문제를 다룬 커뮤니티 도구들도 정지 방지용 요청에 일부러 캐시를 피하는 파라미터를 섞어 쓰는 걸 확인했다.)
+
+두 프로젝트의 실패 시점이 3일 어긋난 것(go-eat이 먼저, mealmate가 나중)은 실제 마지막 "진짜" DB 접근 시점이 프로젝트마다 조금씩 달랐기 때문으로 추정된다.
+
+### 조치
+
+1. 대시보드에서 두 프로젝트 모두 수동 **Restore**
+2. `.github/workflows/supabase-keepalive.yml`에 캐시 우회 로직 추가
+
+```diff
+  status=$(curl -s -o /dev/null -w '%{http_code}' \
+    -H "apikey: ${SUPABASE_KEY}" \
+    -H "Authorization: Bearer ${SUPABASE_KEY}" \
++   -H "Cache-Control: no-cache" \
++   -H "Prefer: no-cache" \
++   -H "X-Cache-Bust: $(date +%s)" \
+    "${SUPABASE_URL}/rest/v1/keep_alive?select=id&limit=1")
+```
+
+**시행착오 하나**: 캐시버스터를 처음엔 쿼리스트링(`&_cb=$(date +%s)`)으로 넣었는데, PostgREST가 인식 못 하는 파라미터를 **존재하지 않는 컬럼 필터로 해석**해서 오히려 `HTTP 400`을 냈다. 그래서 응답 파싱에 영향 없는 **커스텀 헤더**(`X-Cache-Bust`)로 옮겨서 해결했다. REST API마다 "모르는 쿼리 파라미터"를 처리하는 방식이 다르다는 걸 실제로 겪은 사례.
+
+### 남은 확인 사항
+
+다음 자동 스케줄(3일 후)에서도 계속 성공하는지 지켜봐야 한다. 이번 수정으로도 다시 정지된다면, 캐싱이 아닌 다른 원인(예: 진짜로 매주 지정된 시점에 재검사가 도는 방식이라 SELECT 자체가 애초에 부족했을 가능성)을 의심해야 한다.
