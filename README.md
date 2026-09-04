@@ -19,7 +19,7 @@
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp; |
 |:--|:--|
 | **이름** | 김민석 (Kim Minseok) |
-| **목표** | AI 에이전트 엔지니어 — LLM 응용 서비스 개발 |
+| **목표** | AI 에이전트 엔지니어 - LLM 응용 서비스 개발 |
 | **관심 도메인** | 금융 AI (RAG 기반 규제·약관 상담, 이상탐지, 자산관리 에이전트) |
 | **현재** | 멀티캠퍼스 **AI 에이전트 엔지니어 트랙 1회차** 수강 중 |
 | **기간** | 2026.07 ~ 2027.01 · 984시간 |
@@ -32,7 +32,7 @@
 대표 프로젝트에서는 RAG 도입 효과를 평가셋 50건으로 측정해 **1차 응답 승인률 34% → 94%** 를 확인했습니다.
 
 아직 배우는 중이고, 트랙을 마치며 관심 분야를 좁혀가고 있습니다.
-지금까지의 작업은 **LLM을 실제 서비스에 안전하게 붙이는 일** — 구조화 출력 강제, 출력 검증, 사람 개입 지점 설계 — 에 몰려 있습니다.
+지금까지의 작업은 **LLM을 실제 서비스에 안전하게 붙이는 일** - 구조화 출력 강제, 출력 검증, 사람 개입 지점 설계 - 에 몰려 있습니다.
 
 > 이 저장소는 프로젝트별 **소스 코드와 설계 문서**를 한 곳에 모은 것입니다.
 > 각 프로젝트는 `projects/` 아래 같은 이름의 폴더에 있고, 원본 저장소 링크를 함께 표기했습니다.
@@ -41,7 +41,7 @@
 
 ## 대표 프로젝트
 
-### 1. replygate — 고객 문의 응대 자동화 (AI 초안 + 사람 승인)
+### 1. replygate - 고객 문의 응대 자동화 (AI 초안 + 사람 승인)
 
 ![n8n](https://img.shields.io/badge/n8n-EA4B71?style=flat-square&logo=n8n&logoColor=white)
 ![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
@@ -51,7 +51,7 @@
 
 **문제.** 고객 문의 답변에는 환불 수수료·배송 기한처럼 **틀리면 곧바로 분쟁이 되는 수치**가 들어갑니다. 그리고 LLM은 이런 수치를 그럴듯하게 지어냅니다. 그래서 "AI가 자동으로 답장하는 시스템"은 실무에 그대로 넣을 수 없습니다.
 
-**접근.** 자동 발송 대신 **AI 초안 → 사람 승인 → 발송** 구조로 설계하고, 정책 문서 70개 조항을 RAG로 검색해 근거 조항을 인용하게 했습니다. 핵심 주장은 이것입니다 — *AI를 빠르게 만드는 것보다, 통제 가능하게 만드는 것이 실무의 문제다.*
+**접근.** 자동 발송 대신 **AI 초안 → 사람 승인 → 발송** 구조로 설계하고, 정책 문서 70개 조항을 RAG로 검색해 근거 조항을 인용하게 했습니다. 핵심 주장은 이것입니다 - *AI를 빠르게 만드는 것보다, 통제 가능하게 만드는 것이 실무의 문제다.*
 
 ```mermaid
 flowchart LR
@@ -84,7 +84,7 @@ flowchart LR
 
 <br/>
 
-### 2. englishWordApp — 토익 단어 학습 앱 (Google Play 출시)
+### 2. englishWordApp - 토익 단어 학습 앱 (Google Play 출시)
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=flat-square&logo=kotlin&logoColor=white)
 ![Compose](https://img.shields.io/badge/Jetpack_Compose-4285F4?style=flat-square&logo=jetpackcompose&logoColor=white)
@@ -110,7 +110,7 @@ flowchart LR
 
 <br/>
 
-### 3. mealmate — 냉장고 재료 기반 AI 주간 식단 생성
+### 3. mealmate - 냉장고 재료 기반 AI 주간 식단 생성
 
 ![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)
@@ -136,7 +136,7 @@ flowchart LR
 
 <br/>
 
-### 4. n8n-finance-news-briefing — 금융 뉴스 자동 요약 브리핑
+### 4. n8n-finance-news-briefing - 금융 뉴스 자동 요약 브리핑
 
 ![n8n](https://img.shields.io/badge/n8n-EA4B71?style=flat-square&logo=n8n&logoColor=white)
 ![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
@@ -189,7 +189,7 @@ flowchart LR
 
 <br/>
 
-**go-eat** — 시골 맛집 기록. 사이드바의 "24곳 중 17곳 정복" 진행률은 필터와 무관하게 전체를 집계합니다.
+**go-eat** - 시골 맛집 기록. 사이드바의 "24곳 중 17곳 정복" 진행률은 필터와 무관하게 전체를 집계합니다.
 
 <img src="projects/go-eat/docs/screenshots/01-목록.png" width="640" />
 
@@ -197,7 +197,7 @@ flowchart LR
 |:--:|:--:|
 | <img src="projects/go-eat/docs/screenshots/02-상세.png" width="380" /> | <img src="projects/go-eat/docs/screenshots/04-모바일.png" width="190" /> |
 
-**cosmic-grazer** — 프레임워크 없이 단일 HTML 파일(2,925줄)로 만든 탄막 서바이버.
+**cosmic-grazer** - 프레임워크 없이 단일 HTML 파일(2,925줄)로 만든 탄막 서바이버.
 
 <img src="projects/cosmic-grazer/intro.png" width="480" />
 
@@ -259,16 +259,16 @@ flowchart LR
 
 **멀티캠퍼스 AI 에이전트 엔지니어 트랙 1회차** · 2026.07 ~ 2027.01 · 984시간
 
-**금융 AI 서비스 개발을 실습 축으로 삼는 과정**입니다. 매 단위기간의 미니프로젝트가 금융 도메인 과제로 구성되어 있습니다 — e-KYC 신분증 마스킹, PFM·로보어드바이저 대화형 에이전트, 금융 규제·약관 상담 RAG, 신용평가 및 이상탐지(FDS) 모델, 멀티에이전트 금융 서비스.
+**금융 AI 서비스 개발을 실습 축으로 삼는 과정**입니다. 매 단위기간의 미니프로젝트가 금융 도메인 과제로 구성되어 있습니다 - e-KYC 신분증 마스킹, PFM·로보어드바이저 대화형 에이전트, 금융 규제·약관 상담 RAG, 신용평가 및 이상탐지(FDS) 모델, 멀티에이전트 금융 서비스.
 
 | 단위기간 | 주제 |
 |:--|:--|
 | 1 | LLM · AI Agent 이해, 프롬프트 엔지니어링, n8n 노코드 워크플로우 |
 | 2 | Python · AI API 웹개발, LangChain (LCEL, Memory, LangSmith) |
-| 3 | Multi-Agent Orchestration — LangGraph, MCP, A2A |
+| 3 | Multi-Agent Orchestration - LangGraph, MCP, A2A |
 | 4 | LLM · RAG 시스템 설계 (Chroma/FAISS, HyDE, Re-ranking), PyTorch · LoRA |
-| 5 | AI 프로덕션 개발 — FastAPI, Docker, AWS, CI/CD |
-| 6 | 종합 프로젝트 — 금융 AI 서비스 개발 (278시간) |
+| 5 | AI 프로덕션 개발 - FastAPI, Docker, AWS, CI/CD |
+| 6 | 종합 프로젝트 - 금융 AI 서비스 개발 (278시간) |
 
 > 진행 중인 과정입니다. 위 항목 중 완료된 단위기간의 결과물은 프로젝트 목록에 반영되어 있고, 이후 단위기간의 산출물은 완성되는 대로 추가됩니다.
 

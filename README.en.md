@@ -19,7 +19,7 @@
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp; |
 |:--|:--|
 | **Name** | Kim Minseok (김민석) |
-| **Focus** | AI agent engineering — building applications on top of LLMs |
+| **Focus** | AI agent engineering - building applications on top of LLMs |
 | **Domain** | Financial AI (regulatory RAG, fraud detection, personal finance agents) |
 | **Currently** | Multicampus **AI Agent Engineer Track**, cohort 1 |
 | **Duration** | Jul 2026 – Jan 2027 · 984 hours |
@@ -29,7 +29,7 @@
 One Android app is live on Google Play with real users. Two web services are deployed and publicly reachable.
 In my main project, I measured the effect of adding RAG against a 50-case evaluation set: **first-pass approval rate went from 34% to 94%.**
 
-I am still early in my career and still narrowing my focus. So far my work has centered on **safely wiring LLMs into real products** — enforcing structured output, validating what the model returns, and designing where a human must stay in the loop.
+I am still early in my career and still narrowing my focus. So far my work has centered on **safely wiring LLMs into real products** - enforcing structured output, validating what the model returns, and designing where a human must stay in the loop.
 
 > This repository collects **source code and design documents** for each project.
 > Every project lives under `projects/` in a folder matching its original repository, with a link back to that repository.
@@ -38,7 +38,7 @@ I am still early in my career and still narrowing my focus. So far my work has c
 
 ## Featured Projects
 
-### 1. replygate — Customer support automation with human approval
+### 1. replygate - Customer support automation with human approval
 
 ![n8n](https://img.shields.io/badge/n8n-EA4B71?style=flat-square&logo=n8n&logoColor=white)
 ![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
@@ -46,13 +46,13 @@ I am still early in my career and still narrowing my focus. So far my work has c
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
 ![RAG](https://img.shields.io/badge/RAG-000000?style=flat-square)
 
-**Problem.** Customer support replies contain numbers that cause disputes when wrong — refund windows, shipping deadlines, fee thresholds. LLMs invent those numbers convincingly. So "an AI that answers customers automatically" cannot go straight into production.
+**Problem.** Customer support replies contain numbers that cause disputes when wrong - refund windows, shipping deadlines, fee thresholds. LLMs invent those numbers convincingly. So "an AI that answers customers automatically" cannot go straight into production.
 
 **Approach.** Instead of auto-sending, I designed it as **AI draft → human approval → send**, with 70 policy clauses retrieved via RAG so every draft cites its source. The thesis: *making an AI controllable matters more than making it fast.*
 
 <img src="projects/replygate/docs/screenshots/텔레그램-정책충돌-감지.png" alt="Telegram approval card flagging a conflict between the operator's instruction and policy" width="420" />
 
-Here the operator asked to state free shipping starts at ₩30,000, but the policy document says ₩50,000. The system **does not follow the instruction** — it surfaces the conflict and leaves the judgment to the human.
+Here the operator asked to state free shipping starts at ₩30,000, but the policy document says ₩50,000. The system **does not follow the instruction** - it surfaces the conflict and leaves the judgment to the human.
 
 ```mermaid
 flowchart LR
@@ -75,13 +75,13 @@ flowchart LR
 
 The evaluation set deliberately includes **5 trap cases with no answer in the policy documents**, to check whether the system admits what it does not know.
 
-**A failure I kept in the record.** Sentiment classification never once picked the `neutral` class — 0 out of 20. Redefining the class did not help. The actual cause was structural: **sentiment and "needs lookup" are orthogonal axes**, and I had collapsed them into one. After separating them, accuracy reached 98% / 92%. The intermediate version was a fake improvement that only moved labels around, and I left that assessment in the development log rather than quietly deleting it.
+**A failure I kept in the record.** Sentiment classification never once picked the `neutral` class - 0 out of 20. Redefining the class did not help. The actual cause was structural: **sentiment and "needs lookup" are orthogonal axes**, and I had collapsed them into one. After separating them, accuracy reached 98% / 92%. The intermediate version was a fake improvement that only moved labels around, and I left that assessment in the development log rather than quietly deleting it.
 
 📂 [Code](projects/replygate/) · 📄 [Evaluation design](projects/replygate/eval/) · 🔗 [Original repo](https://github.com/noviz-domino/replygate)
 
 <br/>
 
-### 2. englishWordApp — TOEIC vocabulary app, live on Google Play
+### 2. englishWordApp - TOEIC vocabulary app, live on Google Play
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=flat-square&logo=kotlin&logoColor=white)
 ![Compose](https://img.shields.io/badge/Jetpack_Compose-4285F4?style=flat-square&logo=jetpackcompose&logoColor=white)
@@ -97,9 +97,9 @@ The evaluation set deliberately includes **5 trap cases with no answer in the po
 
 **Approach.** I rewrote it in Kotlin + Jetpack Compose.
 
-- **CSV parsing** — reimplemented to **RFC 4180**: commas inside quoted fields are not separators, and escaped `""` resolves to a literal quote
-- **Quiz logic** — extracted into pure functions and pinned with **25 JUnit tests**
-- **State** — `SavedStateHandle` restores study position across configuration changes *and* process death
+- **CSV parsing** - reimplemented to **RFC 4180**: commas inside quoted fields are not separators, and escaped `""` resolves to a literal quote
+- **Quiz logic** - extracted into pure functions and pinned with **25 JUnit tests**
+- **State** - `SavedStateHandle` restores study position across configuration changes *and* process death
 
 | | |
 |:--|:--|
@@ -111,7 +111,7 @@ The evaluation set deliberately includes **5 trap cases with no answer in the po
 
 <br/>
 
-### 3. mealmate — AI weekly meal planning from what's in your fridge
+### 3. mealmate - AI weekly meal planning from what's in your fridge
 
 ![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)
@@ -147,7 +147,7 @@ Allergy checking is not a plain string match. Someone avoiding milk must not be 
 
 <br/>
 
-### 4. n8n-finance-news-briefing — Automated financial news digest
+### 4. n8n-finance-news-briefing - Automated financial news digest
 
 ![n8n](https://img.shields.io/badge/n8n-EA4B71?style=flat-square&logo=n8n&logoColor=white)
 ![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
@@ -227,11 +227,11 @@ flowchart LR
 
 ## Working with AI Tools
 
-I use AI coding tools, and I treat them as tools. I decide what to build, verify the result, and own it when it is wrong — which is why I do not list them as commit co-authors.
+I use AI coding tools, and I treat them as tools. I decide what to build, verify the result, and own it when it is wrong - which is why I do not list them as commit co-authors.
 
 Running several of them across a project does create real management problems, so I built rules for it: a single source of truth for instructions, a handoff board for uncommitted work, verification commands recorded in commit messages, and a growing checklist of mistakes that recurred.
 
-📄 [Details](docs/agent-workflow.md) — including what I deliberately did **not** delegate.
+📄 [Details](docs/agent-workflow.md) - including what I deliberately did **not** delegate.
 
 ---
 
@@ -239,16 +239,16 @@ Running several of them across a project does create real management problems, s
 
 **Multicampus AI Agent Engineer Track, Cohort 1** · Jul 2026 – Jan 2027 · 984 hours
 
-The program is built around **financial AI services**. Each module's project targets a finance domain problem — e-KYC ID masking, personal finance and robo-advisor agents, regulatory and terms-of-service RAG, credit scoring and fraud detection, and multi-agent financial services.
+The program is built around **financial AI services**. Each module's project targets a finance domain problem - e-KYC ID masking, personal finance and robo-advisor agents, regulatory and terms-of-service RAG, credit scoring and fraud detection, and multi-agent financial services.
 
 | Module | Topics |
 |:--|:--|
 | 1 | LLM & AI agent fundamentals, prompt engineering, n8n workflows |
 | 2 | Python & AI API web development, LangChain (LCEL, Memory, LangSmith) |
-| 3 | Multi-agent orchestration — LangGraph, MCP, A2A |
+| 3 | Multi-agent orchestration - LangGraph, MCP, A2A |
 | 4 | LLM & RAG system design (Chroma/FAISS, HyDE, re-ranking), PyTorch, LoRA |
-| 5 | Production AI — FastAPI, Docker, AWS, CI/CD |
-| 6 | Capstone — financial AI service (278 hours) |
+| 5 | Production AI - FastAPI, Docker, AWS, CI/CD |
+| 6 | Capstone - financial AI service (278 hours) |
 
 > This program is in progress. Completed modules are reflected in the project list above; later deliverables will be added as they are finished.
 
