@@ -173,37 +173,16 @@ flowchart LR
 
 ## 전체 프로젝트
 
-| 프로젝트 | 한 줄 설명 | 주요 스택 | 링크 |
-|:--|:--|:--|:--|
-| **replygate** | AI 초안 + 사람 승인 CS 응대 자동화 | n8n · Gemini · RAG · FastAPI | [코드](projects/replygate/) |
-| **englishWordApp** | 토익 단어 학습 앱 (Play 출시) | Kotlin · Compose | [코드](projects/englishWordApp/) · [스토어](https://play.google.com/store/apps/details?id=com.voca.englishwordapp) |
-| **mealmate** | AI 주간 식단 생성 | Next.js · Supabase · Gemini | [코드](projects/mealmate/) · [데모](https://mealmate-inky.vercel.app) |
-| **n8n-finance-news-briefing** | 금융 뉴스 자동 브리핑 | n8n · Gemini · Discord | [코드](projects/n8n-finance-news-briefing/) |
-| **n8n-voc-analysis-agent** | 고객 VOC 자동 분류·긴급 알림 | n8n · Gemini · Sheets | [코드](projects/n8n-voc-analysis-agent/) |
-| **go-eat** | 시골 맛집 기록 웹앱 (8시간 제약 개발) | Next.js · Supabase | [코드](projects/go-eat/) · [데모](https://go-eat-noviz.vercel.app) |
-| **cosmic-grazer** | 단일 파일 탄막 서바이버 게임 | Vanilla JS · Canvas2D | [코드](projects/cosmic-grazer/) · [플레이](https://noviz-domino.github.io/cosmic-grazer/) |
-| **god-of-diplomacy** | Gemini 기반 정치·외교 텍스트 RPG | FastAPI · Gemini | [코드](projects/god-of-diplomacy/) |
-
-<details>
-<summary><b>그 외 프로젝트 화면 보기</b></summary>
-
-<br/>
-
-**go-eat** - 시골 맛집 기록. 사이드바의 "24곳 중 17곳 정복" 진행률은 필터와 무관하게 전체를 집계합니다.
-
-<img src="projects/go-eat/docs/screenshots/01-목록.png" width="640" />
-
-| 상세 | 모바일 |
-|:--:|:--:|
-| <img src="projects/go-eat/docs/screenshots/02-상세.png" width="380" /> | <img src="projects/go-eat/docs/screenshots/04-모바일.png" width="190" /> |
-
-직접 눌러보려면 데모 계정을 쓰면 됩니다. 이메일 `test1@goeat.test`, 비밀번호 `test1234`.
-
-**cosmic-grazer** - 프레임워크 없이 단일 HTML 파일(2,925줄)로 만든 탄막 서바이버.
-
-<img src="projects/cosmic-grazer/intro.png" width="480" />
-
-</details>
+| 프로젝트 | 한 줄 설명 | 주요 스택 | 화면 | 링크 |
+|:--|:--|:--|:--:|:--|
+| **replygate** | AI 초안 + 사람 승인 CS 응대 자동화 | n8n · Gemini · RAG · FastAPI | 위 대표 프로젝트 참고 | [코드](projects/replygate/) |
+| **englishWordApp** | 토익 단어 학습 앱 (Play 출시) | Kotlin · Compose | 위 대표 프로젝트 참고 | [코드](projects/englishWordApp/) · [스토어](https://play.google.com/store/apps/details?id=com.voca.englishwordapp) |
+| **mealmate** | AI 주간 식단 생성 | Next.js · Supabase · Gemini | 위 대표 프로젝트 참고 | [코드](projects/mealmate/) · [데모](https://mealmate-inky.vercel.app) |
+| **n8n-finance-news-briefing** | 금융 뉴스 자동 브리핑 | n8n · Gemini · Discord | 위 대표 프로젝트 참고 | [코드](projects/n8n-finance-news-briefing/) |
+| **n8n-voc-analysis-agent** | 고객 VOC 자동 분류·긴급 알림 | n8n · Gemini · Sheets | - | [코드](projects/n8n-voc-analysis-agent/) |
+| **go-eat** | 시골 맛집 기록 웹앱 (8시간 제약 개발) | Next.js · Supabase | <details><summary>보기</summary><br/><img src="projects/go-eat/docs/screenshots/01-목록.png" width="360" /><br/><img src="projects/go-eat/docs/screenshots/04-모바일.png" width="160" /></details> | [코드](projects/go-eat/) · [데모](https://go-eat-noviz.vercel.app) (`test1@goeat.test`/`test1234`) |
+| **cosmic-grazer** | 단일 파일 탄막 서바이버 게임 | Vanilla JS · Canvas2D | <details><summary>보기</summary><br/><img src="projects/cosmic-grazer/intro.png" width="300" /></details> | [코드](projects/cosmic-grazer/) · [플레이](https://noviz-domino.github.io/cosmic-grazer/) |
+| **god-of-diplomacy** | Gemini 기반 정치·외교 텍스트 RPG | FastAPI · Gemini | - | [코드](projects/god-of-diplomacy/) |
 
 ---
 
