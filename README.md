@@ -173,16 +173,92 @@ flowchart LR
 
 ## 전체 프로젝트
 
-| 프로젝트 | 한 줄 설명 | 주요 스택 | 화면 | 링크 |
-|:--|:--|:--|:--:|:--|
-| **replygate** | AI 초안 + 사람 승인 CS 응대 자동화 | n8n · Gemini · RAG · FastAPI | 위 대표 프로젝트 참고 | [코드](projects/replygate/) |
-| **englishWordApp** | 토익 단어 학습 앱 (Play 출시) | Kotlin · Compose | 위 대표 프로젝트 참고 | [코드](projects/englishWordApp/) · [스토어](https://play.google.com/store/apps/details?id=com.voca.englishwordapp) |
-| **mealmate** | AI 주간 식단 생성 | Next.js · Supabase · Gemini | 위 대표 프로젝트 참고 | [코드](projects/mealmate/) · [데모](https://mealmate-inky.vercel.app) |
-| **n8n-finance-news-briefing** | 금융 뉴스 자동 브리핑 | n8n · Gemini · Discord | 위 대표 프로젝트 참고 | [코드](projects/n8n-finance-news-briefing/) |
-| **n8n-voc-analysis-agent** | 고객 VOC 자동 분류·긴급 알림 | n8n · Gemini · Sheets | - | [코드](projects/n8n-voc-analysis-agent/) |
-| **go-eat** | 시골 맛집 기록 웹앱 (8시간 제약 개발) | Next.js · Supabase | <details><summary>보기</summary><br/><img src="projects/go-eat/docs/screenshots/01-목록.png" width="360" /><br/><img src="projects/go-eat/docs/screenshots/04-모바일.png" width="160" /></details> | [코드](projects/go-eat/) · [데모](https://go-eat-noviz.vercel.app) (`test1@goeat.test`/`test1234`) |
-| **cosmic-grazer** | 단일 파일 탄막 서바이버 게임 | Vanilla JS · Canvas2D | <details><summary>보기</summary><br/><img src="projects/cosmic-grazer/intro.png" width="300" /></details> | [코드](projects/cosmic-grazer/) · [플레이](https://noviz-domino.github.io/cosmic-grazer/) |
-| **god-of-diplomacy** | Gemini 기반 정치·외교 텍스트 RPG | FastAPI · Gemini | - | [코드](projects/god-of-diplomacy/) |
+<table>
+<thead>
+<tr><th>프로젝트</th><th>한 줄 설명</th><th>주요 스택</th><th>링크</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td><b>replygate</b></td>
+<td>AI 초안 + 사람 승인 CS 응대 자동화</td>
+<td>n8n · Gemini · RAG · FastAPI</td>
+<td><a href="projects/replygate/">코드</a></td>
+</tr>
+
+<tr>
+<td><b>englishWordApp</b></td>
+<td>토익 단어 학습 앱 (Play 출시)</td>
+<td>Kotlin · Compose</td>
+<td><a href="projects/englishWordApp/">코드</a> · <a href="https://play.google.com/store/apps/details?id=com.voca.englishwordapp">스토어</a></td>
+</tr>
+
+<tr>
+<td><b>mealmate</b></td>
+<td>AI 주간 식단 생성</td>
+<td>Next.js · Supabase · Gemini</td>
+<td><a href="projects/mealmate/">코드</a> · <a href="https://mealmate-inky.vercel.app">데모</a></td>
+</tr>
+
+<tr>
+<td><b>n8n-finance-news-briefing</b></td>
+<td>금융 뉴스 자동 브리핑</td>
+<td>n8n · Gemini · Discord</td>
+<td><a href="projects/n8n-finance-news-briefing/">코드</a></td>
+</tr>
+
+<tr>
+<td><b>n8n-voc-analysis-agent</b></td>
+<td>고객 VOC 자동 분류·긴급 알림</td>
+<td>n8n · Gemini · Sheets</td>
+<td><a href="projects/n8n-voc-analysis-agent/">코드</a></td>
+</tr>
+
+<tr>
+<td><b>go-eat</b></td>
+<td>시골 맛집 기록 웹앱 (8시간 제약 개발)</td>
+<td>Next.js · Supabase</td>
+<td><a href="projects/go-eat/">코드</a> · <a href="https://go-eat-noviz.vercel.app">데모</a> (<code>test1@goeat.test</code>/<code>test1234</code>)</td>
+</tr>
+<tr>
+<td colspan="4">
+<details>
+<summary><b>go-eat 화면 보기</b></summary>
+<br/>
+<img src="projects/go-eat/docs/screenshots/01-목록.png" width="100%" />
+<br/>
+<img src="projects/go-eat/docs/screenshots/04-모바일.png" width="260" />
+</details>
+</td>
+</tr>
+
+<tr>
+<td><b>cosmic-grazer</b></td>
+<td>단일 파일 탄막 서바이버 게임</td>
+<td>Vanilla JS · Canvas2D</td>
+<td><a href="projects/cosmic-grazer/">코드</a> · <a href="https://noviz-domino.github.io/cosmic-grazer/">플레이</a></td>
+</tr>
+<tr>
+<td colspan="4">
+<details>
+<summary><b>cosmic-grazer 화면 보기</b></summary>
+<br/>
+<img src="projects/cosmic-grazer/intro.png" width="100%" />
+</details>
+</td>
+</tr>
+
+<tr>
+<td><b>god-of-diplomacy</b></td>
+<td>Gemini 기반 정치·외교 텍스트 RPG</td>
+<td>FastAPI · Gemini</td>
+<td><a href="projects/god-of-diplomacy/">코드</a></td>
+</tr>
+
+</tbody>
+</table>
+
+> replygate · englishWordApp · mealmate · n8n-finance-news-briefing의 화면은 위 대표 프로젝트 섹션에 있습니다.
 
 ---
 
