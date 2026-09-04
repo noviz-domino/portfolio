@@ -197,6 +197,8 @@ flowchart LR
 |:--:|:--:|
 | <img src="projects/go-eat/docs/screenshots/02-상세.png" width="380" /> | <img src="projects/go-eat/docs/screenshots/04-모바일.png" width="190" /> |
 
+직접 눌러보려면 데모 계정을 쓰면 됩니다. 이메일 `test1@goeat.test`, 비밀번호 `test1234`.
+
 **cosmic-grazer** - 프레임워크 없이 단일 HTML 파일(2,925줄)로 만든 탄막 서바이버.
 
 <img src="projects/cosmic-grazer/intro.png" width="480" />
