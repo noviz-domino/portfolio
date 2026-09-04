@@ -181,16 +181,92 @@ flowchart LR
 
 ## All Projects
 
-| Project | Description | Stack | Links |
-|:--|:--|:--|:--|
-| **replygate** | Customer support automation with human approval | n8n · Gemini · RAG · FastAPI | [code](projects/replygate/) |
-| **englishWordApp** | TOEIC vocabulary app (on Google Play) | Kotlin · Compose | [code](projects/englishWordApp/) · [store](https://play.google.com/store/apps/details?id=com.voca.englishwordapp) |
-| **mealmate** | AI weekly meal planning | Next.js · Supabase · Gemini | [code](projects/mealmate/) · [demo](https://mealmate-inky.vercel.app) |
-| **n8n-finance-news-briefing** | Automated financial news digest | n8n · Gemini · Discord | [code](projects/n8n-finance-news-briefing/) |
-| **n8n-voc-analysis-agent** | Customer VOC triage with urgent alerts | n8n · Gemini · Sheets | [code](projects/n8n-voc-analysis-agent/) |
-| **go-eat** | Restaurant journal for rural areas (8-hour build) | Next.js · Supabase | [code](projects/go-eat/) · [demo](https://go-eat-noviz.vercel.app) |
-| **cosmic-grazer** | Single-file bullet-hell survivor game | Vanilla JS · Canvas2D | [code](projects/cosmic-grazer/) · [play](https://noviz-domino.github.io/cosmic-grazer/) |
-| **god-of-diplomacy** | Gemini-driven political text RPG | FastAPI · Gemini | [code](projects/god-of-diplomacy/) |
+<table>
+<thead>
+<tr><th>Project</th><th>Description</th><th>Stack</th><th>Links</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td><b>replygate</b></td>
+<td>Customer support automation with human approval</td>
+<td>n8n · Gemini · RAG · FastAPI</td>
+<td><a href="projects/replygate/">code</a></td>
+</tr>
+
+<tr>
+<td><b>englishWordApp</b></td>
+<td>TOEIC vocabulary app (on Google Play)</td>
+<td>Kotlin · Compose</td>
+<td><a href="projects/englishWordApp/">code</a> · <a href="https://play.google.com/store/apps/details?id=com.voca.englishwordapp">store</a></td>
+</tr>
+
+<tr>
+<td><b>mealmate</b></td>
+<td>AI weekly meal planning</td>
+<td>Next.js · Supabase · Gemini</td>
+<td><a href="projects/mealmate/">code</a> · <a href="https://mealmate-inky.vercel.app">demo</a></td>
+</tr>
+
+<tr>
+<td><b>n8n-finance-news-briefing</b></td>
+<td>Automated financial news digest</td>
+<td>n8n · Gemini · Discord</td>
+<td><a href="projects/n8n-finance-news-briefing/">code</a></td>
+</tr>
+
+<tr>
+<td><b>n8n-voc-analysis-agent</b></td>
+<td>Customer VOC triage with urgent alerts</td>
+<td>n8n · Gemini · Sheets</td>
+<td><a href="projects/n8n-voc-analysis-agent/">code</a></td>
+</tr>
+
+<tr>
+<td><b>go-eat</b></td>
+<td>Restaurant journal for rural areas (8-hour build)</td>
+<td>Next.js · Supabase</td>
+<td><a href="projects/go-eat/">code</a> · <a href="https://go-eat-noviz.vercel.app">demo</a> (<code>test1@goeat.test</code>/<code>test1234</code>)</td>
+</tr>
+<tr>
+<td colspan="4">
+<details>
+<summary><b>See go-eat screens</b></summary>
+<br/>
+<img src="projects/go-eat/docs/screenshots/01-목록.png" width="100%" />
+<br/>
+<img src="projects/go-eat/docs/screenshots/04-모바일.png" width="260" />
+</details>
+</td>
+</tr>
+
+<tr>
+<td><b>cosmic-grazer</b></td>
+<td>Single-file bullet-hell survivor game</td>
+<td>Vanilla JS · Canvas2D</td>
+<td><a href="projects/cosmic-grazer/">code</a> · <a href="https://noviz-domino.github.io/cosmic-grazer/">play</a></td>
+</tr>
+<tr>
+<td colspan="4">
+<details>
+<summary><b>See cosmic-grazer screen</b></summary>
+<br/>
+<img src="projects/cosmic-grazer/intro.png" width="100%" />
+</details>
+</td>
+</tr>
+
+<tr>
+<td><b>god-of-diplomacy</b></td>
+<td>Gemini-driven political text RPG</td>
+<td>FastAPI · Gemini</td>
+<td><a href="projects/god-of-diplomacy/">code</a></td>
+</tr>
+
+</tbody>
+</table>
+
+> Screens for replygate, englishWordApp, mealmate, and n8n-finance-news-briefing are in the Featured Projects section above.
 
 ---
 
