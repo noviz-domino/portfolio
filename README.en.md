@@ -145,6 +145,8 @@ Allergy checking is not a plain string match. Someone avoiding milk must not be 
 
 🔗 [Live demo](https://mealmate-inky.vercel.app) · 📂 [Code](projects/mealmate/) · 🔗 [Original repo](https://github.com/noviz-domino/mealmate)
 
+*The demo may be paused on the free tier. The screenshots above show the actual screens.*
+
 <br/>
 
 ### 4. n8n-finance-news-briefing - Automated financial news digest
@@ -267,6 +269,9 @@ flowchart LR
 </table>
 
 > Screens for replygate, englishWordApp, mealmate, and n8n-finance-news-briefing are in the Featured Projects section above.
+
+> `mealmate` and `go-eat` run on Supabase's free tier, so the live demos may be paused.
+> If a demo is down, the screenshots in each project show the same screens. ([how it is kept alive](docs/supabase-keepalive.md))
 
 ---
 

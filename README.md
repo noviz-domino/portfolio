@@ -134,6 +134,8 @@ flowchart LR
 
 🔗 [라이브 데모](https://mealmate-inky.vercel.app) · 📂 [코드 보기](projects/mealmate/) · 🔗 [원본 저장소](https://github.com/noviz-domino/mealmate)
 
+*무료 플랜이라 데모가 일시정지되어 있을 수 있습니다. 위 스크린샷이 실제 화면입니다.*
+
 <br/>
 
 ### 4. n8n-finance-news-briefing - 금융 뉴스 자동 요약 브리핑
@@ -259,6 +261,9 @@ flowchart LR
 </table>
 
 > replygate · englishWordApp · mealmate · n8n-finance-news-briefing의 화면은 위 대표 프로젝트 섹션에 있습니다.
+
+> `mealmate`와 `go-eat`은 Supabase 무료 플랜을 쓰기 때문에 데모가 일시정지되어 있을 수 있습니다.
+> 그럴 때는 각 프로젝트의 스크린샷으로 화면을 확인하실 수 있습니다. ([유지 방법](docs/supabase-keepalive.md))
 
 ---
 

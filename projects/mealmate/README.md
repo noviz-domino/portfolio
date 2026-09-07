@@ -4,6 +4,9 @@
 
 [![라이브 데모](https://img.shields.io/badge/라이브_데모-mealmate--inky.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://mealmate-inky.vercel.app)
 
+> Supabase 무료 플랜이라 데모가 일시정지되어 있을 수 있습니다. 그럴 때는 아래 화면 캡처를 참고해주세요.
+> 유지 방법은 [라이브 데모 유지](docs/라이브데모_유지.md)에 정리해두었습니다.
+
 ![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
