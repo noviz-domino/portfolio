@@ -1,13 +1,20 @@
-# Supabase 무료 플랜은 7일간 DB 활동이 없으면 프로젝트를 일시정지시킨다.
-# 정지되면 대시보드에서 수동으로 재개해야 하고, 그동안 라이브 데모가 죽는다.
-# 포트폴리오 데모가 채용 검토 중에 멈추는 일이 없도록 3일마다 가벼운 조회를 보낸다.
+# Supabase 무료 플랜은 DB 활동이 부족하면 프로젝트를 자동으로 일시정지시킨다.
+# 정지되면 대시보드에서 손으로 재개할 때까지 앱 전체가 동작하지 않는다.
+# 포트폴리오 데모가 채용 검토 중에 멈추는 일이 없도록 매일 쓰기 요청을 보낸다.
+#
+# 2026-09-07 개편: 읽기(SELECT)만 보내던 방식으로 두 차례 정지됐다.
+# HTTP 200을 받고 두 시간 뒤에 정지 통보가 온 적이 있어, 읽기는 활동으로
+# 인정되지 않는다고 판단했다. 그래서 세 가지를 바꿨다.
+#   1. 읽기 대신 keep_alive.last_ping 을 갱신하는 쓰기(PATCH)로 전환
+#   2. 실행 주기를 3일에서 매일로 (공식 문서가 "매일 몇 건"을 권장한다)
+#   3. 응답 코드만 믿지 않고, 값이 실제로 바뀌었는지 확인하는 단계 추가
 name: Supabase Keep-Alive
 
 on:
   schedule:
-    # 3일마다 00:17 UTC. 정각을 피한 건 GitHub Actions가 정각에 몰려
-    # 실행이 지연되거나 누락되는 경우가 있기 때문이다.
-    - cron: "17 0 */3 * *"
+    # 매일 00:17 UTC (한국 시간 09:17). 정각을 피한 건 GitHub Actions가
+    # 정각에 실행이 몰려 지연되거나 누락되는 경우가 있기 때문이다.
+    - cron: "17 0 * * *"
   workflow_dispatch: # 수동 실행용
 
 jobs:
@@ -36,25 +43,55 @@ jobs:
             exit 1
           fi
 
-          # keep_alive 테이블에서 한 행만 조회한다. 읽기 활동으로도 정지 타이머가 초기화된다.
-          # 매번 같은 쿼리를 보내면 PostgREST/엣지 레이어에서 캐시되어 응답은 200이 와도
-          # 실제로는 DB까지 도달하지 않아 Supabase의 활동 감지에 안 잡힐 수 있다.
-          # 쿼리스트링에 캐시버스터를 넣으면 PostgREST가 존재하지 않는 컬럼 필터로 오해해 400을 낸다.
-          # 그래서 응답에 영향 없는 커스텀 헤더로 매 요청을 다르게 만든다.
-          status=$(curl -s -o /dev/null -w '%{http_code}' \
+          # 지금 시각을 보내고, 나중에 이 값이 DB에 그대로 들어갔는지 대조한다.
+          now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          # keep_alive 테이블에서 id=1 한 행의 last_ping 을 갱신한다.
+          # PostgREST에서 갱신은 PATCH 메서드이고, 대상을 지정하는 필터(id=eq.1)가
+          # 없으면 전체 행 갱신으로 보고 거부한다.
+          # Prefer: return=representation 을 주면 갱신된 행이 응답 본문으로 돌아와서
+          # 따로 조회하지 않고도 결과를 검증할 수 있다.
+          response=$(curl -s -w '\n%{http_code}' -X PATCH \
             -H "apikey: ${SUPABASE_KEY}" \
             -H "Authorization: Bearer ${SUPABASE_KEY}" \
-            -H "Cache-Control: no-cache" \
-            -H "Prefer: no-cache" \
-            -H "X-Cache-Bust: $(date +%s)" \
-            "${SUPABASE_URL}/rest/v1/keep_alive?select=id&limit=1")
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d "{\"last_ping\":\"${now}\"}" \
+            "${SUPABASE_URL}/rest/v1/keep_alive?id=eq.1")
+
+          status=$(printf '%s' "${response}" | tail -n1)  # 마지막 줄이 HTTP 코드
+          body=$(printf '%s' "${response}" | sed '$d')    # 그 앞까지가 응답 본문
 
           echo "${{ matrix.name }} → HTTP ${status}"
 
           case "${status}" in
-            200) echo "정상. 프로젝트가 활성 상태입니다." ;;
-            404) echo "::error::keep_alive 테이블이 없습니다. README의 SQL을 실행하세요." ; exit 1 ;;
-            401|403) echo "::error::인증 실패. anon 키 또는 RLS 정책을 확인하세요." ; exit 1 ;;
-            5*)  echo "::error::프로젝트가 이미 일시정지되었을 수 있습니다. 대시보드에서 재개하세요." ; exit 1 ;;
-            *)   echo "::error::예상치 못한 응답: ${status}" ; exit 1 ;;
+            200) : ;; # 코드는 통과. 내용은 아래에서 따로 검증한다
+            404) echo "::error::keep_alive 테이블이 없습니다. docs/supabase-keepalive.md의 SQL을 실행하세요." ; exit 1 ;;
+            401|403) echo "::error::인증 실패. anon 키 또는 UPDATE 정책을 확인하세요." ; exit 1 ;;
+            5*) echo "::error::프로젝트가 이미 정지되었을 수 있습니다. 대시보드에서 재개하세요." ; exit 1 ;;
+            *) echo "::error::예상치 못한 응답: ${status}" ; exit 1 ;;
           esac
+
+          # 여기가 이번 개편의 핵심이다.
+          # RLS 정책 때문에 갱신이 막히면 PostgREST는 오류가 아니라 200과 빈 배열을 돌려준다.
+          # "갱신할 수 있는 행이 0개였다"를 정상 처리로 보기 때문이다.
+          # 응답 코드만 보면 성공으로 착각하는데, 지난 두 번의 정지가 정확히
+          # 이런 "성공처럼 보이는 실패"였다.
+          updated=$(printf '%s' "${body}" | jq 'length')
+          if [ "${updated}" -eq 0 ]; then
+            echo "::error::갱신된 행이 없습니다. id=1 행이 있는지, UPDATE 정책이 있는지 확인하세요."
+            exit 1
+          fi
+
+          # 보낸 시각과 DB에 저장된 시각을 초 단위까지 대조한다.
+          # 보낸 값은 2026-09-07T07:51:47Z, 돌아온 값은 2026-09-07T07:51:47+00:00 형태로
+          # 표기가 달라서 앞 19자(초까지)만 잘라 비교한다.
+          saved=$(printf '%s' "${body}" | jq -r '.[0].last_ping' | cut -c1-19)
+          sent=$(printf '%s' "${now}" | cut -c1-19)
+
+          if [ "${saved}" != "${sent}" ]; then
+            echo "::error::쓰기가 반영되지 않았습니다. 보낸 값 ${sent}, 저장된 값 ${saved}"
+            exit 1
+          fi
+
+          echo "정상. last_ping 이 ${saved} 로 갱신되었습니다."
