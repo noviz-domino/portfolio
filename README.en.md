@@ -109,7 +109,7 @@ flowchart LR
 | Ledger integrity after the scenarios | **10 / 10** |
 | Task-code unit checks (no API) | 31 / 31 |
 
-**Failures I kept in the record.** 26 design changes are logged with their reasons. Two of them:
+**Failures I kept in the record.** 27 design changes are logged with their reasons. Two of them:
 
 - Even with *"account to carry over: none"* written in the prompt, the LLM filled in a source account. **It passed once and failed once - a prompt is a probability.** So the rule no longer stops at telling the model; **code validates** the LLM's answer.
 - While using it myself I found the LLM **inventing** the source account for *"move ₩100,000 to savings"*. Code cannot tell "understood by meaning" from "made up", so I restricted **only the high-risk field - the source account** - to names the user said, carried over, or picked from shown candidates.
