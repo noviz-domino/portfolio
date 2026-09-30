@@ -1,6 +1,6 @@
 <div align="center">
 
-[![Visit Portfolio Site](https://img.shields.io/badge/Visit_Portfolio_Site-noviz--domino.github.io-1F2328?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=0F766E)](https://noviz-domino.github.io/)
+[![Visit Portfolio Site](https://img.shields.io/badge/Visit_Portfolio_Site-noviz--domino.github.io-14B8A6?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=0F766E)](https://noviz-domino.github.io/)
 
 # Kim Minseok
 
