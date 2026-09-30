@@ -59,7 +59,7 @@ Instead of "it got better", I keep numbers from evaluation sets and scenarios - 
 
 | | |
 |:--|:--|
-| **Now** | **Multicampus AI Agent Engineer Track, Cohort 1** (Jul 2026 – Jan 2027 · 984 hours) |
+| **Now** | **Samsung Multicampus AI Agent Engineer Track, Cohort 1** (Jul 2026 – Jan 2027 · 984 hours) |
 | **Domain interest** | Financial AI - RAG for regulations and terms, fraud detection, asset-management agents |
 | **Built so far** | LangGraph agents · RAG · n8n automation · Next.js web services · an Android app · a browser game |
 
@@ -376,7 +376,7 @@ Running several of them across a project does create real management problems, s
 
 ## Training
 
-**Multicampus AI Agent Engineer Track, Cohort 1** · Jul 2026 – Jan 2027 · 984 hours
+**Samsung Multicampus AI Agent Engineer Track, Cohort 1** · Jul 2026 – Jan 2027 · 984 hours
 
 The program is built around **financial AI services**. Each module's project targets a finance domain problem - e-KYC ID masking, personal finance and robo-advisor agents, regulatory and terms-of-service RAG, credit scoring and fraud detection, and multi-agent financial services.
 
