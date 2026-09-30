@@ -394,7 +394,7 @@ $env:REPLYGATE_SHEET_ID="<시트 ID>"; $env:REPLYGATE_SA_KEY="dashboard/keys/sa-
 
 | 항목 | 값 |
 |---|---|
-| 스프레드시트 ID | `1j3_T7KfrUBZr9wqSiKjEXDN8LBr1D2GaMwy4909eObI` |
+| 스프레드시트 ID | `<SHEET_ID>` |
 | 시트 탭 | `문의` / `조항` / `평가셋` |
 | 텔레그램 봇 | `@domino_CX_Assistant_bot` (이 프로젝트 전용) |
 | n8n 자격증명 | `구글 시트 미니프로젝트용`, `Google Sheets Trigger account 2`, `gmail 미니프로젝트용`, `미니프로젝트용_cx어시스턴트` |

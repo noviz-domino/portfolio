@@ -15,7 +15,7 @@ REPLYGATE_DEMO=1 python dashboard/app.py
 
 [방법 2] 실제 모드 - 실제 시트 + 텔레그램 연동 확인 (리허설용, 권장)
 ------------------------------------------------------------
-REPLYGATE_SHEET_ID="1j3_T7KfrUBZr9wqSiKjEXDN8LBr1D2GaMwy4909eObI" REPLYGATE_SA_KEY="dashboard/keys/sa-key.json" python dashboard/app.py
+REPLYGATE_SHEET_ID="<SHEET_ID>" REPLYGATE_SA_KEY="dashboard/keys/sa-key.json" python dashboard/app.py
 
 브라우저에서 http://127.0.0.1:8000 접속
 
