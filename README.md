@@ -106,12 +106,15 @@
 
 - **설계** - LLM은 말을 해석하는 노드 한 곳에서만 사용하고, 잔액 계산·검사·저장·답변 문장은 모두 코드로 처리해 숫자가 LLM을 거치지 않게 했습니다.
 - **안전장치** - LangGraph `interrupt`로 승인 전 실행을 멈추고, 저장은 무결성 규칙 10개를 통과해야만 한 번에 교체되도록(atomic write) 구현했습니다.
-- **검증** - 실패 상황을 포함한 대화 시나리오 47개를 자동으로 돌려 전부 통과했고, 설계 변경 27건을 이유와 함께 기록했습니다.
+- **검증** - 실패 상황을 포함한 대화 시나리오 47개를 자동으로 돌려 전부 통과했고, 설계 변경 29건을 이유와 함께 기록했습니다.
 - **문제 해결** - 프롬프트로 금지해도 LLM이 출금 계좌를 지어내는 것을 발견해, 규칙을 LLM 응답을 코드가 검증하는 방식으로 바꿨습니다.
+- **관찰** - LangSmith로 실행 기록과 LLM 해석 평가(Experiment)를 남기고, LangGraph Studio에서 그래프가 승인 단계에서 멈췄다가 이어지는 흐름을 확인했습니다.
 
 | 이체 요청 → 승인 카드 | 승인 후 잔액 변화 |
 |:--:|:--:|
 | <img src="projects/langgraph-financial-agent/docs/images/02-confirm.png" alt="이체 승인 카드" width="400" /> | <img src="projects/langgraph-financial-agent/docs/images/03-done.png" alt="승인 후 잔액 변화" width="400" /> |
+| **LangGraph Studio - 승인 대기 (`interrupt`)** | **"예"로 이어 간 뒤** |
+| <img src="projects/langgraph-financial-agent/docs/images/08-studio-interrupt.png" alt="Studio 승인 대기" width="400" /> | <img src="projects/langgraph-financial-agent/docs/images/09-studio-resume.png" alt="Studio 이어 가기" width="400" /> |
 
 🔗 [직접 써보기](https://noviz-bank.duckdns.org) · 📂 [원본 저장소](https://github.com/noviz-domino/langgraph-financial-agent) · 📄 [설계 변경 기록](projects/langgraph-financial-agent/docs/설계변경기록.md)
 

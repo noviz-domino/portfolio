@@ -5,6 +5,15 @@
 
 ---
 
+## 2026-09-30 (4) - langgraph-financial-agent 사본 갱신 (Studio · LangSmith)
+
+원본 저장소의 최신 상태로 `projects/langgraph-financial-agent/`를 통째로 바꿨다 (`git archive`, 추적 중인 파일만).
+
+- 새로 들어온 것: Gemini 바쁠 때 대응, 호출 제한 강화, 여러 요청 안내, LangSmith 평가 스크립트(`evaluation.py`), LangGraph Studio 입구(`studio.py`, `langgraph.json`), Studio 실행 화면 2장
+- README(한국어·영문) 프로젝트 1번: 설계 변경 27건 → 29건, "관찰(LangSmith·Studio)" 항목과 Studio 화면 줄 추가
+
+---
+
 ## 2026-09-30 (3) - 이력서형 순서는 두고 색감 있는 디자인으로 복원
 
 (2)의 글자 위주 표 구성이 밋밋하다는 피드백을 받아, 순서와 내용은 이력서형 그대로 두고 시각 요소를 되살렸다.

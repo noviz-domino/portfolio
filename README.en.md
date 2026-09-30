@@ -106,12 +106,15 @@ Understands requests like "send ₩100,000 from living expenses to savings" and 
 
 - **Design** - The LLM is used only in the node that interprets what the user said. Balance math, checks, storage and reply text are all code, so no number passes through the LLM.
 - **Safeguards** - A LangGraph `interrupt` pauses execution until approval, and a save happens only after 10 integrity rules pass, replacing the ledger atomically.
-- **Verification** - 47 dialogue scenarios, including failure cases, run automatically and all pass; 27 design changes are logged with their reasons.
+- **Verification** - 47 dialogue scenarios, including failure cases, run automatically and all pass; 29 design changes are logged with their reasons.
 - **Problem solved** - Even when told not to in the prompt, the LLM sometimes invented the source account. I changed the rule so that code validates the LLM's answer instead of relying on the prompt.
+- **Observability** - Runs and LLM-interpretation evaluations (Experiments) are recorded in LangSmith, and LangGraph Studio shows the graph pausing at the approval step and resuming.
 
 | Transfer request → approval card | Balances after approval |
 |:--:|:--:|
 | <img src="projects/langgraph-financial-agent/docs/images/02-confirm.png" alt="Transfer approval card" width="400" /> | <img src="projects/langgraph-financial-agent/docs/images/03-done.png" alt="Balances after approval" width="400" /> |
+| **LangGraph Studio - paused for approval (`interrupt`)** | **After resuming with "yes"** |
+| <img src="projects/langgraph-financial-agent/docs/images/08-studio-interrupt.png" alt="Studio paused for approval" width="400" /> | <img src="projects/langgraph-financial-agent/docs/images/09-studio-resume.png" alt="Studio after resuming" width="400" /> |
 
 🔗 [Try it live](https://noviz-bank.duckdns.org) · 📂 [Repository](https://github.com/noviz-domino/langgraph-financial-agent) · 📄 [Design change log (KR)](projects/langgraph-financial-agent/docs/설계변경기록.md)
 
