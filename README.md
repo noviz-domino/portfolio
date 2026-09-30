@@ -1,5 +1,7 @@
 <div align="center">
 
+[![포트폴리오 사이트 바로가기](https://img.shields.io/badge/포트폴리오_사이트_바로가기-noviz--domino.github.io-1F2328?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=0F766E)](https://noviz-domino.github.io/)
+
 # 김민석
 
 ### AI Agent Engineer · 신입
