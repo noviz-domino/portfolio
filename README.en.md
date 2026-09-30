@@ -14,6 +14,8 @@ Where a plausible answer is not good enough, I split the work between what the L
 
 [Featured](#featured-projects) · [All projects](#all-projects) · [Tech stack](#tech-stack) · [AI tools](#working-with-ai-tools) · [Training](#training) · [한국어](README.md)
 
+**Try it live** · [englishWordApp (Google Play)](https://play.google.com/store/apps/details?id=com.voca.englishwordapp) · [mealmate](https://mealmate-inky.vercel.app) · [go-eat](https://go-eat-noviz.vercel.app) · [data-value-sandbox](https://noviz-domino.github.io/data-value-sandbox/) · [cosmic-grazer](https://noviz-domino.github.io/cosmic-grazer/)
+
 </div>
 
 <br/>

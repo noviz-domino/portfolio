@@ -14,6 +14,8 @@
 
 [대표 프로젝트](#대표-프로젝트) · [전체 프로젝트](#전체-프로젝트) · [기술 스택](#기술-스택) · [AI 도구 운용](#ai-에이전트를-운용하는-방식) · [학습 기록](#학습-기록) · [English](README.en.md)
 
+**바로 체험하기** · [englishWordApp (Google Play)](https://play.google.com/store/apps/details?id=com.voca.englishwordapp) · [mealmate](https://mealmate-inky.vercel.app) · [가봐야 알지](https://go-eat-noviz.vercel.app) · [data-value-sandbox](https://noviz-domino.github.io/data-value-sandbox/) · [스쳐야 산다](https://noviz-domino.github.io/cosmic-grazer/)
+
 </div>
 
 <br/>
