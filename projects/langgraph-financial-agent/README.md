@@ -32,6 +32,12 @@ KDT 과제 미니 프로젝트 · Python 3.13 · LangGraph 1.2 · LangChain 1.4 
 |---|---|---|
 | ![첫 화면](docs/images/01-home.png) | ![어두운 모드](docs/images/06-dark.png) | ![폰 화면](docs/images/07-mobile.png) |
 
+**LangGraph Studio로 본 그래프.** 같은 이체를 Studio에서 실행하면 노드를 차례로 지나 `confirm_change`에서 멈추고(`INTERRUPT`, 승인 질문), "예"로 이어 가면 `apply_change → record_result → respond`까지 간다. 루프 두 개(되묻기 `ask_more → understand`, 수정 `confirm_change → understand`)도 그림에 그대로 보인다.
+
+| 승인 대기 (`interrupt`) | "예"로 이어 간 뒤 |
+|---|---|
+| ![Studio 승인 대기](docs/images/08-studio-interrupt.png) | ![Studio 이어 가기](docs/images/09-studio-resume.png) |
+
 ---
 
 ## 실행 방법
@@ -80,6 +86,21 @@ uv run python -m uvicorn web:app --app-dir src --port 8000
 - 방문자마다 장부가 따로 있다 (`data/ledgers/`). "처음으로"를 누르면 원본 상태로 돌아간다
 - 호출 제한: 방문자마다 1분에 3번·10분에 10번, 서버 전체 하루 50번, 한 번에 300자 (API 비용 보호)
 - Windows에서 `uvicorn` 실행 파일이 앱 제어 정책에 막히면 위처럼 `python -m uvicorn`으로 실행한다
+
+### 5. LangGraph Studio (선택)
+
+그래프를 그림으로 띄워 놓고 실행해 볼 수 있다. 노드가 차례로 켜지며 지나가고, 노드마다 State가 보이며, `confirm_change`에서 멈추면 화면에서 바로 "예"로 이어 갈 수 있다.
+
+```bash
+PYTHONUTF8=1 uv run langgraph dev
+```
+
+나오는 `Studio UI` 링크를 브라우저로 연다 (LangSmith 로그인 필요).
+
+- 입구는 `src/studio.py` — 다른 입구와 같은 `build_graph()`를 쓰되, 멈춘 상태는 LangGraph 서버가 저장하므로 checkpointer 없이 compile한다 (`main.py`·`web.py`는 그대로 `InMemorySaver`)
+- 장부는 `main.py`와 같은 작업용 복사본(`bank_data.json`)을 쓴다
+- `PYTHONUTF8=1`: 한국어 Windows에서 `langgraph-api`가 자기 파일을 읽다가 인코딩 오류가 난다
+- 개발용 도구라 배포 서버에는 설치하지 않는다 (`uv sync --locked --no-dev`)
 
 ---
 
@@ -153,6 +174,7 @@ uv run python -m uvicorn web:app --app-dir src --port 8000
 | 승인 사이 잔액 감소 | 비상금 75,000 → 승인 대기 중 65,000으로 → "예" | 승인하시는 사이 상황이 바뀌어 실행하지 않았어요. 비상금 계좌 잔액이 부족해요. (잔액 65,000원, 이체 금액 70,000원) (`failed`) |
 | 잔액 넘는 수정 | 승인 화면에서 "아니 1000만 원으로" | 생활비 계좌 잔액이 부족해요. (잔액 420,000원, 이체 금액 10,000,000원) 그래서 처음 내용 그대로 여쭤볼게요. + 이전 승인 화면 |
 | 저장 실패 | 파일 교체가 3번 모두 실패 | 장부에 저장하지 못해 실행하지 않았어요. 잠시 후 다시 시도해 주세요. (`failed`) |
+| 한 번에 여러 요청 | "생활비에서 저축으로 1000만원 보내줘. 그리고 저축에서 생활비로 다시 1000만원 보내줘" | 한 번에 한 가지 요청만 처리할 수 있어요. 아무것도 실행하지 않았어요. 하나씩 말씀해 주세요. |
 | AI 서버가 바쁨 | 503·429 또는 20초 안에 답이 없음 (1번 재시도 후) | 지금 AI 서버가 바빠요. 잠시 후 같은 말을 다시 보내 주세요. — 가짜 오류로 확인 |
 | 되묻기 중 그만두기 | "여행 자금으로 보내줘" → "취소" | 알겠어요, 요청을 그만둘게요. |
 
@@ -176,6 +198,7 @@ START → understand ─┬─ 정보 부족 → ask_more 🛑 ──(답)──
 | `src/graph.py` | State, 노드 8개, 조건부 Edge 4개. LLM은 `understand` 한 곳 |
 | `src/web.py`, `web/index.html` | 웹 서버(FastAPI)와 채팅 화면. 그래프는 그대로, 입구만 다름 |
 | `src/scenarios.py` | 대화 시나리오 확인 (그래프 + 업무 코드 + 저장을 함께) |
+| `src/evaluation.py` | LLM(`understand`) 평가 — Golden set을 LangSmith Experiment로 채점, 같은 사례 반복 가능 |
 | `src/intents.py` | intent와 slot의 유일한 정의처 |
 | `src/functions.py` | 업무 코드 — 조회 함수, 이체·카드 잠금 Handler(`validate`·`describe`·`apply`) |
 | `src/data_store.py` | 장부 읽기·저장의 유일한 통로 (무결성 검사 + atomic write + 재시도) |
@@ -190,6 +213,8 @@ uv run python src/data_store.py   # 저장 통로 10/10 (API 없음, 작업용 �
 uv run python src/functions.py    # 업무 코드 31/31 (API 없음)
 uv run python src/graph.py        # 그래프 모양을 Mermaid로 출력 (API 없음)
 uv run python src/scenarios.py    # 대화 시나리오 47개 (Gemini 41회 호출 + 가짜 LLM 시나리오)
+uv run python src/evaluation.py --offline     # 채점 함수 확인 8/8 (API 없음)
+uv run python src/evaluation.py --repeat 5    # LangSmith Experiment (사례 4개 × 5번 = Gemini 20회, LANGSMITH_API_KEY 필요)
 ```
 
 ---
