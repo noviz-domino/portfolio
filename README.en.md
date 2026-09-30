@@ -79,10 +79,10 @@ Instead of "it got better", I keep numbers from evaluation sets and scenarios, a
 
 <div align="center">
 
-| First-pass approval | Dialogue scenarios | Daily API calls | Shipped app |
+| First-pass approval | Dialogue scenarios | RAG retrieval accuracy | Shipped app |
 |:--:|:--:|:--:|:--:|
-| **34% → 94%** | **47 / 47** passed | **188 → 4** | **Google Play** |
-| replygate · with RAG<br/>numeric accuracy 43.8% → 96.0% | financial agent<br/>failure cases included, ledger intact | news digest<br/>free-tier limits | englishWordApp<br/>25 JUnit tests |
+| **34% → 94%** | **47 / 47** passed | **0.886 → 0.943** | **Google Play** |
+| replygate · with RAG<br/>numeric accuracy 43.8% → 96.0% | financial agent<br/>failure cases included, ledger intact | RAG experiment · Page Hit@1<br/>20 configs compared, hybrid retrieval | englishWordApp<br/>25 JUnit tests |
 
 </div>
 
