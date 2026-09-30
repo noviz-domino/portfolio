@@ -1,0 +1,21 @@
+{
+  "experiment_name": "chunk-1000-mmr",
+  "quality": {
+    "file_hit_1": 0.9714285714285714,
+    "page_hit_1": 0.8285714285714286,
+    "page_hit_3": 0.9142857142857143,
+    "page_hit_5": 0.9142857142857143,
+    "mrr": 0.8714285714285714
+  },
+  "cost": {
+    "embedding_requests": 35,
+    "embedding_tokens": 1398,
+    "llm_requests": 0,
+    "llm_tokens": 0
+  },
+  "time": {
+    "total_sec": 56.58778679999523,
+    "avg_latency_ms": 523.8665085751563
+  },
+  "count": 35
+}

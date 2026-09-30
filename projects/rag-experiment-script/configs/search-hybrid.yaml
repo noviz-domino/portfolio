@@ -1,0 +1,42 @@
+# 기준선(baseline) 실험 설정
+# 다른 모든 실험은 이 파일에서 딱 한 항목만 바꾼 것이다.
+# 경로는 main.py를 실행하는 위치(10-rag-evalution-script 폴더) 기준이다.
+
+experiment_name: search-hybrid
+
+data:
+  pdf_dir: ../data/public                                          # 검색 대상 PDF 폴더
+  golden_set: ../data/public/public_paragraph_golden_set.json       # 정답 데이터(35문항)
+
+models:
+  embedding: gemini-embedding-2       # 문서와 질문을 벡터로 바꾸는 모델
+  llm: gemini-3.5-flash-lite          # rerank / 답변 생성 / 채점에 쓰는 모델
+
+chunk:
+  size: 700          # 청크 하나의 최대 글자 수
+  overlap: 100       # 앞 청크와 겹치는 글자 수 (문장이 잘리는 것을 완화)
+
+search:
+  strategy: hybrid       # 기준선 similarity에서 변경
+  k: 5                   # 검색해서 LLM에 넘길 문서 개수
+  mmr:                   # strategy가 mmr일 때만 사용된다
+    fetch_k: 20          # 후보를 20개 뽑아서 그중 다양성을 고려해 k개 선택
+    lambda_mult: 0.5     # 1에 가까울수록 관련성 우선, 0에 가까울수록 다양성 우선
+  hybrid:                # strategy가 hybrid일 때만 사용된다
+    weights: [0.5, 0.5]  # [벡터검색 가중치, BM25 가중치]
+
+rerank:
+  enabled: false   # true면 검색 결과를 LLM으로 재정렬한다
+  top_n: 5         # rerank에 넘길 후보 수 (LLM 호출 수 = 문항 수 × 이 값)
+
+evaluation:
+  retrieval_limit: 35      # 검색 지표(Hit/MRR) 계산에 쓸 문항 수
+  llm_limit: 10            # rerank·생성·채점에 쓸 문항 수 (비용 때문에 줄임)
+  run_generation: false    # true면 검색 결과로 실제 답변을 생성한다
+  run_judge: false         # true면 생성한 답변을 LLM이 채점한다
+
+pacing:
+  embed_batch_size: 10   # 문서 임베딩을 몇 개씩 묶어 보낼지
+  embed_sleep_sec: 12    # 배치 간 대기 → 분당 5배치 = 약 2만 토큰/분 (무료 티어 분당 3만 토큰의 67%)
+  llm_sleep_sec: 5       # LLM 호출 사이 대기 → 분당 12회 (분당 15회 한도의 80%)
+  max_retries: 5         # 429가 나면 대기 시간을 늘려가며 몇 번까지 재시도할지

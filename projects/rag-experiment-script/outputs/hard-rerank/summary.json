@@ -1,0 +1,21 @@
+{
+  "experiment_name": "hard-rerank",
+  "quality": {
+    "file_hit_1": 1.0,
+    "page_hit_1": 0.8,
+    "page_hit_3": 0.8,
+    "page_hit_5": 0.8,
+    "mrr": 0.8
+  },
+  "cost": {
+    "embedding_requests": 10,
+    "embedding_tokens": 425,
+    "llm_requests": 50,
+    "llm_tokens": 16540
+  },
+  "time": {
+    "total_sec": 370.40241059998516,
+    "avg_latency_ms": 643.7853300012648
+  },
+  "count": 10
+}

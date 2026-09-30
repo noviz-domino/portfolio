@@ -1,0 +1,21 @@
+{
+  "experiment_name": "hard-baseline",
+  "quality": {
+    "file_hit_1": 0.9,
+    "page_hit_1": 0.6,
+    "page_hit_3": 0.7,
+    "page_hit_5": 0.8,
+    "mrr": 0.675
+  },
+  "cost": {
+    "embedding_requests": 10,
+    "embedding_tokens": 425,
+    "llm_requests": 0,
+    "llm_tokens": 0
+  },
+  "time": {
+    "total_sec": 43.85253899998497,
+    "avg_latency_ms": 548.1843799934722
+  },
+  "count": 10
+}

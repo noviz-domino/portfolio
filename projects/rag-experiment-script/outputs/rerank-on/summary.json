@@ -1,0 +1,21 @@
+{
+  "experiment_name": "rerank-on",
+  "quality": {
+    "file_hit_1": 1.0,
+    "page_hit_1": 1.0,
+    "page_hit_3": 1.0,
+    "page_hit_5": 1.0,
+    "mrr": 1.0
+  },
+  "cost": {
+    "embedding_requests": 8,
+    "embedding_tokens": 323,
+    "llm_requests": 40,
+    "llm_tokens": 13197
+  },
+  "time": {
+    "total_sec": 308.24922579998383,
+    "avg_latency_ms": 2067.357930005528
+  },
+  "count": 10
+}

@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+
+# 재생성 가능한 벡터 DB (pdf_data로부터 생성됨)
+vector_store/
+data/vector_store/
+
+# 중복 백업 파일
+app copy.py
+app (사본).py
+templates/index copy.html
+templates/result copy.html
+static/css/style copy.css
+.pytest_cache/
+.ruff_cache/

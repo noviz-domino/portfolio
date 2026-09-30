@@ -1,0 +1,21 @@
+{
+  "experiment_name": "chunk-500-hybrid",
+  "quality": {
+    "file_hit_1": 1.0,
+    "page_hit_1": 0.9428571428571428,
+    "page_hit_3": 0.9428571428571428,
+    "page_hit_5": 0.9428571428571428,
+    "mrr": 0.9428571428571428
+  },
+  "cost": {
+    "embedding_requests": 35,
+    "embedding_tokens": 1398,
+    "llm_requests": 0,
+    "llm_tokens": 0
+  },
+  "time": {
+    "total_sec": 62.98277469997993,
+    "avg_latency_ms": 527.5822171459107
+  },
+  "count": 35
+}

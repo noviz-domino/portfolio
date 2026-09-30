@@ -1,0 +1,31 @@
+{
+  "experiment_name": "gen-similarity",
+  "quality": {
+    "file_hit_1": 1.0,
+    "page_hit_1": 1.0,
+    "page_hit_3": 1.0,
+    "page_hit_5": 1.0,
+    "mrr": 1.0
+  },
+  "cost": {
+    "embedding_requests": 10,
+    "embedding_tokens": 413,
+    "llm_requests": 20,
+    "llm_tokens": 32187
+  },
+  "time": {
+    "total_sec": 201.5244031000184,
+    "avg_latency_ms": 633.8855400041211
+  },
+  "count": 10,
+  "generation": {
+    "valid_citation": 1.0,
+    "relevant_citation": 1.0,
+    "generation_latency_ms": 1568.110250000609,
+    "judge_correctness": 9.9,
+    "judge_completeness": 9.8,
+    "judge_groundedness": 10.0,
+    "judge_citation_accuracy": 9.1,
+    "judge_average": 9.7
+  }
+}

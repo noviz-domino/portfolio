@@ -1,0 +1,21 @@
+{
+  "experiment_name": "baseline-10",
+  "quality": {
+    "file_hit_1": 1.0,
+    "page_hit_1": 1.0,
+    "page_hit_3": 1.0,
+    "page_hit_5": 1.0,
+    "mrr": 1.0
+  },
+  "cost": {
+    "embedding_requests": 10,
+    "embedding_tokens": 413,
+    "llm_requests": 0,
+    "llm_tokens": 0
+  },
+  "time": {
+    "total_sec": 45.700895500020124,
+    "avg_latency_ms": 537.8494900010992
+  },
+  "count": 10
+}

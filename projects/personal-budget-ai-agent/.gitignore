@@ -1,0 +1,16 @@
+# API 키 — 절대 커밋하지 않는다
+.env
+
+# 파이썬
+__pycache__/
+*.pyc
+
+# 주피터
+.ipynb_checkpoints/
+
+# 실행 중 생성되는 파일
+test_data.json
+agent.log
+
+# data.json은 시연용 샘플을 함께 올리고 싶다면 아래 줄을 지운다
+data.json

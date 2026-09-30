@@ -1,0 +1,21 @@
+{
+  "experiment_name": "k-3",
+  "quality": {
+    "file_hit_1": 0.9714285714285714,
+    "page_hit_1": 0.8857142857142857,
+    "page_hit_3": 0.9142857142857143,
+    "page_hit_5": 0.9142857142857143,
+    "mrr": 0.9
+  },
+  "cost": {
+    "embedding_requests": 35,
+    "embedding_tokens": 1398,
+    "llm_requests": 0,
+    "llm_tokens": 0
+  },
+  "time": {
+    "total_sec": 56.07415860000765,
+    "avg_latency_ms": 513.9181457077419
+  },
+  "count": 35
+}
