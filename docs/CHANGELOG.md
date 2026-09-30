@@ -1,0 +1,62 @@
+# 포트폴리오 정돈 기록
+
+포트폴리오 저장소의 구성을 바꿀 때마다 **무엇을, 왜** 바꿨는지 남긴다.
+지운 내용도 여기서 찾을 수 있게 한다. 지운 파일은 git 이력에도 남아 있다.
+
+---
+
+## 2026-09-30 - 새 프로젝트 반영과 README 재구성
+
+직전 정돈(2026-09-07) 이후 완성되거나 새로 만든 저장소를 반영하고, 첫 화면 구성을 새로 짰다.
+
+### 추가한 프로젝트
+
+| 프로젝트 | 위치 | 이유 |
+|:--|:--|:--|
+| langgraph-financial-agent | 대표 1번 | 완성됐고, 시나리오 47개와 설계 변경 기록 26건으로 "LLM은 입구에만" 원칙을 가장 잘 보여준다 |
+| legal_secretary | 대표 3번 | 하이브리드 검색·근거 인용·스트리밍까지 완성. 6단계 중 3단계라는 진행 상태를 그대로 밝혔다 |
+| rag-experiment-script | 전체 목록 (결과 접이식) | 설정 20개로 비교한 정량 결과가 있다. 규모가 작아 대표로 올리지는 않았다 |
+| multi-agent-tax-prep | 전체 목록 (요점 접이식) | 설계와 교훈("통과 ≠ 동작")은 좋지만 CLI만 있고 데모가 없다 |
+| personal-budget-ai-agent | 전체 목록 | Function Calling 기본기 과제. 측정 결과가 없다 |
+| data-value-sandbox | 전체 목록 (링크만) | 원본이 이미 공개 저장소라 사본을 두지 않았다 |
+
+**복사할 때 뺀 것**
+
+- `legal_secretary`: `project.zip`(2024년 구버전 통째 압축, 벡터DB·ngrok 주소 포함), `archive/`(ngrok 주소가 남은 구버전 코드), `data/pdf/`(법령 원문 PDF), README의 학번
+- `rag-experiment-script`: `outputs/*/rows.jsonl` - 강의 제공 PDF 본문 발췌가 들어 있다. 결과 요약(`summary.json`)만 남겼다
+- 공통: 원본에서 커밋되지 않은 파일(`.env`, 제출용 zip, 로컬 지침 파일)은 `git archive`로 커밋된 파일만 복사해서 들어오지 않게 했다
+
+**넣지 않은 것**
+
+- `aim-day01-my-strengths`: 코드가 없는 첫날 자기소개 과제
+- `my-free-oracle`, `local-llm-setup`: 프로젝트가 아니라 환경 구축 기록. 학습 기록 섹션에 한 줄로만 언급했다
+- `aim-ai-agent`: 다른 계정(`jun-yu-edu`) 소유의 수업 저장소라 내 작업물로 올리지 않았다
+
+### 기존 사본 동기화
+
+- `go-eat`, `mealmate`의 `docs/개발일지.md`: 원본의 2026-08-31 항목(Supabase 자동 정지 사고)이 사본에 빠져 있어 원본 커밋 기준으로 갱신했다
+
+### 개인정보 · 공개 범위 정리
+
+| 파일 | 조치 | 이유 |
+|:--|:--|:--|
+| `projects/replygate/AGENTS.md`, `CLAUDE.md`, `docs/대시보드_실행법.txt` | 스프레드시트 ID를 `<SHEET_ID>`로 대체 | 실제 구글 시트 ID가 공개돼 있었다. 시트가 링크 공유 상태면 설문 응답자 정보가 노출될 수 있다 |
+| `projects/replygate/docs/폼QR코드_김민석_.jpeg` | 삭제 | 어디서도 참조하지 않는 설문 QR 이미지 |
+| `projects/cosmic-grazer/screenshot.PNG` | 삭제 | 브라우저 북마크와 로컬 경로가 찍혀 있고, 원본 개발일지도 이 파일을 "커밋에서 제외"한다고 적어뒀다 |
+
+### README 재구성 (한국어 · 영문)
+
+| 바뀐 것 | 이전 | 이후 | 이유 |
+|:--|:--|:--|:--|
+| 헤더 | capsule-render 물결 이미지 | 텍스트 제목 + 목차 링크 | 외부 이미지 서비스가 느리거나 멈추면 첫 화면이 깨진다. 목차로 긴 문서를 바로 이동할 수 있게 했다 |
+| 첫 화면 | "30초 요약" 표 | 핵심 원칙 3칸 + 숫자 요약 한 줄 + 소개 | 무엇을 중요하게 여기는지와 그 근거 숫자를 스크롤 없이 보이게 했다 |
+| 대표 프로젝트 | replygate · englishWordApp · mealmate · n8n-finance-news-briefing | langgraph-financial-agent · replygate · legal_secretary · englishWordApp · mealmate | 최근 작업(LangGraph·RAG)이 지향점과 가장 가깝다 |
+| n8n-finance-news-briefing | 대표 4번 (흐름도 포함) | 전체 목록의 접이식 요점 | 대표를 5개로 유지하려고 옮겼다. 요점 문장은 그대로 보존했고 흐름도는 프로젝트 README에 있다 |
+| 전체 프로젝트 표 | 한 줄 나열 | AI 에이전트 · 앱/웹 · 데이터/게임으로 묶음 | 16개로 늘어나 분야별로 읽히게 했다 |
+| "원본 저장소" 링크 | 대표 프로젝트마다 표기 | 삭제 | 원본이 비공개라 방문자에게는 404가 뜬다 |
+| 기술 스택 | 분야별 배지 나열 | 분야 × 배지 표, LangGraph·Chroma·BM25·uv 등 추가 | 새 프로젝트에서 쓴 기술 반영, 세로 길이 절반 |
+| 학습 기록 | 단위기간 · 주제 | 관련 결과물 열 추가 | 과정과 결과물을 연결해 보이게 했다 |
+
+### 사이트
+
+- `noviz-domino.github.io`를 같은 내용으로 새로 디자인했다 (별도 저장소, 그쪽 커밋 참고)
