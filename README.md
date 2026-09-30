@@ -14,7 +14,7 @@
 
 [대표 프로젝트](#대표-프로젝트) · [전체 프로젝트](#전체-프로젝트) · [기술 스택](#기술-스택) · [AI 도구 운용](#ai-에이전트를-운용하는-방식) · [학습 기록](#학습-기록) · [English](README.en.md)
 
-**바로 체험하기** · [englishWordApp (Google Play)](https://play.google.com/store/apps/details?id=com.voca.englishwordapp) · [mealmate](https://mealmate-inky.vercel.app) · [가봐야 알지](https://go-eat-noviz.vercel.app) · [data-value-sandbox](https://noviz-domino.github.io/data-value-sandbox/) · [스쳐야 산다](https://noviz-domino.github.io/cosmic-grazer/)
+**바로 체험하기** · [금융 에이전트](https://noviz-bank.duckdns.org) · [englishWordApp (Google Play)](https://play.google.com/store/apps/details?id=com.voca.englishwordapp) · [mealmate](https://mealmate-inky.vercel.app) · [가봐야 알지](https://go-eat-noviz.vercel.app) · [data-value-sandbox](https://noviz-domino.github.io/data-value-sandbox/) · [스쳐야 산다](https://noviz-domino.github.io/cosmic-grazer/)
 
 </div>
 
@@ -72,7 +72,7 @@
 최근에는 같은 원칙을 LangGraph 에이전트로 옮겨, *"흔들리면 안 되는 판단은 LLM이 아니라 코드가 한다"* 는 쪽으로 설계를 좁혀가고 있습니다.
 
 > 이 저장소는 프로젝트별 **소스 코드와 설계 문서**를 한 곳에 모은 것입니다.
-> 원본 저장소는 비공개이며, 각 프로젝트는 `projects/` 아래 같은 이름의 폴더에 민감정보를 뺀 사본으로 들어 있습니다.
+> 원본 저장소는 대부분 비공개이며, 각 프로젝트는 `projects/` 아래 같은 이름의 폴더에 민감정보를 뺀 사본으로 들어 있습니다.
 
 ---
 
@@ -103,6 +103,12 @@ flowchart LR
     F -->|수정| B
 ```
 
+| 이체 요청 → 승인 카드 | 승인 후 잔액 변화 |
+|:--:|:--:|
+| <img src="projects/langgraph-financial-agent/docs/images/02-confirm.png" alt="이체 승인 카드" width="400" /> | <img src="projects/langgraph-financial-agent/docs/images/03-done.png" alt="승인 후 잔액 변화" width="400" /> |
+
+승인 카드가 떠 있는 동안 장부는 그대로이고, "예"를 눌러야 잔액이 바뀝니다. 왼쪽 아래에 그래프가 지금 멈춘 단계가 표시됩니다.
+
 **측정 결과.** 실패 상황을 포함한 대화 시나리오를 자동으로 돌려 확인했습니다.
 
 | 확인 항목 | 결과 |
@@ -116,7 +122,7 @@ flowchart LR
 - *"이어받을 계좌: 없음"* 이라고 프롬프트에 적어줘도 LLM이 출금 계좌를 채웠습니다. **한 번은 통과, 한 번은 실패 - 프롬프트는 확률입니다.** 그래서 규칙을 "알려주기"에서 끝내지 않고 LLM 응답을 **코드가 검증**하도록 바꿨습니다.
 - 직접 써보다가 *"저축으로 10만 원 옮겨줘"* 에 LLM이 출금 계좌를 **지어내는** 것을 발견했습니다. 뜻으로 알아들은 것과 지어낸 것은 코드로 구분할 수 없어서, **피해가 큰 출금 계좌만** "말했거나·이어받았거나·후보에서 고른 이름"으로 엄격히 제한했습니다.
 
-📂 [코드 보기](projects/langgraph-financial-agent/) · 📄 [설계 변경 기록](projects/langgraph-financial-agent/docs/설계변경기록.md)
+🔗 [직접 써보기](https://noviz-bank.duckdns.org) · 📂 [코드 보기](projects/langgraph-financial-agent/) · 📄 [설계 변경 기록](projects/langgraph-financial-agent/docs/설계변경기록.md) · 🔗 [원본 저장소](https://github.com/noviz-domino/langgraph-financial-agent)
 
 <br/>
 
@@ -252,7 +258,7 @@ flowchart LR
 <td><b>langgraph-financial-agent</b></td>
 <td>승인 후에만 실행하는 대화형 은행 업무 에이전트</td>
 <td>LangGraph · Gemini · FastAPI</td>
-<td><a href="projects/langgraph-financial-agent/">코드</a></td>
+<td><a href="projects/langgraph-financial-agent/">코드</a> · <a href="https://noviz-bank.duckdns.org">데모</a></td>
 </tr>
 
 <tr>

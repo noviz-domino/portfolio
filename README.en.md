@@ -14,7 +14,7 @@ Where a plausible answer is not good enough, I split the work between what the L
 
 [Featured](#featured-projects) · [All projects](#all-projects) · [Tech stack](#tech-stack) · [AI tools](#working-with-ai-tools) · [Training](#training) · [한국어](README.md)
 
-**Try it live** · [englishWordApp (Google Play)](https://play.google.com/store/apps/details?id=com.voca.englishwordapp) · [mealmate](https://mealmate-inky.vercel.app) · [go-eat](https://go-eat-noviz.vercel.app) · [data-value-sandbox](https://noviz-domino.github.io/data-value-sandbox/) · [cosmic-grazer](https://noviz-domino.github.io/cosmic-grazer/)
+**Try it live** · [financial agent](https://noviz-bank.duckdns.org) · [englishWordApp (Google Play)](https://play.google.com/store/apps/details?id=com.voca.englishwordapp) · [mealmate](https://mealmate-inky.vercel.app) · [go-eat](https://go-eat-noviz.vercel.app) · [data-value-sandbox](https://noviz-domino.github.io/data-value-sandbox/) · [cosmic-grazer](https://noviz-domino.github.io/cosmic-grazer/)
 
 </div>
 
@@ -72,7 +72,7 @@ Most of my work so far is about **enforcing structured output, validating model 
 Lately I have been carrying the same principle into LangGraph agents: *decisions that must not wobble are made by code, not by the LLM.*
 
 > This repository collects **source code and design documents** per project.
-> The original repositories are private; each project lives under `projects/` as a copy with sensitive data removed.
+> Most original repositories are private; each project lives under `projects/` as a copy with sensitive data removed.
 
 ---
 
@@ -103,6 +103,12 @@ flowchart LR
     F -->|edit| B
 ```
 
+| Transfer request → approval card | Balances after approval |
+|:--:|:--:|
+| <img src="projects/langgraph-financial-agent/docs/images/02-confirm.png" alt="Transfer approval card" width="400" /> | <img src="projects/langgraph-financial-agent/docs/images/03-done.png" alt="Balances after approval" width="400" /> |
+
+While the approval card is open the ledger is untouched; balances change only after "yes". The bottom-left panel shows the graph node it is paused on.
+
 **Measured results.** Dialogue scenarios, including failure cases, run automatically.
 
 | Check | Result |
@@ -116,7 +122,7 @@ flowchart LR
 - Even with *"account to carry over: none"* written in the prompt, the LLM filled in a source account. **It passed once and failed once - a prompt is a probability.** So the rule no longer stops at telling the model; **code validates** the LLM's answer.
 - While using it myself I found the LLM **inventing** the source account for *"move ₩100,000 to savings"*. Code cannot tell "understood by meaning" from "made up", so I restricted **only the high-risk field - the source account** - to names the user said, carried over, or picked from shown candidates.
 
-📂 [Code](projects/langgraph-financial-agent/) · 📄 [Design change log (KR)](projects/langgraph-financial-agent/docs/설계변경기록.md)
+🔗 [Try it live](https://noviz-bank.duckdns.org) · 📂 [Code](projects/langgraph-financial-agent/) · 📄 [Design change log (KR)](projects/langgraph-financial-agent/docs/설계변경기록.md) · 🔗 [Original repo](https://github.com/noviz-domino/langgraph-financial-agent)
 
 <br/>
 
@@ -262,7 +268,7 @@ Allergy checking is not a plain string match. Someone avoiding milk must not be 
 
 <tr><td colspan="4"><b>🤖 AI agents · LLM</b></td></tr>
 
-<tr><td><b>langgraph-financial-agent</b></td><td>Conversational banking agent that acts only after approval</td><td>LangGraph · Gemini · FastAPI</td><td><a href="projects/langgraph-financial-agent/">Code</a></td></tr>
+<tr><td><b>langgraph-financial-agent</b></td><td>Conversational banking agent that acts only after approval</td><td>LangGraph · Gemini · FastAPI</td><td><a href="projects/langgraph-financial-agent/">Code</a> · <a href="https://noviz-bank.duckdns.org">Demo</a></td></tr>
 
 <tr><td><b>replygate</b></td><td>Customer support: AI draft + human approval</td><td>n8n · Gemini · RAG · FastAPI</td><td><a href="projects/replygate/">Code</a></td></tr>
 
