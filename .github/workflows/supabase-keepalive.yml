@@ -8,13 +8,19 @@
 #   1. 읽기 대신 keep_alive.last_ping 을 갱신하는 쓰기(PATCH)로 전환
 #   2. 실행 주기를 3일에서 매일로 (공식 문서가 "매일 몇 건"을 권장한다)
 #   3. 응답 코드만 믿지 않고, 값이 실제로 바뀌었는지 확인하는 단계 추가
+#
+# 2026-10-01 개편: 9/7부터 하루도 빠짐없이 쓰기가 성공했는데도 9/27에 go-eat이
+# "7일 넘게 활동이 부족하다"는 정지 예고 메일을 받았다. 하루 1건은 공식 문서의
+# "하루 몇 건"에 못 미친다고 보고 두 가지를 바꿨다.
+#   1. 하루 1회 → 6시간마다 하루 4회
+#   2. 쓰기에 더해 실제 앱처럼 읽기(SELECT)와 로그인 서버(Auth) 확인을 함께 보냄
 name: Supabase Keep-Alive
 
 on:
   schedule:
-    # 매일 00:17 UTC (한국 시간 09:17). 정각을 피한 건 GitHub Actions가
-    # 정각에 실행이 몰려 지연되거나 누락되는 경우가 있기 때문이다.
-    - cron: "17 0 * * *"
+    # 6시간마다 (한국 시간 03:17 · 09:17 · 15:17 · 21:17). 정각을 피한 건
+    # GitHub Actions가 정각에 실행이 몰려 지연되거나 누락되는 경우가 있기 때문이다.
+    - cron: "17 */6 * * *"
   workflow_dispatch: # 수동 실행용
 
 jobs:
@@ -95,3 +101,18 @@ jobs:
           fi
 
           echo "정상. last_ping 이 ${saved} 로 갱신되었습니다."
+
+          # 쓰기 하나만으로는 부족했으므로 실제 앱처럼 읽기와 로그인 서버 확인도 보낸다.
+          read_status=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}" \
+            "${SUPABASE_URL}/rest/v1/keep_alive?select=id,last_ping&id=eq.1")
+          auth_status=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "apikey: ${SUPABASE_KEY}" \
+            "${SUPABASE_URL}/auth/v1/health")
+          echo "${{ matrix.name }} 읽기 → HTTP ${read_status}, Auth → HTTP ${auth_status}"
+
+          if [ "${read_status}" != "200" ] || [ "${auth_status}" != "200" ]; then
+            echo "::error::읽기 또는 Auth 확인이 실패했습니다."
+            exit 1
+          fi
