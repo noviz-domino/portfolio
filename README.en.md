@@ -17,7 +17,7 @@ I design output validation and human approval steps, splitting the work between 
 
 📍 Seoul, South Korea &nbsp;·&nbsp; 🎓 Samsung Multicampus AI Agent Engineer Track (Jul 2026 – Jan 2027)
 
-[Live demos](#-live-demos) · [About](#-about) · [Highlights](#-highlights) · [Projects](#-projects) · [Other projects](#-other-projects) · [Skills](#-skills) · [Education](#-education) · [Certificates & awards](#-certificates--awards) · [한국어](README.md)
+[Live demos](#-live-demos) · [About](#-about) · [Problems I solved](#-problems-i-solved) · [Projects](#-projects) · [Other projects](#-other-projects) · [Skills](#-skills) · [Education](#-education) · [Certificates & awards](#-certificates--awards) · [한국어](README.md)
 
 </div>
 
@@ -27,20 +27,63 @@ I design output validation and human approval steps, splitting the work between 
 
 Things you can click and try right now. All run on fictional data.
 
-<div align="center">
+<table>
+<tr>
+<td width="50%" align="center">
 
-[![Financial AI agent](https://img.shields.io/badge/Financial_AI_agent-Web_demo-1F2328?style=for-the-badge&logo=langchain&logoColor=white&labelColor=1C3C3C)](https://noviz-bank.duckdns.org)
-[![englishWordApp](https://img.shields.io/badge/englishWordApp-Google_Play-1F2328?style=for-the-badge&logo=googleplay&logoColor=white&labelColor=34A853)](https://play.google.com/store/apps/details?id=com.voca.englishwordapp)
-[![mealmate](https://img.shields.io/badge/mealmate-Web_demo-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://mealmate-inky.vercel.app)
+[![Financial AI agent](https://img.shields.io/badge/Financial_AI_agent-Web_demo-1F2328?style=for-the-badge&logo=langchain&logoColor=white&labelColor=1C3C3C)](https://noviz-bank.duckdns.org)<br/>
+<sub>Banking by conversation · runs only after approval</sub>
 
-[![go-eat](https://img.shields.io/badge/go--eat-Web_demo-1F2328?style=for-the-badge&logo=supabase&logoColor=white&labelColor=3FCF8E)](https://go-eat-noviz.vercel.app)
-[![data-value-sandbox](https://img.shields.io/badge/data--value--sandbox-Web_demo-1F2328?style=for-the-badge&logo=github&logoColor=white&labelColor=0F766E)](https://noviz-domino.github.io/data-value-sandbox/)
-[![cosmic-grazer](https://img.shields.io/badge/cosmic--grazer-Play-1F2328?style=for-the-badge&logo=javascript&logoColor=white&labelColor=7C4DCC)](https://noviz-domino.github.io/cosmic-grazer/)
-[![contest-radar](https://img.shields.io/badge/contest--radar-Web_demo-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://contest-radar-eta.vercel.app)
+</td>
+<td width="50%" align="center">
 
-</div>
+[![contest-radar](https://img.shields.io/badge/contest--radar-Web_demo-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://contest-radar-eta.vercel.app)<br/>
+<sub>AI/IT competitions collected daily · AI summaries</sub>
 
-> go-eat demo account `test1@goeat.test` / `test1234` · Demos on free-tier servers may take a few seconds on first load.
+</td>
+</tr>
+<tr>
+<td width="50%" align="center">
+
+[![mealmate](https://img.shields.io/badge/mealmate-Web_demo-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://mealmate-inky.vercel.app)<br/>
+<sub>AI weekly meal plans from what's in your fridge</sub>
+
+</td>
+<td width="50%" align="center">
+
+[![go-eat](https://img.shields.io/badge/go--eat-Web_demo-1F2328?style=for-the-badge&logo=supabase&logoColor=white&labelColor=3FCF8E)](https://go-eat-noviz.vercel.app)<br/>
+<sub>Rural restaurant log · demo <code>test1@goeat.test</code> / <code>test1234</code></sub>
+
+</td>
+</tr>
+<tr>
+<td width="50%" align="center">
+
+[![englishWordApp](https://img.shields.io/badge/englishWordApp-Google_Play-1F2328?style=for-the-badge&logo=googleplay&logoColor=white&labelColor=34A853)](https://play.google.com/store/apps/details?id=com.voca.englishwordapp)<br/>
+<sub>TOEIC vocabulary Android app</sub>
+
+</td>
+<td width="50%" align="center">
+
+[![data-value-sandbox](https://img.shields.io/badge/data--value--sandbox-Web_demo-1F2328?style=for-the-badge&logo=github&logoColor=white&labelColor=0F766E)](https://noviz-domino.github.io/data-value-sandbox/)<br/>
+<sub>Simulation that measures the value of data</sub>
+
+</td>
+</tr>
+<tr>
+<td width="50%" align="center">
+
+[![cosmic-grazer](https://img.shields.io/badge/cosmic--grazer-Play-1F2328?style=for-the-badge&logo=javascript&logoColor=white&labelColor=7C4DCC)](https://noviz-domino.github.io/cosmic-grazer/)<br/>
+<sub>Browser bullet-hell game</sub>
+
+</td>
+<td width="50%" align="center">
+
+<sub>Demos on free-tier servers may take<br/>a few seconds on first load.</sub>
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -76,16 +119,50 @@ Instead of "it got better", I keep numbers from evaluation sets and scenarios, a
 
 ---
 
-## 🏆 Highlights
+## 🔧 Problems I solved
 
-<div align="center">
+How I found each problem, what caused it, and how I fixed it. The numbers come from measuring again after the fix.
 
-| First-pass approval | Dialogue scenarios | RAG retrieval accuracy | Shipped app |
-|:--:|:--:|:--:|:--:|
-| **34% → 94%** | **47 / 47** passed | **0.886 → 0.943** | **Google Play** |
-| replygate · with RAG<br/>numeric accuracy 43.8% → 96.0% | financial agent<br/>failure cases included, ledger intact | RAG experiment · Page Hit@1<br/>20 configs compared, hybrid retrieval | englishWordApp<br/>25 JUnit tests |
+#### 1. The LLM made up the withdrawal account even when the prompt forbade it · `langgraph-financial-agent`
 
-</div>
+- **Problem** - Asked only to "move 100,000 won to savings", the LLM filled in the withdrawal account as "living expenses". Even with "withdrawal account: none" in the prompt, it asked back once and made one up the next time.
+- **Cause** - Prompt rules are probabilistic, so the same input can give different results. And the code could not tell "a name understood from meaning" from "a name made up".
+- **Fix** - Only the high-risk withdrawal account is now validated by code: unless the user said it, it was carried over, or it was picked from the candidates shown, it is left empty and the agent asks. Low-risk fields such as the deposit account stay flexible.
+- **Check** - All 47 dialogue scenarios pass, including insufficient balance, save failures and AI server outages.
+
+#### 2. Numbers in AI reply drafts contradicted company policy · `replygate`
+
+- **Problem** - Without the policy, drafts shortened a 14-day refund window to 7 days, or stated as done that "we have credited 5,000 won in points". The real policy was 5% of the order amount.
+- **Cause** - The model answered from general knowledge without knowing this company's policy. It was right only when common practice happened to match the policy.
+- **Fix** - Policy clauses are retrieved and given as evidence (RAG), and numbers not in the evidence are forbidden. Because it can still be wrong, an email goes out only after a person approves it in Telegram.
+- **Check** - On a 50-case evaluation set, first-pass approval 34% → 94% and numeric accuracy 43.8% → 96.0%. I also recorded the limit: RAG still invented content on one trap question.
+
+#### 3. Sentiment accuracy went up, but the improvement was fake · `replygate`
+
+- **Problem** - Classifying inquiries as complaint / neutral / simple question, "neutral" was never right (0/20). Revising the definitions raised overall accuracy from 56% to 84%, but per class, neutral was still 0/7.
+- **Cause** - The labels had only moved around. The real issue was a design error that squeezed two different questions, "what is the sentiment" and "does this need an order lookup", into one scale.
+- **Fix** - Split them into two independent axes: sentiment (complaint / normal) and lookup needed (yes / no).
+- **Check** - Sentiment 98%, lookup needed 92%. I kept the misleading intermediate measurement in the record instead of deleting it.
+
+#### 4. Reading PDFs as-is mixed up sentences and broke tables · `financial-rag-agent` (team)
+
+- **Problem** - Default text extraction on 23 financial PDFs mixed the left and right halves of two-page spreads and two-column pages, and broke tables, charts, figures and footnotes. Even when retrieval was right, the evidence itself was damaged.
+- **Cause** - Default extraction reads a page top to bottom only, with no idea of reading order or table structure.
+- **Fix** - Rules based on character coordinates split spreads and columns. Tables are counted for Korean characters and digits separately; below 90% they are treated as lossy and repaired by filling merged cells, then by Gemini re-reading the image. Figures are OCR'd first and then described according to their type.
+- **Check** - 191 tables processed; 1,508 chunks with zero missing answer evidence.
+
+#### 5. The agent refused questions it could answer · `financial-rag-agent` (team)
+
+- **Problem** - The agent, which should have been smarter, scored below plain RAG. Looking closer, it refused answerable questions at a rate of 0.32 (plain RAG 0.03).
+- **Cause** - A step decided "can this be answered?" before retrieving anything, so it refused before seeing any evidence.
+- **Fix** - Removed that step so the agent judges once, after seeing the search results.
+- **Check** - On a 40-question pilot, over-refusal 0.32 → 0.12 and answer score 1.03 → 1.40.
+
+#### 6. A "safe because it's a local LLM" design was sending questions outside · `legal_secretary`
+
+- **Problem** - My 2024 capstone was designed to use a local LLM because it handled sensitive legal questions. Looking again, I found users' questions were going out to Colab through a public ngrok tunnel.
+- **Cause** - To borrow Colab's GPU for lack of local compute, the actual data flow drifted away from the design document.
+- **Fix** - Rebuilding the whole structure with the goal of a self-hosted path where data never leaves (rebuild stage 3 of 6).
 
 ---
 
@@ -251,7 +328,7 @@ Study with meanings hidden, resume progress, TTS pronunciation, a mistake notebo
 <tr><td>Jul 2026</td><td><b>god-of-diplomacy</b><br/>Gemini-powered political and diplomatic text RPG</td><td>FastAPI · Gemini</td><td><a href="projects/god-of-diplomacy/">Code</a></td></tr>
 
 <tr><td colspan="4"><b>🏁 Competitions · hackathons</b></td></tr>
-<tr><td>Oct 2026 –</td><td><b>KIC AI Agent Competition</b><br/>Team entry · in progress (to be published after the competition)</td><td>-</td><td>-</td></tr>
+<tr><td>Oct 2026 –</td><td><b>KIC AI Agent Competition</b><br/>Solo entry · in progress (to be published after the competition)</td><td>-</td><td>-</td></tr>
 <tr><td>Oct 2026</td><td><b>Giljabi 24</b> · Proposal entry, Work24 public-participation AI hackathon (solo)<br/>Plan for an AI re-employment navigator that links job training, living-cost support and job seeking into one path</td><td>Service planning · public data design</td><td>-</td></tr>
 
 <tr><td colspan="4"><b>📱 Web · apps</b></td></tr>

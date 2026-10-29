@@ -17,7 +17,7 @@
 
 🎂 1998. 02. 01 &nbsp;·&nbsp; 🎖️ 육군 만기 전역 &nbsp;·&nbsp; 🎓 삼성 멀티캠퍼스 AI 에이전트 엔지니어 트랙 수강 중 (2026.07 ~ 2027.01)
 
-[라이브 데모](#-라이브-데모) · [소개](#-소개) · [핵심 성과](#-핵심-성과) · [프로젝트](#-프로젝트) · [그 외 프로젝트](#-그-외-프로젝트) · [기술](#-기술-스택) · [학력 · 교육](#-학력--교육) · [자격 · 수상](#-자격--수상) · [English](README.en.md)
+[라이브 데모](#-라이브-데모) · [소개](#-소개) · [문제 해결 사례](#-문제-해결-사례) · [프로젝트](#-프로젝트) · [그 외 프로젝트](#-그-외-프로젝트) · [기술](#-기술-스택) · [학력 · 교육](#-학력--교육) · [자격 · 수상](#-자격--수상) · [English](README.en.md)
 
 </div>
 
@@ -27,20 +27,63 @@
 
 바로 눌러서 써볼 수 있는 결과물입니다. 모두 가상 데이터로 동작합니다.
 
-<div align="center">
+<table>
+<tr>
+<td width="50%" align="center">
 
-[![금융 AI 에이전트](https://img.shields.io/badge/금융_AI_에이전트-웹_데모-1F2328?style=for-the-badge&logo=langchain&logoColor=white&labelColor=1C3C3C)](https://noviz-bank.duckdns.org)
-[![englishWordApp](https://img.shields.io/badge/englishWordApp-Google_Play-1F2328?style=for-the-badge&logo=googleplay&logoColor=white&labelColor=34A853)](https://play.google.com/store/apps/details?id=com.voca.englishwordapp)
-[![mealmate](https://img.shields.io/badge/mealmate-웹_데모-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://mealmate-inky.vercel.app)
+[![금융 AI 에이전트](https://img.shields.io/badge/금융_AI_에이전트-웹_데모-1F2328?style=for-the-badge&logo=langchain&logoColor=white&labelColor=1C3C3C)](https://noviz-bank.duckdns.org)<br/>
+<sub>말로 하는 은행 업무 · 승인 후에만 실행</sub>
 
-[![가봐야 알지](https://img.shields.io/badge/가봐야_알지-웹_데모-1F2328?style=for-the-badge&logo=supabase&logoColor=white&labelColor=3FCF8E)](https://go-eat-noviz.vercel.app)
-[![data-value-sandbox](https://img.shields.io/badge/data--value--sandbox-웹_데모-1F2328?style=for-the-badge&logo=github&logoColor=white&labelColor=0F766E)](https://noviz-domino.github.io/data-value-sandbox/)
-[![스쳐야 산다](https://img.shields.io/badge/스쳐야_산다-바로_플레이-1F2328?style=for-the-badge&logo=javascript&logoColor=white&labelColor=7C4DCC)](https://noviz-domino.github.io/cosmic-grazer/)
-[![contest-radar](https://img.shields.io/badge/contest--radar-웹_데모-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://contest-radar-eta.vercel.app)
+</td>
+<td width="50%" align="center">
 
-</div>
+[![contest-radar](https://img.shields.io/badge/contest--radar-웹_데모-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://contest-radar-eta.vercel.app)<br/>
+<sub>AI·IT 공모전 매일 자동 수집 · AI 요약</sub>
 
-> 가봐야 알지 데모 계정 `test1@goeat.test` / `test1234` · 무료 서버를 쓰는 데모는 첫 접속에 몇 초 걸릴 수 있습니다.
+</td>
+</tr>
+<tr>
+<td width="50%" align="center">
+
+[![mealmate](https://img.shields.io/badge/mealmate-웹_데모-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://mealmate-inky.vercel.app)<br/>
+<sub>냉장고 재료로 짜는 AI 주간 식단</sub>
+
+</td>
+<td width="50%" align="center">
+
+[![가봐야 알지](https://img.shields.io/badge/가봐야_알지-웹_데모-1F2328?style=for-the-badge&logo=supabase&logoColor=white&labelColor=3FCF8E)](https://go-eat-noviz.vercel.app)<br/>
+<sub>시골 맛집 기록 · 데모 계정 <code>test1@goeat.test</code> / <code>test1234</code></sub>
+
+</td>
+</tr>
+<tr>
+<td width="50%" align="center">
+
+[![englishWordApp](https://img.shields.io/badge/englishWordApp-Google_Play-1F2328?style=for-the-badge&logo=googleplay&logoColor=white&labelColor=34A853)](https://play.google.com/store/apps/details?id=com.voca.englishwordapp)<br/>
+<sub>토익 단어 학습 Android 앱</sub>
+
+</td>
+<td width="50%" align="center">
+
+[![data-value-sandbox](https://img.shields.io/badge/data--value--sandbox-웹_데모-1F2328?style=for-the-badge&logo=github&logoColor=white&labelColor=0F766E)](https://noviz-domino.github.io/data-value-sandbox/)<br/>
+<sub>데이터 가치 측정 시뮬레이션</sub>
+
+</td>
+</tr>
+<tr>
+<td width="50%" align="center">
+
+[![스쳐야 산다](https://img.shields.io/badge/스쳐야_산다-바로_플레이-1F2328?style=for-the-badge&logo=javascript&logoColor=white&labelColor=7C4DCC)](https://noviz-domino.github.io/cosmic-grazer/)<br/>
+<sub>브라우저 탄막 게임</sub>
+
+</td>
+<td width="50%" align="center">
+
+<sub>무료 서버를 쓰는 데모는<br/>첫 접속에 몇 초 걸릴 수 있습니다.</sub>
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -76,16 +119,50 @@
 
 ---
 
-## 🏆 핵심 성과
+## 🔧 문제 해결 사례
 
-<div align="center">
+프로젝트마다 부딪힌 문제를 어떻게 찾았고, 원인이 무엇이었고, 어떻게 풀었는지 정리했습니다. 숫자는 고친 뒤에 다시 재서 확인한 결과입니다.
 
-| 1차 응답 승인률 | 대화 시나리오 | RAG 검색 정확도 | 앱 출시 |
-|:--:|:--:|:--:|:--:|
-| **34% → 94%** | **47 / 47** 통과 | **0.886 → 0.943** | **Google Play** |
-| replygate · RAG 적용<br/>수치 정확률 43.8% → 96.0% | 금융 에이전트<br/>실패 상황 포함, 장부 무결성 유지 | RAG 실험 · Page Hit@1<br/>설정 20개 비교, 하이브리드 검색 | englishWordApp<br/>JUnit 25건 |
+#### 1. 프롬프트로 막아도 LLM이 출금 계좌를 지어냈다 · `langgraph-financial-agent`
 
-</div>
+- **문제** - "저축으로 10만 원 옮겨줘"라고만 했는데 LLM이 출금 계좌를 '생활비'로 채웠습니다. 프롬프트에 "출금 계좌 없음"이라고 적어 줘도 한 번은 되묻고 한 번은 지어냈습니다.
+- **원인** - 프롬프트 규칙은 확률이라 같은 입력에도 결과가 흔들립니다. 게다가 코드는 "뜻으로 알아들은 이름"과 "지어낸 이름"을 구분할 수 없었습니다.
+- **해결** - 피해가 큰 출금 계좌만 코드가 검증하게 바꿨습니다. 사용자가 말했거나, 앞에서 이어받았거나, 보여 준 후보에서 고른 이름이 아니면 비우고 되묻습니다. 입금 계좌·조회처럼 피해가 작은 곳은 유연하게 두었습니다.
+- **확인** - 잔액 부족·저장 실패·AI 서버 장애를 포함한 대화 시나리오 47개를 모두 통과했습니다.
+
+#### 2. AI 답변 초안 속 숫자가 회사 정책과 달랐다 · `replygate`
+
+- **문제** - 정책 없이 쓴 초안은 환불 기한 14일을 7일로 줄여 안내하거나, "적립금 5,000원을 지급해 드렸습니다"처럼 금액을 지어내 단정했습니다. 실제 정책은 주문 금액의 5% 적립이었습니다.
+- **원인** - 모델이 이 회사 정책을 모른 채 일반 상식으로 답했습니다. 맞힌 경우도 상식과 정책이 우연히 겹칠 때뿐이었습니다.
+- **해결** - 정책 문서를 조항 단위로 검색해 근거로 넣고(RAG), 근거에 없는 숫자는 쓰지 못하게 했습니다. 그래도 틀릴 수 있어서 담당자가 텔레그램에서 승인해야만 메일이 나가게 했습니다.
+- **확인** - 평가셋 50건에서 1차 승인률 34% → 94%, 수치 정확률 43.8% → 96.0%. RAG도 함정 문항 1건에서 본문을 지어낸 한계를 함께 기록했습니다.
+
+#### 3. 감정 분류 정확도가 올랐는데 '가짜 개선'이었다 · `replygate`
+
+- **문제** - 문의 감정을 불만/중립/단순문의 3단계로 나눴더니 '중립'을 한 번도 맞히지 못했습니다(0/20). 정의를 고치자 전체 정확도는 56% → 84%로 올랐지만, 클래스별로 쪼개 보니 중립은 여전히 0/7이었습니다.
+- **원인** - 라벨만 옮긴 개선이었습니다. 실제로는 '감정'과 '주문 조회가 필요한가'라는 서로 다른 두 기준을 한 줄에 섞은 설계 오류였습니다.
+- **해결** - 두 기준을 따로 판정하도록 감정(불만/일반)과 조회 필요(예/아니오) 두 축으로 나눴습니다.
+- **확인** - 감정 98%, 조회 필요 92%. 잘못된 중간 측정도 지우지 않고 기록으로 남겼습니다.
+
+#### 4. PDF를 그대로 읽으니 문장과 표가 뒤섞였다 · `financial-rag-agent` (팀)
+
+- **문제** - 기본 텍스트 추출로 금융 PDF 23개를 읽으니 펼침면·2단 문서의 좌우 문장이 섞이고, 표·차트·그림·각주가 깨졌습니다. 검색이 맞아도 근거 자체가 망가져 있었습니다.
+- **원인** - 기본 추출은 쪽 전체를 위에서 아래로만 읽어서, 사람이 읽는 순서와 표 구조를 알지 못합니다.
+- **해결** - 글자 좌표를 보고 펼침면·2단을 나눠 읽는 규칙을 만들었습니다. 표는 한글·숫자를 따로 세어 90% 미만이면 손실로 보고 칸 채우기 → Gemini 재판독 순서로 복구했고, 그림은 OCR로 먼저 읽은 뒤 종류에 맞게 글로 바꿨습니다.
+- **확인** - 표 191개를 처리하고, 청크 1,508개에서 정답 근거 누락 0을 확인했습니다.
+
+#### 5. Agent가 답할 수 있는 질문까지 거절했다 · `financial-rag-agent` (팀)
+
+- **문제** - 더 똑똑해야 할 Agent가 기본 RAG보다 점수가 낮았습니다. 들여다보니 답할 수 있는 질문을 거절하는 비율이 0.32였습니다(기본 RAG 0.03).
+- **원인** - 검색하기 전에 "답할 수 있는 질문인가"를 먼저 판단하는 단계가 있어서, 근거를 보기도 전에 거절하고 있었습니다.
+- **해결** - 그 단계를 없애고, 검색 결과를 본 뒤 한 번에 판단하도록 구조를 바꿨습니다.
+- **확인** - 시험 40문항에서 과다 거절 0.32 → 0.12, 답변 점수 1.03 → 1.40.
+
+#### 6. "로컬 LLM이라 안전하다"던 설계가 질문을 밖으로 보내고 있었다 · `legal_secretary`
+
+- **문제** - 2024년 캡스톤은 민감한 법률 질문을 다루니 로컬 LLM을 쓴다고 설계했습니다. 그런데 다시 살펴보니 사용자 질문이 ngrok 공개 터널을 거쳐 Colab으로 나가고 있었습니다.
+- **원인** - 컴퓨팅 자원이 부족해 Colab GPU를 빌려 쓰면서, 설계 문서와 실제 데이터 흐름이 어긋났습니다.
+- **해결** - 데이터가 밖으로 나가지 않는 self-hosted 경로를 실제로 구현하는 것을 목표로 구조 전체를 다시 만들고 있습니다(재구축 3 / 6단계).
 
 ---
 
@@ -251,7 +328,7 @@
 <tr><td>2026.07</td><td><b>대통령: 외교의 신 (god-of-diplomacy)</b><br/>Gemini 기반 정치·외교 텍스트 RPG</td><td>FastAPI · Gemini</td><td><a href="projects/god-of-diplomacy/">코드</a></td></tr>
 
 <tr><td colspan="4"><b>🏁 공모전 · 해커톤</b></td></tr>
-<tr><td>2026.10 ~</td><td><b>KIC AI 에이전트 공모전</b><br/>팀 참가 · 진행 중 (대회가 끝난 뒤 공개)</td><td>-</td><td>-</td></tr>
+<tr><td>2026.10 ~</td><td><b>KIC AI 에이전트 공모전</b><br/>개인 참가 · 진행 중 (대회가 끝난 뒤 공개)</td><td>-</td><td>-</td></tr>
 <tr><td>2026.10</td><td><b>길잡이 24</b> · 고용24 국민참여 AI 해커톤 기획안 참가 (개인)<br/>훈련·생계 지원·구직활동을 재취업까지 하나의 경로로 설계하는 AI 재취업 내비게이션 기획</td><td>기획 · 공공데이터 설계</td><td>-</td></tr>
 
 <tr><td colspan="4"><b>📱 웹 · 앱</b></td></tr>
