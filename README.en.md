@@ -36,6 +36,7 @@ Things you can click and try right now. All run on fictional data.
 [![go-eat](https://img.shields.io/badge/go--eat-Web_demo-1F2328?style=for-the-badge&logo=supabase&logoColor=white&labelColor=3FCF8E)](https://go-eat-noviz.vercel.app)
 [![data-value-sandbox](https://img.shields.io/badge/data--value--sandbox-Web_demo-1F2328?style=for-the-badge&logo=github&logoColor=white&labelColor=0F766E)](https://noviz-domino.github.io/data-value-sandbox/)
 [![cosmic-grazer](https://img.shields.io/badge/cosmic--grazer-Play-1F2328?style=for-the-badge&logo=javascript&logoColor=white&labelColor=7C4DCC)](https://noviz-domino.github.io/cosmic-grazer/)
+[![contest-radar](https://img.shields.io/badge/contest--radar-Web_demo-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://contest-radar-eta.vercel.app)
 
 </div>
 
@@ -45,7 +46,7 @@ Things you can click and try right now. All run on fictional data.
 
 ## 👋 About
 
-I majored in Computer Information Security and am now in the Samsung Multicampus AI Agent Engineer Track, learning **LLMs, RAG and multi-agent systems** through projects built around finance-domain problems. Beyond AI agents, I have built and run an Android app published on Google Play and two deployed Next.js web services on my own.
+I majored in Computer Information Security and am now in the Samsung Multicampus AI Agent Engineer Track, learning **LLMs, RAG and multi-agent systems** through projects built around finance-domain problems. Beyond AI agents, I have built and run an Android app published on Google Play and three deployed Next.js web services on my own.
 
 <table>
 <tr>
@@ -90,9 +91,33 @@ Instead of "it got better", I keep numbers from evaluation sets and scenarios, a
 
 ## 📂 Projects
 
-*Most recent first · all solo projects*
+*Most recent first · solo projects unless marked otherwise*
 
-### 1. langgraph-financial-agent · Conversational banking AI agent
+### 1. financial-rag-agent · RAG agent that answers from financial documents with citations
+
+`Oct 2026` · Course team project (3 people) · ✅ **Submitted**
+
+![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=flat-square&logo=langchain&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
+![Chroma](https://img.shields.io/badge/Chroma-FF6446?style=flat-square)
+![BM25](https://img.shields.io/badge/Kiwi_BM25_+_Vector-555555?style=flat-square)
+![pdfplumber](https://img.shields.io/badge/pdfplumber-555555?style=flat-square)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+
+Searches 23 financial PDFs (glossary, standard terms and conditions, a personal-finance guidebook, policy documents) and answers with the file name and page as evidence. For questions it cannot answer, it chooses the right response: ask back, report no data, or decline. We also built an evaluation loop that runs the same 180 questions through run → grade → failure analysis → fix, over and over.
+
+- **How we worked** - The three of us wrote the plan together and settled the agent structure through meetings and pair programming. After that, each person's work came in through PRs and was merged, so all three of us took part in every stage.
+- **Where I focused** - Within that, I went deeper on three areas: PDF loading/preprocessing, agent architecture design, and finding the best configuration.
+- **PDF preprocessing** - Default extraction mixed up sentences on two-page spreads and two-column layouts and broke tables, charts, figures and footnotes, so I wrote rules that work from character coordinates. Tables are checked for loss by counting Korean characters and digits separately (below 90% → fill merged cells; still lossy → Gemini re-reads the table image), and figures are OCR'd first, then described according to their type. 191 tables processed; 1,508 chunks with zero missing answer evidence.
+- **Agent architecture** - I designed the LangGraph flow of retrieve → judge the evidence → (re-search with a new query if it falls short) → answer → check citations and numbers, with stop conditions of 2 re-searches, 1 rewrite and a cap on AI calls. The first version decided whether to answer before retrieving, which made it refuse questions it could have answered; removing that step and judging once after seeing the search results cut over-refusal from 0.32 to 0.12 and raised the answer score from 1.03 to 1.40 on a 40-question pilot.
+- **Finding the best settings** - I changed one thing at a time (chunking by length / by structure / parent-child, retrieval method, top-k, embedding) and graded 15 candidates on all 180 questions, finding a setting that raised the answer score from 1.456 to 1.517. Along the way I found that the ranking by retrieval metrics differs from the ranking by answer score.
+- **Analysis** - Of the 66 questions that missed full marks, only 6 were retrieval failures. The numbers showed that the remaining problems sit in the answer stage (false alarms in the number check, response-type decisions), and we published them as known limitations.
+
+🔗 [Original team repository](https://github.com/noviz-domino/financial-rag-agent) · 📄 [Implementation notes (KR)](https://github.com/noviz-domino/financial-rag-agent/blob/main/docs/구현_문서.md)
+
+<br/>
+
+### 2. langgraph-financial-agent · Conversational banking AI agent
 
 `Sep 2026` · Course assignment · ✅ **Complete · deployed**
 
@@ -120,7 +145,7 @@ Understands requests like "send ₩100,000 from living expenses to savings" and 
 
 <br/>
 
-### 2. legal_secretary · Labor-law RAG assistant that cites the article
+### 3. legal_secretary · Labor-law RAG assistant that cites the article
 
 `Sep – Nov 2024` capstone → `Sep 2026 –` rebuild · Graduation thesis topic · 🚧 **Rebuild: stage 3 of 6**
 
@@ -140,7 +165,7 @@ Answers legal questions by finding the relevant statute articles and citing them
 
 <br/>
 
-### 3. mealmate · AI weekly meal planner from what's in your fridge
+### 4. mealmate · AI weekly meal planner from what's in your fridge
 
 `Aug – Sep 2026` · ✅ **Deployed · live demo**
 
@@ -164,7 +189,7 @@ Enter your ingredients and the AI generates a weekly meal plan and shopping list
 
 <br/>
 
-### 4. replygate · Customer support automation with AI drafts and human approval
+### 5. replygate · Customer support automation with AI drafts and human approval
 
 `Aug 2026` · Course mini project · ✅ **Complete · measured**
 
@@ -186,7 +211,7 @@ When a customer inquiry arrives, the AI drafts a reply grounded in company polic
 
 <br/>
 
-### 5. englishWordApp · TOEIC vocabulary Android app
+### 6. englishWordApp · TOEIC vocabulary Android app
 
 `Jun – Aug 2026` · ✅ **Published on Google Play**
 
@@ -217,6 +242,7 @@ Study with meanings hidden, resume progress, TTS pronunciation, a mistake notebo
 <tbody>
 
 <tr><td colspan="4"><b>🤖 AI agents · LLM</b></td></tr>
+<tr><td>Oct 2026 –</td><td><b>contest-radar</b><br/>Site that collects AI/IT competitions every day and summarizes them with AI · built because I needed it, still running · duplicates resolved by rules → BM25 candidates → LLM</td><td>Next.js · Gemini · GitHub Actions</td><td><a href="https://contest-radar-eta.vercel.app">Demo</a></td></tr>
 <tr><td>Sep 2026</td><td><b>multi-agent-tax-prep</b><br/>Multi-agent helper for Korean income tax filing (research · planning · review) · 57 tests without LLM calls</td><td>LangGraph · Gemini</td><td><a href="projects/multi-agent-tax-prep/">Code</a></td></tr>
 <tr><td>Sep 2026</td><td><b>rag-experiment-script</b><br/>RAG experiment comparing chunking, retrieval and reranking over 20 configs · hybrid Page Hit@1 0.943 (baseline 0.886)</td><td>LangChain · Chroma · BM25</td><td><a href="projects/rag-experiment-script/">Code</a></td></tr>
 <tr><td>Aug – Sep 2026</td><td><b>personal-budget-ai-agent</b><br/>Natural-language budgeting agent with 7 tools</td><td>Gemini Function Calling</td><td><a href="projects/personal-budget-ai-agent/">Code</a></td></tr>
@@ -224,13 +250,17 @@ Study with meanings hidden, resume progress, TTS pronunciation, a mistake notebo
 <tr><td>Aug 2026</td><td><b>n8n-voc-analysis-agent</b><br/>Automatic customer feedback classification and urgent alerts</td><td>n8n · Gemini · Sheets</td><td><a href="projects/n8n-voc-analysis-agent/">Code</a></td></tr>
 <tr><td>Jul 2026</td><td><b>god-of-diplomacy</b><br/>Gemini-powered political and diplomatic text RPG</td><td>FastAPI · Gemini</td><td><a href="projects/god-of-diplomacy/">Code</a></td></tr>
 
+<tr><td colspan="4"><b>🏁 Competitions · hackathons</b></td></tr>
+<tr><td>Oct 2026 –</td><td><b>KIC AI Agent Competition</b><br/>Team entry · in progress (to be published after the competition)</td><td>-</td><td>-</td></tr>
+<tr><td>Oct 2026</td><td><b>Giljabi 24</b> · Proposal entry, Work24 public-participation AI hackathon (solo)<br/>Plan for an AI re-employment navigator that links job training, living-cost support and job seeking into one path</td><td>Service planning · public data design</td><td>-</td></tr>
+
 <tr><td colspan="4"><b>📱 Web · apps</b></td></tr>
 <tr><td>Aug – Sep 2026</td><td><b>go-eat</b><br/>Rural restaurant log web app, built under an 8-hour limit</td><td>Next.js · Supabase</td><td><a href="https://go-eat-noviz.vercel.app">Demo</a> · <a href="projects/go-eat/">Code</a></td></tr>
 
 <tr><td colspan="4"><b>📊 Data · games</b></td></tr>
 <tr><td>Jul – Aug 2026</td><td><b>cosmic-grazer</b><br/>Single-HTML-file bullet-hell survivor game</td><td>Vanilla JS · Canvas2D</td><td><a href="https://noviz-domino.github.io/cosmic-grazer/">Play</a> · <a href="projects/cosmic-grazer/">Code</a></td></tr>
 <tr><td>Apr – Sep 2026</td><td><b>data-value-sandbox</b><br/>Measuring which data makes events predictable, in a synthetic world · target inference top-1 51.5% (3.81× baseline)</td><td>deck.gl · Jupyter</td><td><a href="https://noviz-domino.github.io/data-value-sandbox/">Demo</a> · <a href="https://github.com/noviz-domino/data-value-sandbox">Repo</a></td></tr>
-<tr><td>Dec 2021</td><td><b>GTD terror prediction model</b><br/>Global Terrorism Database analysis and prediction (2-person team)</td><td>Python · Scikit-learn</td><td><a href="https://github.com/noviz-domino/gtd-terror-analysis-project">Repo</a></td></tr>
+<tr><td>Dec 2021</td><td><b>GTD terror prediction model</b><br/>Global Terrorism Database analysis and prediction (2-person team)</td><td>Python · Scikit-learn</td><td>-</td></tr>
 
 </tbody>
 </table>
@@ -260,7 +290,8 @@ Study with meanings hidden, resume progress, TTS pronunciation, a mistake notebo
 | ✅ 1 | LLMs, prompt engineering, n8n | replygate · n8n-voc-analysis-agent · n8n-finance-news-briefing |
 | ✅ 2 | Python AI web development, LangChain | personal-budget-ai-agent · rag-experiment-script |
 | ✅ 3 | LangGraph, MCP, multi-agent systems | langgraph-financial-agent · multi-agent-tax-prep |
-| ⏳ 4 – 6 | RAG system design · production (Docker, AWS, CI/CD) · capstone | *upcoming* |
+| ✅ 4 | RAG system design | financial-rag-agent (team of 3) |
+| ⏳ 5 – 6 | Production (Docker, AWS, CI/CD) · capstone | *upcoming* |
 
 | Period | School | |
 |:--|:--|:--|
@@ -295,6 +326,6 @@ Military service: completed (ROK Army).
 This repository collects each project's source code and design documents under `projects/`. Most original repositories are private, so the copies here have sensitive data removed.<br/>
 How I work with AI coding tools: [docs/agent-workflow.md](docs/agent-workflow.md)
 
-<sub>Last updated 2026-09-30 · <a href="docs/CHANGELOG.md">Change log (KR)</a></sub>
+<sub>Last updated 2026-10-29 · <a href="docs/CHANGELOG.md">Change log (KR)</a></sub>
 
 </div>

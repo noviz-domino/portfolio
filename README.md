@@ -36,6 +36,7 @@
 [![가봐야 알지](https://img.shields.io/badge/가봐야_알지-웹_데모-1F2328?style=for-the-badge&logo=supabase&logoColor=white&labelColor=3FCF8E)](https://go-eat-noviz.vercel.app)
 [![data-value-sandbox](https://img.shields.io/badge/data--value--sandbox-웹_데모-1F2328?style=for-the-badge&logo=github&logoColor=white&labelColor=0F766E)](https://noviz-domino.github.io/data-value-sandbox/)
 [![스쳐야 산다](https://img.shields.io/badge/스쳐야_산다-바로_플레이-1F2328?style=for-the-badge&logo=javascript&logoColor=white&labelColor=7C4DCC)](https://noviz-domino.github.io/cosmic-grazer/)
+[![contest-radar](https://img.shields.io/badge/contest--radar-웹_데모-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://contest-radar-eta.vercel.app)
 
 </div>
 
@@ -45,7 +46,7 @@
 
 ## 👋 소개
 
-컴퓨터정보보안을 전공했고, 지금은 삼성 멀티캠퍼스 AI 에이전트 엔지니어 트랙에서 **LLM · RAG · 멀티 에이전트**를 배우며 금융 도메인 과제를 중심으로 프로젝트를 진행하고 있습니다. AI 에이전트 외에도 Google Play에 출시한 Android 앱, 배포 중인 Next.js 웹 서비스 두 개를 혼자 만들어 운영해봤습니다.
+컴퓨터정보보안을 전공했고, 지금은 삼성 멀티캠퍼스 AI 에이전트 엔지니어 트랙에서 **LLM · RAG · 멀티 에이전트**를 배우며 금융 도메인 과제를 중심으로 프로젝트를 진행하고 있습니다. AI 에이전트 외에도 Google Play에 출시한 Android 앱, 배포 중인 Next.js 웹 서비스 세 개를 혼자 만들어 운영해봤습니다.
 
 <table>
 <tr>
@@ -90,9 +91,33 @@
 
 ## 📂 프로젝트
 
-*최신순 · 모두 개인 프로젝트*
+*최신순 · 따로 표시가 없으면 개인 프로젝트*
 
-### 1. langgraph-financial-agent · 대화형 은행 업무 AI 에이전트
+### 1. financial-rag-agent · 금융 문서 근거 인용 RAG Agent
+
+`2026.10` · KDT 팀 프로젝트 (3인) · ✅ **제출 완료**
+
+![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=flat-square&logo=langchain&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
+![Chroma](https://img.shields.io/badge/Chroma-FF6446?style=flat-square)
+![BM25](https://img.shields.io/badge/Kiwi_BM25_+_Vector-555555?style=flat-square)
+![pdfplumber](https://img.shields.io/badge/pdfplumber-555555?style=flat-square)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+
+금융 PDF 23개(용어집·표준약관·금융생활 가이드북·정책 자료)에서 근거를 찾아 파일명·쪽과 함께 답하고, 답할 수 없는 질문에는 되묻기·자료 없음·거절 중 알맞은 대응을 고릅니다. 같은 180문항으로 실행 → 채점 → 실패 원인 분석 → 수정을 반복하는 평가 루프도 함께 만들었습니다.
+
+- **협업 방식** - 기획서는 셋이 함께 썼고, 에이전트 구조는 회의와 페어 프로그래밍으로 정했습니다. 이후 각자 작업한 내용을 PR로 올려 합치는 방식이라, 세 명 모두 모든 과정에 참여했습니다.
+- **내가 집중한 부분** - 그중 PDF 읽기·전처리, 에이전트 구조 설계, 최적 설정 찾기, 세 가지를 제가 더 깊게 맡았습니다.
+- **PDF 전처리** - 기본 추출로는 펼침면·2단 문서의 문장이 섞이고 표·차트·그림·각주가 깨져서, 글자 좌표를 보고 판단하는 규칙을 직접 만들었습니다. 표는 한글·숫자를 따로 세어 손실을 판정하고(90% 미만이면 칸 채우기, 그래도 안 되면 Gemini 재판독), 그림은 OCR로 먼저 읽은 뒤 종류에 맞게 글로 바꿨습니다. 표 191개를 처리하고 청크 1,508개에서 정답 근거 누락 0을 확인했습니다.
+- **에이전트 구조** - LangGraph로 검색 → 근거 판단 → (부족하면 검색어를 바꿔 재검색) → 답변 → 인용·숫자 검사 흐름을 설계하고, 재검색 2번·재작성 1번·AI 호출 상한으로 끝나는 조건을 정했습니다. 처음 구조는 검색하기 전에 답할지를 먼저 판단해서 답할 수 있는 질문까지 거절했는데, 이 단계를 없애고 검색 결과를 본 뒤 한 번에 판단하도록 바꿔 시험 40문항에서 과다 거절을 0.32 → 0.12로, 답변 점수를 1.03 → 1.40으로 개선했습니다.
+- **최적값 찾기** - 청킹(글자 수·구조형·parent-child)·검색 방식·검색 개수·임베딩을 한 번에 하나씩 바꾼 후보 15개를 180문항 전체로 채점해, 답변 점수를 기준 1.456에서 1.517로 올린 설정을 찾았습니다. 검색 지표 순위와 답변 점수 순위가 다르다는 것도 이 과정에서 확인했습니다.
+- **분석** - 만점을 못 받은 66문항 중 검색 실패는 6문항뿐이었습니다. 남은 문제가 검색이 아니라 답변 단계(숫자 검사 오탐·대응 판단)에 있다는 것을 숫자로 확인하고, 한계로 공개했습니다.
+
+🔗 [원본 팀 저장소](https://github.com/noviz-domino/financial-rag-agent) · 📄 [구현 문서](https://github.com/noviz-domino/financial-rag-agent/blob/main/docs/구현_문서.md)
+
+<br/>
+
+### 2. langgraph-financial-agent · 대화형 은행 업무 AI 에이전트
 
 `2026.09` · KDT 과제 · ✅ **완성 · 배포 중**
 
@@ -120,7 +145,7 @@
 
 <br/>
 
-### 2. legal_secretary · 노동법 조문 인용 RAG 비서
+### 3. legal_secretary · 노동법 조문 인용 RAG 비서
 
 `2024.09 ~ 11` 캡스톤 → `2026.09 ~` 재구축 · 졸업논문 주제 · 🚧 **재구축 3 / 6단계**
 
@@ -140,7 +165,7 @@
 
 <br/>
 
-### 3. mealmate · 냉장고 재료 기반 AI 주간 식단 생성
+### 4. mealmate · 냉장고 재료 기반 AI 주간 식단 생성
 
 `2026.08 ~ 09` · ✅ **배포 · 라이브 데모**
 
@@ -164,7 +189,7 @@
 
 <br/>
 
-### 4. replygate · AI 초안 + 사람 승인 고객 응대 자동화
+### 5. replygate · AI 초안 + 사람 승인 고객 응대 자동화
 
 `2026.08` · KDT 미니프로젝트 · ✅ **완성 · 실측 평가**
 
@@ -186,7 +211,7 @@
 
 <br/>
 
-### 5. englishWordApp · 토익 단어 학습 Android 앱
+### 6. englishWordApp · 토익 단어 학습 Android 앱
 
 `2026.06 ~ 08` · ✅ **Google Play 출시**
 
@@ -217,6 +242,7 @@
 <tbody>
 
 <tr><td colspan="4"><b>🤖 AI 에이전트 · LLM</b></td></tr>
+<tr><td>2026.10 ~</td><td><b>contest-radar</b><br/>AI·IT 공모전을 매일 자동으로 모아 AI가 요약해 주는 사이트 · 필요해서 직접 만들어 운영 중 · 중복 판정은 규칙 → BM25 후보 → LLM 순서</td><td>Next.js · Gemini · GitHub Actions</td><td><a href="https://contest-radar-eta.vercel.app">데모</a></td></tr>
 <tr><td>2026.09</td><td><b>multi-agent-tax-prep</b><br/>종합소득세 신고 준비 멀티 에이전트 (리서치·계획·검토) · LLM 없이 도는 테스트 57개</td><td>LangGraph · Gemini</td><td><a href="projects/multi-agent-tax-prep/">코드</a></td></tr>
 <tr><td>2026.09</td><td><b>rag-experiment-script</b><br/>설정 20개로 청킹·검색·리랭킹을 비교한 RAG 실험 · 하이브리드 검색 Page Hit@1 0.943 (기준 0.886)</td><td>LangChain · Chroma · BM25</td><td><a href="projects/rag-experiment-script/">코드</a></td></tr>
 <tr><td>2026.08 ~ 09</td><td><b>personal-budget-ai-agent</b><br/>자연어로 쓰는 가계부 에이전트 (도구 7개)</td><td>Gemini Function Calling</td><td><a href="projects/personal-budget-ai-agent/">코드</a></td></tr>
@@ -224,13 +250,17 @@
 <tr><td>2026.08</td><td><b>n8n-voc-analysis-agent</b><br/>고객 VOC 자동 분류·긴급 알림</td><td>n8n · Gemini · Sheets</td><td><a href="projects/n8n-voc-analysis-agent/">코드</a></td></tr>
 <tr><td>2026.07</td><td><b>대통령: 외교의 신 (god-of-diplomacy)</b><br/>Gemini 기반 정치·외교 텍스트 RPG</td><td>FastAPI · Gemini</td><td><a href="projects/god-of-diplomacy/">코드</a></td></tr>
 
+<tr><td colspan="4"><b>🏁 공모전 · 해커톤</b></td></tr>
+<tr><td>2026.10 ~</td><td><b>KIC AI 에이전트 공모전</b><br/>팀 참가 · 진행 중 (대회가 끝난 뒤 공개)</td><td>-</td><td>-</td></tr>
+<tr><td>2026.10</td><td><b>길잡이 24</b> · 고용24 국민참여 AI 해커톤 기획안 참가 (개인)<br/>훈련·생계 지원·구직활동을 재취업까지 하나의 경로로 설계하는 AI 재취업 내비게이션 기획</td><td>기획 · 공공데이터 설계</td><td>-</td></tr>
+
 <tr><td colspan="4"><b>📱 웹 · 앱</b></td></tr>
 <tr><td>2026.08 ~ 09</td><td><b>가봐야 알지 (go-eat)</b><br/>시골 맛집 기록 웹앱, 8시간 제약 개발</td><td>Next.js · Supabase</td><td><a href="https://go-eat-noviz.vercel.app">데모</a> · <a href="projects/go-eat/">코드</a></td></tr>
 
 <tr><td colspan="4"><b>📊 데이터 · 게임</b></td></tr>
 <tr><td>2026.07 ~ 08</td><td><b>스쳐야 산다 (cosmic-grazer)</b><br/>단일 HTML 파일 탄막 서바이버 게임</td><td>Vanilla JS · Canvas2D</td><td><a href="https://noviz-domino.github.io/cosmic-grazer/">플레이</a> · <a href="projects/cosmic-grazer/">코드</a></td></tr>
 <tr><td>2026.04 ~ 09</td><td><b>data-value-sandbox</b><br/>합성 세계로 "어떤 데이터가 사건을 예측 가능하게 하는가" 측정 · 표적 추론 top-1 51.5% (기준선의 3.81배)</td><td>deck.gl · Jupyter</td><td><a href="https://noviz-domino.github.io/data-value-sandbox/">데모</a> · <a href="https://github.com/noviz-domino/data-value-sandbox">저장소</a></td></tr>
-<tr><td>2021.12</td><td><b>GTD 테러예측모델</b><br/>글로벌 테러 데이터 분석·예측 (2인 팀)</td><td>Python · Scikit-learn</td><td><a href="https://github.com/noviz-domino/gtd-terror-analysis-project">저장소</a></td></tr>
+<tr><td>2021.12</td><td><b>GTD 테러예측모델</b><br/>글로벌 테러 데이터 분석·예측 (2인 팀)</td><td>Python · Scikit-learn</td><td>-</td></tr>
 
 </tbody>
 </table>
@@ -260,7 +290,8 @@
 | ✅ 1 | LLM · 프롬프트 · n8n | replygate · n8n-voc-analysis-agent · n8n-finance-news-briefing |
 | ✅ 2 | Python AI 웹개발 · LangChain | personal-budget-ai-agent · rag-experiment-script |
 | ✅ 3 | LangGraph · MCP · 멀티 에이전트 | langgraph-financial-agent · multi-agent-tax-prep |
-| ⏳ 4 ~ 6 | RAG 시스템 설계 · 프로덕션(Docker·AWS·CI/CD) · 종합 프로젝트 | *예정* |
+| ✅ 4 | RAG 시스템 설계 | financial-rag-agent (3인 팀) |
+| ⏳ 5 ~ 6 | 프로덕션(Docker·AWS·CI/CD) · 종합 프로젝트 | *예정* |
 
 | 기간 | 학교 | |
 |:--|:--|:--|
@@ -293,6 +324,6 @@
 이 저장소는 프로젝트별 소스 코드와 설계 문서를 `projects/`에 모은 것입니다. 원본 저장소는 대부분 비공개라 민감정보를 뺀 사본을 두었습니다.<br/>
 AI 코딩 도구 운용 방식: [docs/agent-workflow.md](docs/agent-workflow.md)
 
-<sub>최종 수정 2026-09-30 · <a href="docs/CHANGELOG.md">정돈 기록</a></sub>
+<sub>최종 수정 2026-10-29 · <a href="docs/CHANGELOG.md">정돈 기록</a></sub>
 
 </div>
