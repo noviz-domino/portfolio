@@ -328,7 +328,7 @@
 <tr><td>2026.07</td><td><b>대통령: 외교의 신 (god-of-diplomacy)</b><br/>Gemini 기반 정치·외교 텍스트 RPG</td><td>FastAPI · Gemini</td><td><a href="projects/god-of-diplomacy/">코드</a></td></tr>
 
 <tr><td colspan="4"><b>🏁 공모전 · 해커톤</b></td></tr>
-<tr><td>2026.10 ~</td><td><b>KIC AI 에이전트 공모전</b><br/>개인 참가 · 진행 중 (대회가 끝난 뒤 공개)</td><td>-</td><td>-</td></tr>
+<tr><td>2026.10 ~</td><td><b>국부펀드 KIC AI 에이전트 공모전</b><br/>해외 위탁운용사(GP)를 고르고 관리하는 일을 돕는 멀티 에이전트 · 운용사가 낸 제안자료의 주장을 공개 자료로 확인하고, 선정 뒤의 변화를 살핍니다 · 개인 참가 · 진행 중 (코드와 상세 설계는 대회가 끝난 뒤 공개)</td><td>Python · Gemini · Next.js</td><td>-</td></tr>
 <tr><td>2026.10</td><td><b>길잡이 24</b> · 고용24 국민참여 AI 해커톤 기획안 참가 (개인)<br/>훈련·생계 지원·구직활동을 재취업까지 하나의 경로로 설계하는 AI 재취업 내비게이션 기획</td><td>기획 · 공공데이터 설계</td><td>-</td></tr>
 
 <tr><td colspan="4"><b>📱 웹 · 앱</b></td></tr>

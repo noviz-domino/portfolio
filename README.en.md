@@ -328,7 +328,7 @@ Study with meanings hidden, resume progress, TTS pronunciation, a mistake notebo
 <tr><td>Jul 2026</td><td><b>god-of-diplomacy</b><br/>Gemini-powered political and diplomatic text RPG</td><td>FastAPI · Gemini</td><td><a href="projects/god-of-diplomacy/">Code</a></td></tr>
 
 <tr><td colspan="4"><b>🏁 Competitions · hackathons</b></td></tr>
-<tr><td>Oct 2026 –</td><td><b>KIC AI Agent Competition</b><br/>Solo entry · in progress (to be published after the competition)</td><td>-</td><td>-</td></tr>
+<tr><td>Oct 2026 –</td><td><b>KIC (Korea's sovereign wealth fund) AI Agent Competition</b><br/>Multi-agent assistant for selecting and monitoring external fund managers (GPs) · checks claims in GP proposals against public records and tracks changes after selection · Solo entry · in progress (code and detailed design to be published after the competition)</td><td>Python · Gemini · Next.js</td><td>-</td></tr>
 <tr><td>Oct 2026</td><td><b>Giljabi 24</b> · Proposal entry, Work24 public-participation AI hackathon (solo)<br/>Plan for an AI re-employment navigator that links job training, living-cost support and job seeking into one path</td><td>Service planning · public data design</td><td>-</td></tr>
 
 <tr><td colspan="4"><b>📱 Web · apps</b></td></tr>
