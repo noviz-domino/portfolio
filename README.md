@@ -1,406 +1,51 @@
-<div align="center">
+# 김민석 | AI Engineer
 
-[![포트폴리오 사이트 바로가기](https://img.shields.io/badge/포트폴리오_사이트_바로가기-noviz--domino.github.io-14B8A6?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=0F766E)](https://noviz-domino.github.io/)
+금융 문서 RAG와 업무 에이전트를 설계·구현하는 신입 개발자입니다. 문서의 근거를 보존하고 AI의 판단을 권한·승인·검증 흐름에 연결합니다.
 
-# 김민석
+[포트폴리오 사이트](https://noviz-domino.github.io/) · [GitHub](https://github.com/noviz-domino) · [학습 기록](https://github.com/noviz-domino/TIL) · noviz2025@gmail.com
 
-### AI Agent Engineer · 신입
+## 먼저 볼 프로젝트
 
-**LLM을 실제 서비스에 안전하게 붙이는 일을 합니다.**<br/>
-출력 검증과 사람 승인 단계를 설계해, LLM이 할 일과 코드·사람이 할 일을 나눕니다.
+| 프로젝트 | 집중한 문제 | 역할과 근거 |
+|---|---|---|
+| [캡아메리카뱅크](https://github.com/noviz-domino/avengers-bank-noviz) | AI 상담을 권한·PIN 승인·중복 방지와 연결 | 팀 기획 후 개인 구현·고도화. [사례](docs/case-studies/capamerica.md) |
+| [금융 문서 RAG Agent](https://github.com/noviz-domino/financial-rag-agent) | 복잡한 PDF의 근거 보존과 과다 거절 개선 | 3인 팀. 전처리·Agent 구조·설정 비교 중심. [사례](docs/case-studies/rag.md) |
+| [ReplyGate](projects/replygate/) | 정책 근거가 있는 초안과 사람 승인 후 발송 | 개인 프로젝트. [사례](docs/case-studies/reply.md) |
 
-[![Email](https://img.shields.io/badge/noviz2025@gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:noviz2025@gmail.com)
-[![GitHub](https://img.shields.io/badge/noviz--domino-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/noviz-domino)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/kim-min-seok-domino/)
-[![Website](https://img.shields.io/badge/Portfolio_Site-0F766E?style=flat-square&logo=googlechrome&logoColor=white)](https://noviz-domino.github.io/)
-[![TIL](https://img.shields.io/badge/TIL-555555?style=flat-square&logo=github&logoColor=white)](https://github.com/noviz-domino/TIL)
+## 최근 작업
 
-🎂 1998. 02. 01 &nbsp;·&nbsp; 🎖️ 육군 만기 전역 &nbsp;·&nbsp; 🎓 삼성 멀티캠퍼스 AI 에이전트 엔지니어 트랙 수강 중 (2026.07 ~ 2027.01)
+| 기간 | 작업 | 현재 범위 |
+|---|---|---|
+| 2026.11 | [Kick the Tires](https://ktt-w66x.axhub.app) | 삼일PwC AX 인재전쟁 W08. 가상 기업 인수 실사의 근거·조건·상신 흐름. 질의 발송·의결은 모의 처리 |
+| 2026.10 - 11 | [Contest Radar](https://contest-radar-eta.vercel.app) | 수집·요약·중복 판정, 필터·캘린더·북마크. 11월 북마크 전용 보기·Paper 테마 반영. 코치는 로컬 MVP |
+| 2026.10 - 현재 | KIC AI 에이전트 공모전 | 개인 참가. 대회 기간 코드·상세 자료 비공개 |
+| 2026.11 | AWS 검색 배포 실습 | FastAPI·Docker Compose·EC2·RDS·pgvector 연결 실습 |
+| 2026.11 | Agent Command | C# 코어와 규칙 기반 CLI. LLM 실행·게임 화면 미구현 |
 
-[라이브 데모](#-라이브-데모) · [소개](#-소개) · [문제 해결 사례](#-문제-해결-사례) · [프로젝트](#-프로젝트) · [그 외 프로젝트](#-그-외-프로젝트) · [기술](#-기술-스택) · [학력 · 교육](#-학력--교육) · [자격 · 수상](#-자격--수상) · [English](README.en.md)
+## 기술과 경험
 
-</div>
+- **주로 사용하는 기술:** Python, FastAPI, LangGraph, LangChain, Gemini, MCP, PostgreSQL.
+- **문서 검색:** PDF 전처리, BM25 + 벡터 검색, Chroma·pgvector, 청킹·RAG 평가. Parent-Child RAG 설정 비교, 관계 그래프 기반 조사 설계 경험.
+- **제품 구현:** Next.js·TypeScript, Kotlin·Jetpack Compose, n8n.
+- **실행과 검증:** Docker, GitHub Actions, Oracle Cloud, LangSmith·Langfuse. EC2·RDS는 배포 실습 경험.
+- **교육:** 멀티캠퍼스 AI 에이전트 엔지니어 트랙, 2026.07 - 2027.01 수강 중.
 
----
+## 이전 프로젝트와 소스 보관본
 
-## 🚀 라이브 데모
+`projects/`는 공개 가능한 이전 프로젝트의 보관본입니다. 독립 저장소가 있는 작업은 위 링크의 최신 저장소를 우선 확인해 주세요. 모든 프로젝트를 같은 완성도나 운영 상태로 소개하지 않습니다.
 
-바로 눌러서 써볼 수 있는 결과물입니다. 모두 가상 데이터로 동작합니다.
+| 분야 | 프로젝트 |
+|---|---|
+| Agent | [대화형 은행 업무](https://github.com/noviz-domino/langgraph-financial-agent), [종합소득세 신고 준비](projects/multi-agent-tax-prep/), [가계부](projects/personal-budget-ai-agent/) |
+| RAG | [노동법 비서](projects/legal_secretary/), [검색 설정 비교 실험](projects/rag-experiment-script/) |
+| 자동화 | [금융 뉴스 브리핑](projects/n8n-finance-news-briefing/), [VOC 분석](projects/n8n-voc-analysis-agent/) |
+| 웹·앱 | [식단 생성](projects/mealmate/), [맛집 기록](projects/go-eat/), [토익 단어 앱](projects/englishWordApp/) |
+| 기타 | [데이터 가치 실험](https://github.com/noviz-domino/data-value-sandbox), [Cosmic Grazer](projects/cosmic-grazer/), [외교 텍스트 RPG](projects/god-of-diplomacy/) |
 
-<table>
-<tr>
-<td width="50%" align="center">
+## 수치 읽는 법
 
-[![금융 AI 에이전트](https://img.shields.io/badge/금융_AI_에이전트-웹_데모-1F2328?style=for-the-badge&logo=langchain&logoColor=white&labelColor=1C3C3C)](https://noviz-bank.duckdns.org)<br/>
-<sub>말로 하는 은행 업무 · 승인 후에만 실행</sub>
+성과 수치는 각 프로젝트의 기록을 인용한 것으로, 이번 문서 갱신에서 모델 평가를 다시 실행한 결과가 아닙니다. 평가셋·비교 조건·미달 목표를 사례에 함께 적었습니다. 가상 금융 데이터와 공모전 사례를 실제 고객 성과로 해석하지 않습니다.
 
-</td>
-<td width="50%" align="center">
+제출용 이력서·포트폴리오·자기소개서는 별도의 비공개 저장소에서 관리합니다. 공개 저장소에는 개인 전화번호와 제출 문서를 포함하지 않습니다.
 
-[![contest-radar](https://img.shields.io/badge/contest--radar-웹_데모-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://contest-radar-eta.vercel.app)<br/>
-<sub>AI·IT 공모전 매일 자동 수집 · AI 요약</sub>
-
-</td>
-</tr>
-<tr>
-<td width="50%" align="center">
-
-[![mealmate](https://img.shields.io/badge/mealmate-웹_데모-1F2328?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000)](https://mealmate-inky.vercel.app)<br/>
-<sub>냉장고 재료로 짜는 AI 주간 식단</sub>
-
-</td>
-<td width="50%" align="center">
-
-[![가봐야 알지](https://img.shields.io/badge/가봐야_알지-웹_데모-1F2328?style=for-the-badge&logo=supabase&logoColor=white&labelColor=3FCF8E)](https://go-eat-noviz.vercel.app)<br/>
-<sub>시골 맛집 기록 · 데모 계정 <code>test1@goeat.test</code> / <code>test1234</code></sub>
-
-</td>
-</tr>
-<tr>
-<td width="50%" align="center">
-
-[![englishWordApp](https://img.shields.io/badge/englishWordApp-Google_Play-1F2328?style=for-the-badge&logo=googleplay&logoColor=white&labelColor=34A853)](https://play.google.com/store/apps/details?id=com.voca.englishwordapp)<br/>
-<sub>토익 단어 학습 Android 앱</sub>
-
-</td>
-<td width="50%" align="center">
-
-[![data-value-sandbox](https://img.shields.io/badge/data--value--sandbox-웹_데모-1F2328?style=for-the-badge&logo=github&logoColor=white&labelColor=0F766E)](https://noviz-domino.github.io/data-value-sandbox/)<br/>
-<sub>데이터 가치 측정 시뮬레이션</sub>
-
-</td>
-</tr>
-<tr>
-<td width="50%" align="center">
-
-[![스쳐야 산다](https://img.shields.io/badge/스쳐야_산다-바로_플레이-1F2328?style=for-the-badge&logo=javascript&logoColor=white&labelColor=7C4DCC)](https://noviz-domino.github.io/cosmic-grazer/)<br/>
-<sub>브라우저 탄막 게임</sub>
-
-</td>
-<td width="50%" align="center">
-
-<sub>무료 서버를 쓰는 데모는<br/>첫 접속에 몇 초 걸릴 수 있습니다.</sub>
-
-</td>
-</tr>
-</table>
-
----
-
-## 👋 소개
-
-컴퓨터정보보안을 전공했고, 지금은 삼성 멀티캠퍼스 AI 에이전트 엔지니어 트랙에서 **LLM · RAG · 멀티 에이전트**를 배우며 금융 도메인 과제를 중심으로 프로젝트를 진행하고 있습니다. AI 에이전트 외에도 Google Play에 출시한 Android 앱, 배포 중인 Next.js 웹 서비스 세 개를 혼자 만들어 운영해봤습니다.
-
-<table>
-<tr>
-<td width="33%" valign="top">
-
-**🧭 LLM은 입구에만**
-
-말을 해석하는 곳에서만 LLM을 쓰고, 계산·검증·저장은 코드가 합니다. 숫자가 LLM을 거치지 않게 합니다.
-
-</td>
-<td width="33%" valign="top">
-
-**✋ 사람이 멈출 수 있게**
-
-돈이 나가거나 고객에게 발송되는 지점에는 승인 단계를 둡니다. AI를 빠르게보다 통제 가능하게 만듭니다.
-
-</td>
-<td width="33%" valign="top">
-
-**📏 측정해서 말하기**
-
-"좋아졌다" 대신 평가셋과 시나리오로 확인한 숫자를 남기고, 실패와 설계를 바꾼 이유도 기록합니다.
-
-</td>
-</tr>
-</table>
-
----
-
-## 🔧 문제 해결 사례
-
-프로젝트마다 부딪힌 문제를 어떻게 찾았고, 원인이 무엇이었고, 어떻게 풀었는지 정리했습니다. 숫자는 고친 뒤에 다시 재서 확인한 결과입니다.
-
-#### 1. 프롬프트로 막아도 LLM이 출금 계좌를 지어냈다 · `langgraph-financial-agent`
-
-- **문제** - "저축으로 10만 원 옮겨줘"라고만 했는데 LLM이 출금 계좌를 '생활비'로 채웠습니다. 프롬프트에 "출금 계좌 없음"이라고 적어 줘도 한 번은 되묻고 한 번은 지어냈습니다.
-- **원인** - 프롬프트 규칙은 확률이라 같은 입력에도 결과가 흔들립니다. 게다가 코드는 "뜻으로 알아들은 이름"과 "지어낸 이름"을 구분할 수 없었습니다.
-- **해결** - 피해가 큰 출금 계좌만 코드가 검증하게 바꿨습니다. 사용자가 말했거나, 앞에서 이어받았거나, 보여 준 후보에서 고른 이름이 아니면 비우고 되묻습니다. 입금 계좌·조회처럼 피해가 작은 곳은 유연하게 두었습니다.
-- **확인** - 잔액 부족·저장 실패·AI 서버 장애를 포함한 대화 시나리오 47개를 모두 통과했습니다.
-
-#### 2. AI 답변 초안 속 숫자가 회사 정책과 달랐다 · `replygate`
-
-- **문제** - 정책 없이 쓴 초안은 환불 기한 14일을 7일로 줄여 안내하거나, "적립금 5,000원을 지급해 드렸습니다"처럼 금액을 지어내 단정했습니다. 실제 정책은 주문 금액의 5% 적립이었습니다.
-- **원인** - 모델이 이 회사 정책을 모른 채 일반 상식으로 답했습니다. 맞힌 경우도 상식과 정책이 우연히 겹칠 때뿐이었습니다.
-- **해결** - 정책 문서를 조항 단위로 검색해 근거로 넣고(RAG), 근거에 없는 숫자는 쓰지 못하게 했습니다. 그래도 틀릴 수 있어서 담당자가 텔레그램에서 승인해야만 메일이 나가게 했습니다.
-- **확인** - 평가셋 50건에서 1차 승인률 34% → 94%, 수치 정확률 43.8% → 96.0%. RAG도 함정 문항 1건에서 본문을 지어낸 한계를 함께 기록했습니다.
-
-#### 3. 감정 분류 정확도가 올랐는데 '가짜 개선'이었다 · `replygate`
-
-- **문제** - 문의 감정을 불만/중립/단순문의 3단계로 나눴더니 '중립'을 한 번도 맞히지 못했습니다(0/20). 정의를 고치자 전체 정확도는 56% → 84%로 올랐지만, 클래스별로 쪼개 보니 중립은 여전히 0/7이었습니다.
-- **원인** - 라벨만 옮긴 개선이었습니다. 실제로는 '감정'과 '주문 조회가 필요한가'라는 서로 다른 두 기준을 한 줄에 섞은 설계 오류였습니다.
-- **해결** - 두 기준을 따로 판정하도록 감정(불만/일반)과 조회 필요(예/아니오) 두 축으로 나눴습니다.
-- **확인** - 감정 98%, 조회 필요 92%. 잘못된 중간 측정도 지우지 않고 기록으로 남겼습니다.
-
-#### 4. PDF를 그대로 읽으니 문장과 표가 뒤섞였다 · `financial-rag-agent` (팀)
-
-- **문제** - 기본 텍스트 추출로 금융 PDF 23개를 읽으니 펼침면·2단 문서의 좌우 문장이 섞이고, 표·차트·그림·각주가 깨졌습니다. 검색이 맞아도 근거 자체가 망가져 있었습니다.
-- **원인** - 기본 추출은 쪽 전체를 위에서 아래로만 읽어서, 사람이 읽는 순서와 표 구조를 알지 못합니다.
-- **해결** - 글자 좌표를 보고 펼침면·2단을 나눠 읽는 규칙을 만들었습니다. 표는 한글·숫자를 따로 세어 90% 미만이면 손실로 보고 칸 채우기 → Gemini 재판독 순서로 복구했고, 그림은 OCR로 먼저 읽은 뒤 종류에 맞게 글로 바꿨습니다.
-- **확인** - 표 191개를 처리하고, 청크 1,508개에서 정답 근거 누락 0을 확인했습니다.
-
-#### 5. Agent가 답할 수 있는 질문까지 거절했다 · `financial-rag-agent` (팀)
-
-- **문제** - 더 똑똑해야 할 Agent가 기본 RAG보다 점수가 낮았습니다. 들여다보니 답할 수 있는 질문을 거절하는 비율이 0.32였습니다(기본 RAG 0.03).
-- **원인** - 검색하기 전에 "답할 수 있는 질문인가"를 먼저 판단하는 단계가 있어서, 근거를 보기도 전에 거절하고 있었습니다.
-- **해결** - 그 단계를 없애고, 검색 결과를 본 뒤 한 번에 판단하도록 구조를 바꿨습니다.
-- **확인** - 시험 40문항에서 과다 거절 0.32 → 0.12, 답변 점수 1.03 → 1.40.
-
-#### 6. "로컬 LLM이라 안전하다"던 설계가 질문을 밖으로 보내고 있었다 · `legal_secretary`
-
-- **문제** - 2024년 캡스톤은 민감한 법률 질문을 다루니 로컬 LLM을 쓴다고 설계했습니다. 그런데 다시 살펴보니 사용자 질문이 ngrok 공개 터널을 거쳐 Colab으로 나가고 있었습니다.
-- **원인** - 컴퓨팅 자원이 부족해 Colab GPU를 빌려 쓰면서, 설계 문서와 실제 데이터 흐름이 어긋났습니다.
-- **해결** - 데이터가 밖으로 나가지 않는 self-hosted 경로를 실제로 구현하는 것을 목표로 구조 전체를 다시 만들고 있습니다(재구축 3 / 6단계).
-
----
-
-## 📂 프로젝트
-
-*최신순 · 따로 표시가 없으면 개인 프로젝트*
-
-### 1. financial-rag-agent · 금융 문서 근거 인용 RAG Agent
-
-`2026.10` · KDT 팀 프로젝트 (3인) · ✅ **제출 완료**
-
-![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=flat-square&logo=langchain&logoColor=white)
-![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
-![Chroma](https://img.shields.io/badge/Chroma-FF6446?style=flat-square)
-![BM25](https://img.shields.io/badge/Kiwi_BM25_+_Vector-555555?style=flat-square)
-![pdfplumber](https://img.shields.io/badge/pdfplumber-555555?style=flat-square)
-![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
-
-금융 PDF 23개(용어집·표준약관·금융생활 가이드북·정책 자료)에서 근거를 찾아 파일명·쪽과 함께 답하고, 답할 수 없는 질문에는 되묻기·자료 없음·거절 중 알맞은 대응을 고릅니다. 같은 180문항으로 실행 → 채점 → 실패 원인 분석 → 수정을 반복하는 평가 루프도 함께 만들었습니다.
-
-- **협업 방식** - 기획서는 셋이 함께 썼고, 에이전트 구조는 회의와 페어 프로그래밍으로 정했습니다. 이후 각자 작업한 내용을 PR로 올려 합치는 방식이라, 세 명 모두 모든 과정에 참여했습니다.
-- **내가 집중한 부분** - 그중 PDF 읽기·전처리, 에이전트 구조 설계, 최적 설정 찾기, 세 가지를 제가 더 깊게 맡았습니다.
-- **PDF 전처리** - 기본 추출로는 펼침면·2단 문서의 문장이 섞이고 표·차트·그림·각주가 깨져서, 글자 좌표를 보고 판단하는 규칙을 직접 만들었습니다. 표는 한글·숫자를 따로 세어 손실을 판정하고(90% 미만이면 칸 채우기, 그래도 안 되면 Gemini 재판독), 그림은 OCR로 먼저 읽은 뒤 종류에 맞게 글로 바꿨습니다. 표 191개를 처리하고 청크 1,508개에서 정답 근거 누락 0을 확인했습니다.
-- **에이전트 구조** - LangGraph로 검색 → 근거 판단 → (부족하면 검색어를 바꿔 재검색) → 답변 → 인용·숫자 검사 흐름을 설계하고, 재검색 2번·재작성 1번·AI 호출 상한으로 끝나는 조건을 정했습니다. 처음 구조는 검색하기 전에 답할지를 먼저 판단해서 답할 수 있는 질문까지 거절했는데, 이 단계를 없애고 검색 결과를 본 뒤 한 번에 판단하도록 바꿔 시험 40문항에서 과다 거절을 0.32 → 0.12로, 답변 점수를 1.03 → 1.40으로 개선했습니다.
-- **최적값 찾기** - 청킹(글자 수·구조형·parent-child)·검색 방식·검색 개수·임베딩을 한 번에 하나씩 바꾼 후보 15개를 180문항 전체로 채점해, 답변 점수를 기준 1.456에서 1.517로 올린 설정을 찾았습니다. 검색 지표 순위와 답변 점수 순위가 다르다는 것도 이 과정에서 확인했습니다.
-- **분석** - 만점을 못 받은 66문항 중 검색 실패는 6문항뿐이었습니다. 남은 문제가 검색이 아니라 답변 단계(숫자 검사 오탐·대응 판단)에 있다는 것을 숫자로 확인하고, 한계로 공개했습니다.
-
-🔗 [원본 팀 저장소](https://github.com/noviz-domino/financial-rag-agent) · 📄 [구현 문서](https://github.com/noviz-domino/financial-rag-agent/blob/main/docs/구현_문서.md)
-
-<br/>
-
-### 2. langgraph-financial-agent · 대화형 은행 업무 AI 에이전트
-
-`2026.09` · KDT 과제 · ✅ **완성 · 배포 중**
-
-![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=flat-square&logo=langchain&logoColor=white)
-![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
-![Python](https://img.shields.io/badge/Python_3.13-3776AB?style=flat-square&logo=python&logoColor=white)
-![Oracle Cloud](https://img.shields.io/badge/Oracle_Cloud-F80000?style=flat-square&logo=oracle&logoColor=white)
-
-"생활비에서 저축으로 10만 원 보내줘" 같은 말을 이해해 계좌 조회·이체·카드 잠금을 처리합니다. 돈이나 카드 상태가 바뀌는 일은 사용자 승인을 받은 뒤에만 실행합니다.
-
-- **설계** - LLM은 말을 해석하는 노드 한 곳에서만 사용하고, 잔액 계산·검사·저장·답변 문장은 모두 코드로 처리해 숫자가 LLM을 거치지 않게 했습니다.
-- **안전장치** - LangGraph `interrupt`로 승인 전 실행을 멈추고, 저장은 무결성 규칙 10개를 통과해야만 한 번에 교체되도록(atomic write) 구현했습니다.
-- **검증** - 실패 상황을 포함한 대화 시나리오 47개를 자동으로 돌려 전부 통과했고, 설계 변경 29건을 이유와 함께 기록했습니다.
-- **문제 해결** - 프롬프트로 금지해도 LLM이 출금 계좌를 지어내는 것을 발견해, 규칙을 LLM 응답을 코드가 검증하는 방식으로 바꿨습니다.
-- **관찰** - LangSmith로 실행 기록과 LLM 해석 평가(Experiment)를 남기고, LangGraph Studio에서 그래프가 승인 단계에서 멈췄다가 이어지는 흐름을 확인했습니다.
-
-| 이체 요청 → 승인 카드 | 승인 후 잔액 변화 |
-|:--:|:--:|
-| <img src="projects/langgraph-financial-agent/docs/images/02-confirm.png" alt="이체 승인 카드" width="400" /> | <img src="projects/langgraph-financial-agent/docs/images/03-done.png" alt="승인 후 잔액 변화" width="400" /> |
-| **LangGraph Studio - 승인 대기 (`interrupt`)** | **"예"로 이어 간 뒤** |
-| <img src="projects/langgraph-financial-agent/docs/images/08-studio-interrupt.png" alt="Studio 승인 대기" width="400" /> | <img src="projects/langgraph-financial-agent/docs/images/09-studio-resume.png" alt="Studio 이어 가기" width="400" /> |
-
-🔗 [직접 써보기](https://noviz-bank.duckdns.org) · 📂 [원본 저장소](https://github.com/noviz-domino/langgraph-financial-agent) · 📄 [설계 변경 기록](projects/langgraph-financial-agent/docs/설계변경기록.md)
-
-<br/>
-
-### 3. legal_secretary · 노동법 조문 인용 RAG 비서
-
-`2024.09 ~ 11` 캡스톤 → `2026.09 ~` 재구축 · 졸업논문 주제 · 🚧 **재구축 3 / 6단계**
-
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
-![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=flat-square&logo=langchain&logoColor=white)
-![Chroma](https://img.shields.io/badge/Chroma-FF6446?style=flat-square)
-![BM25](https://img.shields.io/badge/BM25_+_Vector-555555?style=flat-square)
-![SSE](https://img.shields.io/badge/SSE_Streaming-555555?style=flat-square)
-
-법률 질문에 관련 조문을 찾아 근거와 함께 답합니다. 2024년 캡스톤 버전을 기획·개발·인프라까지 단독으로 만들었고, 2026년에 구조를 전면 재구축하고 있습니다.
-
-- **재구축 이유** - "민감한 법률 문서라 로컬 LLM을 쓴다"는 설계와 달리 실제로는 질문이 외부 터널을 거쳐 나가고 있던 문제를 스스로 찾아냈습니다.
-- **검색** - "근로기준법 제56조"처럼 정확히 일치해야 하는 표현을 놓치지 않도록 조문 단위로 나누고, 키워드(BM25)와 의미(벡터) 검색을 합쳤습니다.
-- **응답** - 근거 조문을 답변보다 먼저 보내는 스트리밍(SSE)으로, 느린 무료 API(실측 8.8초)에서도 사용자가 기다리지 않게 했습니다.
-
-📂 [코드 보기](projects/legal_secretary/) · 📄 [재구축 계획](projects/legal_secretary/docs/리빌딩계획.md)
-
-<br/>
-
-### 4. mealmate · 냉장고 재료 기반 AI 주간 식단 생성
-
-`2026.08 ~ 09` · ✅ **배포 · 라이브 데모**
-
-![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)
-![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white)
-![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
-
-재료를 입력하면 AI가 주간 식단과 장보기 목록을 만들고, 끼니별 조리법은 필요할 때 생성합니다.
-
-- **출력 검증** - AI 출력 형식을 스키마로 강제한 뒤에도 구조를 다시 검사하고, 실패하면 한 번 재생성합니다.
-- **알레르기** - 우유를 피하는 사람에게 연유·생크림이 나오지 않도록 파생 재료까지 차단했습니다.
-- **보안** - Supabase RLS로 사용자별 데이터를 격리했습니다. TypeScript 약 3,200줄을 3일 동안 개발했습니다.
-
-| 공개 식단 | AI가 만든 식단 | 끼니별 조리법 |
-|:--:|:--:|:--:|
-| <img src="projects/mealmate/docs/screenshots/01-홈-공개식단.png" width="240" /> | <img src="projects/mealmate/docs/screenshots/05-AI가만든식단.png" width="240" /> | <img src="projects/mealmate/docs/screenshots/06-AI가만든조리법.png" width="240" /> |
-
-🔗 [라이브 데모](https://mealmate-inky.vercel.app) · 📂 [코드 보기](projects/mealmate/)
-
-<br/>
-
-### 5. replygate · AI 초안 + 사람 승인 고객 응대 자동화
-
-`2026.08` · KDT 미니프로젝트 · ✅ **완성 · 실측 평가**
-
-![n8n](https://img.shields.io/badge/n8n-EA4B71?style=flat-square&logo=n8n&logoColor=white)
-![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
-![RAG](https://img.shields.io/badge/RAG-000000?style=flat-square)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
-![Telegram](https://img.shields.io/badge/Telegram_Bot-26A5E4?style=flat-square&logo=telegram&logoColor=white)
-
-고객 문의가 오면 AI가 사내 정책 문서를 근거로 답변 초안을 쓰고, 담당자가 텔레그램에서 승인해야만 메일이 발송됩니다.
-
-- **설계** - 틀리면 분쟁이 되는 수치(환불 수수료·배송 기한) 때문에 자동 발송 대신 사람 승인 단계를 두었습니다.
-- **성과** - 평가셋 50건 기준 1차 승인률을 34% → 94%, 수치 정확률을 43.8% → 96.0%로 개선했습니다. 정책에 답이 없는 함정 질문 5건도 포함했습니다.
-- **문제 해결** - 감정 분류에서 한 클래스가 전혀 선택되지 않는 원인이 두 기준을 하나로 섞은 데 있음을 찾아, 두 축으로 분리해 정확도 98% / 92%를 얻었습니다.
-
-<img src="projects/replygate/docs/screenshots/텔레그램-정책충돌-감지.png" alt="담당자의 수정 지시가 정책과 충돌하자 경고를 띄운 텔레그램 승인 카드" width="320" />
-
-📂 [코드 보기](projects/replygate/) · 📄 [평가셋 설계](projects/replygate/eval/)
-
-<br/>
-
-### 6. englishWordApp · 토익 단어 학습 Android 앱
-
-`2026.06 ~ 08` · ✅ **Google Play 출시**
-
-![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=flat-square&logo=kotlin&logoColor=white)
-![Compose](https://img.shields.io/badge/Jetpack_Compose-4285F4?style=flat-square&logo=jetpackcompose&logoColor=white)
-![Android](https://img.shields.io/badge/Android-34A853?style=flat-square&logo=android&logoColor=white)
-![JUnit](https://img.shields.io/badge/JUnit_25건-25A162?style=flat-square&logo=junit5&logoColor=white)
-
-뜻을 가리고 외우는 학습, 진행도 이어보기, TTS 발음, 오답노트, 4지선다 퀴즈를 제공합니다. 단어 1,222개.
-
-- **재작성** - 직접 만든 Java 버전의 문제(뜻이 항상 보임, 1,225행 중 835행에 따옴표 노출, 화면 회전 시 진행도 초기화)를 Kotlin·Compose로 전면 재작성해 해결했습니다.
-- **품질** - 퀴즈 출제 로직을 순수 함수로 분리해 JUnit 테스트 25건으로 고정하고, 앱이 종료됐다 다시 켜져도 학습 위치를 복원합니다.
-
-| 홈 | 단어 학습 | 퀴즈 |
-|:--:|:--:|:--:|
-| <img src="projects/englishWordApp/docs/brand/play-store/capture/main.png" width="200" /> | <img src="projects/englishWordApp/docs/brand/play-store/capture/word.png" width="200" /> | <img src="projects/englishWordApp/docs/brand/play-store/capture/game.png" width="200" /> |
-
-📱 [Google Play에서 보기](https://play.google.com/store/apps/details?id=com.voca.englishwordapp) · 📂 [코드 보기](projects/englishWordApp/)
-
----
-
-## 📦 그 외 프로젝트
-
-<table>
-<thead>
-<tr><th>기간</th><th>프로젝트</th><th>기술</th><th>링크</th></tr>
-</thead>
-<tbody>
-
-<tr><td colspan="4"><b>🤖 AI 에이전트 · LLM</b></td></tr>
-<tr><td>2026.10 ~</td><td><b>contest-radar</b><br/>AI·IT 공모전을 매일 자동으로 모아 AI가 요약해 주는 사이트 · 필요해서 직접 만들어 운영 중 · 중복 판정은 규칙 → BM25 후보 → LLM 순서</td><td>Next.js · Gemini · GitHub Actions</td><td><a href="https://contest-radar-eta.vercel.app">데모</a></td></tr>
-<tr><td>2026.09</td><td><b>multi-agent-tax-prep</b><br/>종합소득세 신고 준비 멀티 에이전트 (리서치·계획·검토) · LLM 없이 도는 테스트 57개</td><td>LangGraph · Gemini</td><td><a href="projects/multi-agent-tax-prep/">코드</a></td></tr>
-<tr><td>2026.09</td><td><b>rag-experiment-script</b><br/>설정 20개로 청킹·검색·리랭킹을 비교한 RAG 실험 · 하이브리드 검색 Page Hit@1 0.943 (기준 0.886)</td><td>LangChain · Chroma · BM25</td><td><a href="projects/rag-experiment-script/">코드</a></td></tr>
-<tr><td>2026.08 ~ 09</td><td><b>personal-budget-ai-agent</b><br/>자연어로 쓰는 가계부 에이전트 (도구 7개)</td><td>Gemini Function Calling</td><td><a href="projects/personal-budget-ai-agent/">코드</a></td></tr>
-<tr><td>2026.08</td><td><b>n8n-finance-news-briefing</b><br/>금융 뉴스 자동 요약 브리핑 · 하루 API 호출 188회 → 4회</td><td>n8n · Gemini · Discord</td><td><a href="projects/n8n-finance-news-briefing/">코드</a></td></tr>
-<tr><td>2026.08</td><td><b>n8n-voc-analysis-agent</b><br/>고객 VOC 자동 분류·긴급 알림</td><td>n8n · Gemini · Sheets</td><td><a href="projects/n8n-voc-analysis-agent/">코드</a></td></tr>
-<tr><td>2026.07</td><td><b>대통령: 외교의 신 (god-of-diplomacy)</b><br/>Gemini 기반 정치·외교 텍스트 RPG</td><td>FastAPI · Gemini</td><td><a href="projects/god-of-diplomacy/">코드</a></td></tr>
-
-<tr><td colspan="4"><b>🏁 공모전 · 해커톤</b></td></tr>
-<tr><td>2026.10 ~</td><td><b>국부펀드 KIC AI 에이전트 공모전</b><br/>해외 위탁운용사(GP)를 고르고 관리하는 일을 돕는 멀티 에이전트 · 운용사가 낸 제안자료의 주장을 공개 자료로 확인하고, 선정 뒤의 변화를 살핍니다 · 개인 참가 · 진행 중 (코드와 상세 설계는 대회가 끝난 뒤 공개)</td><td>LangGraph · LangChain · Parent-Child RAG · GraphRAG · Vector DB · Next.js</td><td>-</td></tr>
-<tr><td>2026.10</td><td><b>길잡이 24</b> · 고용24 국민참여 AI 해커톤 기획안 참가 (개인)<br/>훈련·생계 지원·구직활동을 재취업까지 하나의 경로로 설계하는 AI 재취업 내비게이션 기획</td><td>기획 · 공공데이터 설계</td><td>-</td></tr>
-
-<tr><td colspan="4"><b>📱 웹 · 앱</b></td></tr>
-<tr><td>2026.08 ~ 09</td><td><b>가봐야 알지 (go-eat)</b><br/>시골 맛집 기록 웹앱, 8시간 제약 개발</td><td>Next.js · Supabase</td><td><a href="https://go-eat-noviz.vercel.app">데모</a> · <a href="projects/go-eat/">코드</a></td></tr>
-
-<tr><td colspan="4"><b>📊 데이터 · 게임</b></td></tr>
-<tr><td>2026.07 ~ 08</td><td><b>스쳐야 산다 (cosmic-grazer)</b><br/>단일 HTML 파일 탄막 서바이버 게임</td><td>Vanilla JS · Canvas2D</td><td><a href="https://noviz-domino.github.io/cosmic-grazer/">플레이</a> · <a href="projects/cosmic-grazer/">코드</a></td></tr>
-<tr><td>2026.04 ~ 09</td><td><b>data-value-sandbox</b><br/>합성 세계로 "어떤 데이터가 사건을 예측 가능하게 하는가" 측정 · 표적 추론 top-1 51.5% (기준선의 3.81배)</td><td>deck.gl · Jupyter</td><td><a href="https://noviz-domino.github.io/data-value-sandbox/">데모</a> · <a href="https://github.com/noviz-domino/data-value-sandbox">저장소</a></td></tr>
-<tr><td>2021.12</td><td><b>GTD 테러예측모델</b><br/>글로벌 테러 데이터 분석·예측 (2인 팀)</td><td>Python · Scikit-learn</td><td>-</td></tr>
-
-</tbody>
-</table>
-
----
-
-## 🧰 기술 스택
-
-| 분야 | 프로젝트에서 사용 |
-|:--|:--|
-| **AI · Agent** | ![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=flat-square&logo=langchain&logoColor=white) ![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=flat-square&logo=langchain&logoColor=white) ![Gemini](https://img.shields.io/badge/Gemini_API-8E75B2?style=flat-square&logo=googlegemini&logoColor=white) ![n8n](https://img.shields.io/badge/n8n-EA4B71?style=flat-square&logo=n8n&logoColor=white) ![Function Calling](https://img.shields.io/badge/Function_Calling-555555?style=flat-square) ![Structured Output](https://img.shields.io/badge/Structured_Output-555555?style=flat-square) ![멀티_에이전트_오케스트레이션](https://img.shields.io/badge/멀티_에이전트_오케스트레이션-555555?style=flat-square) ![서브에이전트](https://img.shields.io/badge/서브에이전트-555555?style=flat-square) |
-| **RAG · 검색** | ![Parent-Child RAG](https://img.shields.io/badge/Parent--Child_RAG-555555?style=flat-square) ![GraphRAG](https://img.shields.io/badge/GraphRAG-555555?style=flat-square) ![임베딩_·_Vector_DB](https://img.shields.io/badge/임베딩_·_Vector_DB-555555?style=flat-square) ![Chroma](https://img.shields.io/badge/Chroma-FF6446?style=flat-square) ![BM25](https://img.shields.io/badge/BM25-555555?style=flat-square) ![Hybrid](https://img.shields.io/badge/Hybrid_RRF-555555?style=flat-square) ![Reranking](https://img.shields.io/badge/Reranking-555555?style=flat-square) ![Eval](https://img.shields.io/badge/평가셋_설계_·_RAG_평가-555555?style=flat-square) |
-| **Backend** | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white) ![Flask](https://img.shields.io/badge/Flask-000000?style=flat-square&logo=flask&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white) |
-| **Frontend · Mobile** | ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white) ![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=flat-square&logo=kotlin&logoColor=white) ![Compose](https://img.shields.io/badge/Jetpack_Compose-4285F4?style=flat-square&logo=jetpackcompose&logoColor=white) |
-| **Infra · Tool** | ![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white) ![Oracle Cloud](https://img.shields.io/badge/Oracle_Cloud-F80000?style=flat-square&logo=oracle&logoColor=white) ![Ollama](https://img.shields.io/badge/Ollama-000000?style=flat-square&logo=ollama&logoColor=white) ![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black) ![Claude Code](https://img.shields.io/badge/Claude_Code-D97757?style=flat-square&logo=anthropic&logoColor=white) |
-| *학습 경험 (프로젝트 미사용)* | ![Java](https://img.shields.io/badge/Java-AAAAAA?style=flat-square&logo=openjdk&logoColor=white) ![PyTorch](https://img.shields.io/badge/PyTorch-AAAAAA?style=flat-square&logo=pytorch&logoColor=white) ![TensorFlow](https://img.shields.io/badge/TensorFlow-AAAAAA?style=flat-square&logo=tensorflow&logoColor=white) ![Alibaba Cloud](https://img.shields.io/badge/Alibaba_Cloud-AAAAAA?style=flat-square&logo=alibabacloud&logoColor=white) |
-
----
-
-## 🎓 학력 · 교육
-
-**삼성 멀티캠퍼스 · AI 에이전트 엔지니어 트랙 1회차** · `2026.07 ~ 2027.01` · 🟢 수강 중<br/>
-984시간 · 금융 AI 서비스 개발을 실습 축으로 하는 과정
-
-| 단위기간 | 주제 | 관련 결과물 |
-|:--:|:--|:--|
-| ✅ 1 | LLM · 프롬프트 · n8n | replygate · n8n-voc-analysis-agent · n8n-finance-news-briefing |
-| ✅ 2 | Python AI 웹개발 · LangChain | personal-budget-ai-agent · rag-experiment-script |
-| ✅ 3 | LangGraph · MCP · 멀티 에이전트 | langgraph-financial-agent · multi-agent-tax-prep |
-| ✅ 4 | RAG 시스템 설계 | financial-rag-agent (3인 팀) |
-| ⏳ 5 ~ 6 | 프로덕션(Docker·AWS·CI/CD) · 종합 프로젝트 | *예정* |
-
-| 기간 | 학교 | |
-|:--|:--|:--|
-| 2017.03 ~ 2026.03 | **우송대학교** 컴퓨터정보보안학과 | 수료 |
-| 2019.03 ~ 2024.01 | **베이징이공대학** 공동학위과정 | 중퇴 · 다국적 팀 프로젝트 수행 |
-
-매일의 학습 기록은 [TIL 저장소](https://github.com/noviz-domino/TIL)에 남기고 있습니다.
-
----
-
-## 🏅 자격 · 수상
-
-| 시기 | 내용 |
-|:--|:--|
-| 🥇 군 복무 중 | **C4I 체계 전산운용 1위** - 대한민국 육군 정보통신학교 준장 표창 |
-| 📝 2026.03 | TOEIC 545 |
-| 🚁 보유 | 초경량비행장치 1급 (드론) |
-| 📚 준비 중 | 정보처리기사 · 정보보안기사 실기 |
-
----
-
-<div align="center">
-
-### 📬 연락처
-
-[![Email](https://img.shields.io/badge/noviz2025@gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:noviz2025@gmail.com)
-[![GitHub](https://img.shields.io/badge/noviz--domino-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/noviz-domino)
-[![Website](https://img.shields.io/badge/Portfolio_Site-0F766E?style=for-the-badge&logo=googlechrome&logoColor=white)](https://noviz-domino.github.io/)
-
-이 저장소는 프로젝트별 소스 코드와 설계 문서를 `projects/`에 모은 것입니다. 원본 저장소는 대부분 비공개라 민감정보를 뺀 사본을 두었습니다.<br/>
-AI 코딩 도구 운용 방식: [docs/agent-workflow.md](docs/agent-workflow.md)
-
-<sub>최종 수정 2026-10-29 · <a href="docs/CHANGELOG.md">정돈 기록</a></sub>
-
-</div>
+마지막 내용 검토: 2026-11-16
